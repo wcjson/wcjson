@@ -63,7 +63,7 @@ The **wcjson** utility exits&#160;0 on success, and&#160;&gt;0 if an error occur
 
 ## SEE ALSO
 
-locale(1)
+[locale(1)](https://man.openbsd.org/locale)
 wcjson(3)
 
 # WCJSON(3) - Library Functions Manual
@@ -194,22 +194,22 @@ function provides status via
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
-RFC 8259,
+[RFC 8259](https://www.rfc-editor.org/info/rfc8259),
 December 2017.
 
 J. Klensin,
 *ASCII Escaping of Unicode Characters*,
-RFC 5137,
+[RFC 5137](https://www.rfc-editor.org/info/rfc5137),
 February 2008.
 
 F. Yergeau,
 *UTF-8, a transformation format of ISO 10646*,
-RFC 3629,
+[RFC 3629](https://www.rfc-editor.org/info/rfc3629),
 November 2003.
 
 P. Hoffman,
 F. Yergeau,
 *UTF-16, an encoding of ISO 10646*,
-RFC 2781,
+[RFC 2781](https://www.rfc-editor.org/info/rfc2781),
 February 2000.
 
