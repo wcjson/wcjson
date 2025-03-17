@@ -212,3 +212,8 @@ F. Yergeau,
 *UTF-16, an encoding of ISO 10646*,
 [RFC 2781](https://www.rfc-editor.org/info/rfc2781),
 February 2000.
+
+# Releases
+
+Releases are provided via Github. The latest release is
+[v0.0](https://github.com/wcjson/wcjson/releases/tag/v0.0).
