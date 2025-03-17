@@ -77,7 +77,7 @@ wcjson(3)
 
 ## SYNOPSIS
 
-**#include &lt;wcjson.h>**
+**#include &lt;[wcjson.h](src/wcjson.h)>**
 
 *int*  
 **wcjson**(*struct wcjson \*ctx*, *const struct wcjson\_ops \*ops*, *void \*document*, *const wchar\_t \*text*, *const size\_t len*);
