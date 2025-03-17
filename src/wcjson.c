@@ -891,7 +891,7 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
     s++;                                                                       \
   } while (0)
 
-  size_t u_len;
+  size_t start = d_len, u_len;
 #if defined(WCHAR_T_UTF8)
   uint32_t cp;
 #endif
@@ -1056,18 +1056,18 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
   }
 
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   return 0;
 err_range:
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   errno = ERANGE;
   return -1;
 err_ilseq:
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   errno = EILSEQ;
   return -1;
@@ -1089,6 +1089,7 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
   struct scan_state ss = {0};
   uint32_t cp;
   uint16_t ls;
+  size_t start = d_len;
 
   if (s_len != 0) {
     if (d_len == 0)
@@ -1247,18 +1248,18 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
   }
 
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   return 0;
 err_range:
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   errno = ERANGE;
   return -1;
 err_ilseq:
   if (d_lenp != NULL)
-    *d_lenp -= d_len;
+    *d_lenp = start - d_len;
 
   errno = EILSEQ;
   return -1;

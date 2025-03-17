@@ -451,9 +451,10 @@ void print_node(FILE *f, struct wcjson *ctx, struct cli_node *node,
 }
 
 static _Noreturn void usage(void) {
-  fprintf(stderr,
-          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-m bytes]\n",
-          __progname);
+  fprintf(
+      stderr,
+      "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-m bytes]\n",
+      __progname);
   exit(3);
 }
 
