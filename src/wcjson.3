@@ -1,0 +1,144 @@
+.Dd March 15 2025
+.Dt WCJSON 3
+.Os
+.Sh NAME
+.Nm wcjson ,
+.Nm wctowcjsons ,
+.Nm wctoascjsons ,
+.Nm wcjsonstowc
+.Nd wide character JSON
+.Sh SYNOPSIS
+.In wcjson.h
+.Ft int
+.Fn wcjson "struct wcjson *ctx" "const struct wcjson_ops *ops" "void *document" "const wchar_t *text" "const size_t len"
+.Ft int
+.Fn wctowcjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Ft int
+.Fn wctoascjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Ft int
+.Fn wcjsonstowc "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Sh DESCRIPTION
+The
+.Fn wcjson
+function deserializes
+.Fa len
+characters JSON
+.Fa text
+by passing
+.Fa ctx
+and
+.Fa document
+to callback functions
+.Fa ops .
+.Pp
+The (a)
+.Fn wctowcjsons
+and (b)
+.Fn wctoascjsons
+functions encode
+.Fa s_len
+characters from
+.Fa s
+to
+.Fa d
+capable of storing
+.Fa d_len
+characters by applying JSON escaping rules (a) for all characters requiring escaping
+according to the JSON grammar or additionally (b) for all characters not compatible with
+7bit ASCII. To ensure the destination
+.Fa d
+is capable of storing the complete encoded representation of
+.Fa s
+the
+.Dv WCJSON_ESCAPE_MAX
+constant can be used such that d_len >= s_len *
+.Dv WCJSON_ESCAPE_MAX .
+.Pp
+The
+.Fn wcjsonstowc
+function decodes
+.Fa s_len
+characters from
+.Fa s
+to
+.Fa d
+capable of storing
+.Fa d_len
+characters by unapplying JSON escaping rules. To ensure the destination
+.Fa d
+is capable of storing the complete decoded representation of
+.Fa s
+that destination needs to be capable of storing at least
+.Fa s_len
+characters such that d_len >= s_len.
+.Pp
+The
+.Fn wctowcjsons ,
+.Fn wctoascjsons
+and
+.Fn wcjsonstowc
+functions set
+.Fa d_lenp
+to the number of characters written to
+.Fa d
+on return, if not NULL.
+.Sh RETURN VALUES
+The functions return 0 on success, or a negative value if a deserialization, decoding or
+encoding error occurs.
+The
+.Fn wctowcjsons ,
+.Fn wctoascjsons
+and
+.Fn wcjsonstowc
+functions set the global variable
+.Va errno
+to indicate the error. The
+.Fn wcjson
+function provides status via
+.Fa ctx .
+.Sh ERRORS
+.Bl -tag -width Er
+.It Bq Er ERANGE
+The size
+.Fa d_len
+of the destination
+.Fa d
+was too small.
+.It Bq Er EILSEQ
+The source
+.Fa s
+cointained invalid data.
+.El.
+.Sh STANDARDS
+.Rs
+.%A T. Bray, Ed.
+.%D December 2017
+.%R RFC 8259
+.%T The JavaScript Object Notation (JSON) Data Interchange Format
+.Re
+.Pp
+.Rs
+.%A J. Klensin
+.%D February 2008
+.%R RFC 5137
+.%T ASCII Escaping of Unicode Characters
+.Re
+.Pp
+.Rs
+.%A F. Yergeau
+.%D November 2003
+.%R RFC 3629
+.%T UTF-8, a transformation format of ISO 10646
+.Re
+.Pp
+.Rs
+.%A P. Hoffman
+.%A F. Yergeau
+.%D February 2000
+.%R RFC 2781
+.%T UTF-16, an encoding of ISO 10646
+.Re
+.Sh AUTHORS
+.An -nosplit
+.An Christian Schulte Aq Mt cs@schulte.it .
+

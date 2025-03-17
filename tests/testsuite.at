@@ -1,0 +1,112 @@
+m4_include([package.m4])
+
+AT_INIT
+AT_COLOR_TESTS
+AT_TESTED([wcjson])
+
+AT_SETUP([null])
+AT_CHECK([printf -- %s null | wcjson], [0], [null])
+AT_CHECK([printf -- %s "   null" | wcjson], [0], [null])
+AT_CHECK([printf -- %s "null   " | wcjson], [0], [null])
+AT_CHECK([printf -- %s "   null   " | wcjson], [0], [null])
+AT_CHECK([printf -- %s n | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([true])
+AT_CHECK([printf -- %s true | wcjson], [0], [true])
+AT_CHECK([printf -- %s "   true" | wcjson], [0], [true])
+AT_CHECK([printf -- %s "true   " | wcjson], [0], [true])
+AT_CHECK([printf -- %s "   true   " | wcjson], [0], [true])
+AT_CHECK([printf -- %s t | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([false])
+AT_CHECK([printf -- %s false | wcjson], [0], [false])
+AT_CHECK([printf -- %s "   false" | wcjson], [0], [false])
+AT_CHECK([printf -- %s "false   " | wcjson], [0], [false])
+AT_CHECK([printf -- %s "   false   " | wcjson], [0], [false])
+AT_CHECK([printf -- %s f | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([number])
+AT_CHECK([printf -- %s 0 | wcjson], [0], [0])
+AT_CHECK([printf -- %s "   0" | wcjson], [0], [0])
+AT_CHECK([printf -- %s "0   " | wcjson], [0], [0])
+AT_CHECK([printf -- %s "   0   " | wcjson], [0] ,[0])
+AT_CHECK([printf -- %s 00 | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s -0 | wcjson], [0], [-0])
+AT_CHECK([printf -- %s 1. | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 1.1 | wcjson], [0], [1.1])
+AT_CHECK([printf -- %s 1.10 | wcjson], [0], [1.10])
+AT_CHECK([printf -- %s 0e | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 0E | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s Oe+ | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 0E+ | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 0e- | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 0E- | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s 0e1 | wcjson], [0], [0e1])
+AT_CHECK([printf -- %s 0e+1 | wcjson], [0], [0e+1])
+AT_CHECK([printf -- %s 0E+1 | wcjson], [0], [0E+1])
+AT_CHECK([printf -- %s 0e-1 | wcjson], [0], [0e-1])
+AT_CHECK([printf -- %s 0E-1 | wcjson], [0], [0E-1])
+AT_CHECK([printf -- %s 1.23e456 | wcjson], [0], [1.23e456])
+AT_CHECK([printf -- %s "   1.23e456" | wcjson], [0], [1.23e456])
+AT_CHECK([printf -- %s "1.23e456   " | wcjson], [0], [1.23e456])
+AT_CHECK([printf -- %s "   1.23e456   " | wcjson], [0], [1.23e456])
+AT_CHECK([printf -- %s "1.23e+456" | wcjson], [0], [1.23e+456])
+AT_CHECK([printf -- %s "1.23e-456" | wcjson], [0], [1.23e-456])
+AT_CLEANUP
+
+AT_SETUP([string])
+AT_CHECK([printf -- %s \"\" | wcjson], [0], [""])
+AT_CHECK([printf -- %s "   \"\"" | wcjson], [0], [""])
+AT_CHECK([printf -- %s "\"\"   " | wcjson], [0], [""])
+AT_CHECK([printf -- %s "   \"\"   " | wcjson], [0], [""])
+AT_CHECK([printf -- %s "   \"ABC\"   " | wcjson], [0], ["ABC"])
+AT_CHECK([printf -- %s \" | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s "   \"" | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s "\"   " | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s "   \"   " | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([array])
+AT_CHECK([printf -- %s @<:@@:>@ | wcjson], [0], [@<:@@:>@])
+AT_CHECK([printf -- %s "   @<:@@:>@" | wcjson], [0], [@<:@@:>@])
+AT_CHECK([printf -- %s "@<:@@:>@   " | wcjson], [0], [@<:@@:>@])
+AT_CHECK([printf -- %s "   @<:@@:>@   " | wcjson], [0], [@<:@@:>@])
+AT_CHECK([printf -- %s "   @<:@   @:>@   " | wcjson], [0], [@<:@@:>@])
+AT_CHECK([printf -- %s "   @<:@   " | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s "   @:>@   " | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([object])
+AT_CHECK([printf -- %s {} | wcjson], [0],[{}])
+AT_CHECK([printf -- %s "   {}" | wcjson], [0], [{}])
+AT_CHECK([printf -- %s "{}   " | wcjson], [0], [{}])
+AT_CHECK([printf -- %s "   {}   " | wcjson], [0], [{}])
+AT_CHECK([printf -- %s "   {   }   " | wcjson], [0], [{}])
+AT_CHECK([printf -- %s "   {   " | wcjson 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s "   }   " | wcjson 2>/dev/null], [1], [], [])
+AT_CLEANUP
+
+AT_SETUP([document])
+AT_CHECK([printf -- %s "   @<:@   null   ,   true   ,   false   ,   \"abc\"   ,   -100e-10   , @<:@   {   }   @:>@   @:>@   " | wcjson], [0], [@<:@null,true,false,"abc",-100e-10,@<:@{}@:>@@:>@])
+AT_CHECK([printf -- %s "   {   \"key\"   :  null   ,   \"key\"   :   true   ,   \"key\"   :   false   ,   \"key\"   :   \"abc\"   ,   \"key\"   :   -100e-10   ,   \"key\"   :   @<:@   null   @:>@   ,   \"key\"   :   {   \"key\"   :   @<:@   true   @:>@   }   }   " | wcjson], [0], [{"key":null,"key":true,"key":false,"key":"abc","key":-100e-10,"key":@<:@null@:>@,"key":{"key":@<:@true@:>@}}])
+
+AT_CHECK([printf -- %s \"ABC\\u0041\\u0042\\u0043ABC\" | wcjson], [0], ["ABCABCABC"])
+AT_CHECK([printf -- %s \"ABC\\tABC\\u0041BC\\rA\\u0042C\\/AB\\u0043\\\\ABC\" | wcjson], [0], ["ABC\tABCABC\rABC\/ABC\\ABC"])
+AT_CHECK([printf -- %s \"ABC\\udbff\\udfffABC\" | wcjson -e C -a], [0], ["ABC\udbff\udfffABC"])
+AT_CHECK([printf -- %s "   \"   \\udbff\\udfff   \"   " | wcjson -e C -a], [0], ["   \udbff\udfff   "])
+AT_CHECK([printf -- %s \"ABC\\uffffABC\" | wcjson -e C -a], [0], ["ABC\uffffABC"])
+AT_CHECK([printf -- %s \"ABC\\u0081ABC\" | wcjson -e C -a], [0], ["ABC\u0081ABC"])
+AT_CHECK([printf -- %s \"ABC\\u0801ABC\" | wcjson -e C -a], [0], ["ABC\u0801ABC"])
+AT_CHECK([printf -- %s \"\\\" | wcjson -e C -a 2>/dev/null], [1], [],[])
+AT_CHECK([printf -- %s \"\\u\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\u1\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\u12\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\u123\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\udfff\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\udbff\\udbff\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"\\u0000\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CLEANUP
+

@@ -1,0 +1,81 @@
+.Dd March 15 2025
+.Dt WCJSON 1
+.Os
+.Sh NAME
+.Nm wcjson
+.Nd transcode JSON text
+.Sh SYNOPSIS
+.Nm wcjson
+.Op Fl i Ar file
+.Op Fl d Ar locale
+.Op Fl o Ar file
+.Op Fl e Ar locale
+.Op Fl a
+.Op Fl m Ar bytes
+.Sh DESCRIPTION
+The
+.Nm
+utility transcodes JSON text.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl i Ar file
+Input file to read JSON text from. Defaults to standard input.
+.It Fl d Ar locale
+Character encoding to use for decoding JSON text. See
+.Sx ENVIRONMENT .
+.It Fl o Ar file
+Output file to write JSON text to. Defaults to standard output.
+.It Fl e Ar locale
+Character encoding to use for encoding JSON text. See
+.Sx ENVIRONMENT .
+.It Fl a
+Flag indicating to encode JSON text for 7bit ASCII compatibility (e.g. when
+using
+.Fl e
+C).
+.It Fl m Ar bytes
+Maximum amount of memory the utility is allowed to allocate.
+.El
+.Sh EXIT STATUS
+.Ex -std wcjson
+.Sh ENVIRONMENT
+.Bl -tag -width LC_CTYPEX
+.It Ev LC_CTYPE
+Character encoding used for decoding and encoding JSON text by default.
+.Sh SEE ALSO
+.Xr locale 1
+.Xr wcjson 3
+.Sh STANDARDS
+.Rs
+.%A T. Bray, Ed.
+.%D December 2017
+.%R RFC 8259
+.%T The JavaScript Object Notation (JSON) Data Interchange Format
+.Re
+.Pp
+.Rs
+.%A J. Klensin
+.%D February 2008
+.%R RFC 5137
+.%T ASCII Escaping of Unicode Characters
+.Re
+.Pp
+.Rs
+.%A F. Yergeau
+.%D November 2003
+.%R RFC 3629
+.%T UTF-8, a transformation format of ISO 10646
+.Re
+.Pp
+.Rs
+.%A P. Hoffman
+.%A F. Yergeau
+.%D February 2000
+.%R RFC 2781
+.%T UTF-16, an encoding of ISO 10646
+.Re
+.Sh AUTHORS
+.An -nosplit
+.An Christian Schulte Aq Mt cs@schulte.it .
+
