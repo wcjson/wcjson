@@ -284,8 +284,6 @@ static void print_string(FILE *f, struct wcjson *ctx, struct cli_node *node,
   if (wcjsonstowc(node->txt, node->len, unesc, unesc_len, &unesc_len)) {
     if (errno == ERANGE)
       errno = ENOMEM;
-    else if (errno == EILSEQ)
-      ctx->status = WCJSON_ABORT_INVALID;
 
     goto err;
   }
@@ -454,7 +452,7 @@ void print_node(FILE *f, struct wcjson *ctx, struct cli_node *node,
 
 static _Noreturn void usage(void) {
   fprintf(stderr,
-          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-l bytes]\n",
+          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-m bytes]\n",
           __progname);
   exit(3);
 }
