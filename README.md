@@ -83,13 +83,13 @@ wcjson(3)
 **wcjson**(*struct wcjson \*ctx*, *const struct wcjson\_ops \*ops*, *void \*document*, *const wchar\_t \*text*, *const size\_t len*);
 
 *int*  
-**wctowcjsons**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t d\_len*, *size\_t \*d\_lenp*);
+**wctowcjsons**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t \*d\_lenp*);
 
 *int*  
-**wctoascjsons**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t d\_len*, *size\_t \*d\_lenp*);
+**wctoascjsons**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t \*d\_lenp*);
 
 *int*  
-**wcjsonstowc**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t d\_len*, *size\_t \*d\_lenp*);
+**wcjsonstowc**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t \*d\_lenp*);
 
 ## DESCRIPTION
 
@@ -117,7 +117,7 @@ characters from
 to
 *d*
 capable of storing
-*d\_len*
+*\*d\_lenp*
 characters by applying JSON escaping rules (a) for all characters requiring escaping
 according to the JSON grammar or additionally (b) for all characters not compatible with
 7bit ASCII. To ensure the destination
@@ -126,7 +126,7 @@ is capable of storing the complete encoded representation of
 *s*
 the
 `WCJSON_ESCAPE_MAX`
-constant can be used such that d\_len &gt;= s\_len \*
+constant can be used such that \*d\_lenp &gt;= s\_len \*
 `WCJSON_ESCAPE_MAX`.
 
 The
@@ -138,14 +138,14 @@ characters from
 to
 *d*
 capable of storing
-*d\_len*
+*\*d\_lenp*
 characters by unapplying JSON escaping rules. To ensure the destination
 *d*
 is capable of storing the complete decoded representation of
 *s*
 that destination needs to be capable of storing at least
 *s\_len*
-characters such that d\_len &gt;= s\_len.
+characters such that \*d\_lenp &gt;= s\_len.
 
 The
 **wctowcjsons**(),
@@ -153,10 +153,10 @@ The
 and
 **wcjsonstowc**()
 functions set
-*d\_lenp*
+*\*d\_lenp*
 to the number of characters written to
 *d*
-on return, if not NULL.
+on return.
 
 ## RETURN VALUES
 
@@ -212,4 +212,3 @@ F. Yergeau,
 *UTF-16, an encoding of ISO 10646*,
 [RFC 2781](https://www.rfc-editor.org/info/rfc2781),
 February 2000.
-
