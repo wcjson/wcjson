@@ -31,7 +31,7 @@ extern "C" {
 
 /**
  * Maximum number of wide characters escaping of a single wide character may
- * require. This worst case currently is when a single wide character needs to
+ * require. The worst case currently is when a single wide character needs to
  * be escaped to UTF 16 surrogates.
  */
 #define WCJSON_ESCAPE_MAX 12
