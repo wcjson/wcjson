@@ -281,7 +281,7 @@ static void print_string(FILE *f, struct wcjson *ctx, struct cli_node *node,
   wchar_t *unesc = buf, *esc = NULL;
   size_t unesc_len = buf_len, esc_len;
 
-  if (wcjsonstowc(node->txt, node->len, unesc, unesc_len, &unesc_len)) {
+  if (wcjsonstowc(node->txt, node->len, unesc, &unesc_len)) {
     if (errno == ERANGE)
       errno = ENOMEM;
 
@@ -297,14 +297,14 @@ static void print_string(FILE *f, struct wcjson *ctx, struct cli_node *node,
   esc = buf + unesc_len;
 
   if (ascii) {
-    if (wctoascjsons(unesc, unesc_len, esc, esc_len, &esc_len)) {
+    if (wctoascjsons(unesc, unesc_len, esc, &esc_len)) {
       if (errno == ERANGE)
         errno = ENOMEM;
 
       goto err;
     }
   } else {
-    if (wctowcjsons(unesc, unesc_len, esc, esc_len, &esc_len)) {
+    if (wctowcjsons(unesc, unesc_len, esc, &esc_len)) {
       if (errno == ERANGE)
         errno = ENOMEM;
 

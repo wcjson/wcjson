@@ -161,39 +161,33 @@ int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops, void *doc,
  * @param s The wide characters to encode.
  * @param s_len The number of wide characters to encode.
  * @param d The destination to write encoded wide characters to.
- * @param d_len The number of wide characters available in d.
- * @param d_lenp Pointer the number of wide characters written to d will be
- * stored to - maybe NULL.
+ * @param d_lenp Pointer to the number of wide characters available in d,
+ * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
-                size_t *d_lenp);
+int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
 
 /**
  * Encodes wide characters to a JSON 7bit ASCII string,
  * @param s The wide characters to encode.
  * @param s_len The number of wide characters to encode.
  * @param d The destination to write encoded characters to.
- * @param d_len The number of wide characters available in d
- * @param d_lenp Pointer the number of wide characters written to d will be
- * stored to - maybe NULL.
+ * @param d_lenp Pointer to the number of wide characters available in d,
+ * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
-                 size_t *d_lenp);
+int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
 
 /**
  * Decodes a JSON string to wide characters.
  * @param s The JSON string to decode.
  * @param s_len The number of wide characters to decode.
  * @param d The destination to write decoded wide characters to.
- * @param d_len The number of wide characters available in d.
- * @param d_lenp Pointer the number of wide characters written to d will be
- * stored to - maybe NULL.
+ * @param d_lenp Pointer to the number of wide characters available in d,
+ * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t d_len,
-                size_t *d_lenp);
+int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
 
 #ifdef __cplusplus
 }

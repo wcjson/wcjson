@@ -12,11 +12,11 @@
 .Ft int
 .Fn wcjson "struct wcjson *ctx" "const struct wcjson_ops *ops" "void *document" "const wchar_t *text" "const size_t len"
 .Ft int
-.Fn wctowcjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Fn wctowcjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t *d_lenp"
 .Ft int
-.Fn wctoascjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Fn wctoascjsons "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t *d_lenp"
 .Ft int
-.Fn wcjsonstowc "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t d_len" "size_t *d_lenp"
+.Fn wcjsonstowc "const wchar_t *s" "size_t s_len" "wchar_t *d" "size_t *d_lenp"
 .Sh DESCRIPTION
 The
 .Fn wcjson
@@ -42,7 +42,7 @@ characters from
 to
 .Fa d
 capable of storing
-.Fa d_len
+.Fa *d_lenp
 characters by applying JSON escaping rules (a) for all characters requiring escaping
 according to the JSON grammar or additionally (b) for all characters not compatible with
 7bit ASCII. To ensure the destination
@@ -51,7 +51,7 @@ is capable of storing the complete encoded representation of
 .Fa s
 the
 .Dv WCJSON_ESCAPE_MAX
-constant can be used such that d_len >= s_len *
+constant can be used such that *d_lenp >= s_len *
 .Dv WCJSON_ESCAPE_MAX .
 .Pp
 The
@@ -63,14 +63,14 @@ characters from
 to
 .Fa d
 capable of storing
-.Fa d_len
+.Fa *d_lenp
 characters by unapplying JSON escaping rules. To ensure the destination
 .Fa d
 is capable of storing the complete decoded representation of
 .Fa s
 that destination needs to be capable of storing at least
 .Fa s_len
-characters such that d_len >= s_len.
+characters such that *d_lenp >= s_len.
 .Pp
 The
 .Fn wctowcjsons ,
@@ -78,10 +78,10 @@ The
 and
 .Fn wcjsonstowc
 functions set
-.Fa d_lenp
+.Fa *d_lenp
 to the number of characters written to
 .Fa d
-on return, if not NULL.
+on return.
 .Sh RETURN VALUES
 The functions return 0 on success, or a negative value if a deserialization, decoding or
 encoding error occurs.
