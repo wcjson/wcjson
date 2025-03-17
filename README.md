@@ -1,10 +1,10 @@
-WCJSON(1) - General Commands Manual
+# WCJSON(1) - General Commands Manual
 
-# NAME
+## NAME
 
 **wcjson** - transcode JSON text
 
-# SYNOPSIS
+## SYNOPSIS
 
 **wcjson**
 \[**-i**&nbsp;*file*]
@@ -14,7 +14,7 @@ WCJSON(1) - General Commands Manual
 \[**-a**]
 \[**-m**&nbsp;*bytes*]
 
-# DESCRIPTION
+## DESCRIPTION
 
 The
 **wcjson**
@@ -51,54 +51,31 @@ The options are as follows:
 
 > Maximum amount of memory the utility is allowed to allocate.
 
-# EXIT STATUS
+## EXIT STATUS
 
 The **wcjson** utility exits&#160;0 on success, and&#160;&gt;0 if an error occurs.
 
-# ENVIRONMENT
+## ENVIRONMENT
 
 `LC_CTYPE`
 
 > Character encoding used for decoding and encoding JSON text by default.
 
-# SEE ALSO
+## SEE ALSO
 
 locale(1)
 wcjson(3)
 
-# STANDARDS
+# WCJSON(3) - Library Functions Manual
 
-T. Bray, Ed.,
-*The JavaScript Object Notation (JSON) Data Interchange Format*,
-RFC 8259,
-December 2017.
-
-J. Klensin,
-*ASCII Escaping of Unicode Characters*,
-RFC 5137,
-February 2008.
-
-F. Yergeau,
-*UTF-8, a transformation format of ISO 10646*,
-RFC 3629,
-November 2003.
-
-P. Hoffman,
-F. Yergeau,
-*UTF-16, an encoding of ISO 10646*,
-RFC 2781,
-February 2000.
-
-WCJSON(3) - Library Functions Manual
-
-# NAME
+## NAME
 
 **wcjson**,
 **wctowcjsons**,
 **wctoascjsons**,
 **wcjsonstowc** - wide character JSON
 
-# SYNOPSIS
+## SYNOPSIS
 
 **#include &lt;wcjson.h>**
 
@@ -114,7 +91,7 @@ WCJSON(3) - Library Functions Manual
 *int*  
 **wcjsonstowc**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t d\_len*, *size\_t \*d\_lenp*);
 
-# DESCRIPTION
+## DESCRIPTION
 
 The
 **wcjson**()
@@ -181,7 +158,7 @@ to the number of characters written to
 *d*
 on return, if not NULL.
 
-# RETURN VALUES
+## RETURN VALUES
 
 The functions return 0 on success, or a negative value if a deserialization, decoding or
 encoding error occurs.
@@ -197,7 +174,7 @@ to indicate the error. The
 function provides status via
 *ctx*.
 
-# ERRORS
+## ERRORS
 
 \[`ERANGE`]
 
@@ -213,7 +190,7 @@ function provides status via
 > *s*
 > cointained invalid data.
 
-# STANDARDS
+## STANDARDS
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
