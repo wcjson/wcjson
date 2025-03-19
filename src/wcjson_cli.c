@@ -89,7 +89,7 @@ struct cli_node {
   const wchar_t *txt;
   size_t len;
   bool escaped;
-  struct cli_node *parent, *value, *first, *last, *next;
+  struct cli_node *value, *first, *last, *next;
   bool flag;
 };
 
@@ -135,7 +135,6 @@ static inline struct cli_node *alloc_node(struct wcjson *ctx,
   n->txt = NULL;
   n->len = 0;
   n->escaped = false;
-  n->parent = NULL;
   n->value = NULL;
   n->first = NULL;
   n->last = NULL;
