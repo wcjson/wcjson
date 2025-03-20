@@ -1,0 +1,305 @@
+.Dd March 27 2025
+.Dt WCJSON-DOCUMENT 3
+.Os
+.Sh NAME
+.Nm wcjson_value_head ,
+.Nm wcjson_value_next ,
+.Nm wcjson_value_tail ,
+.Nm wcjson_value_prev ,
+.Nm wcjson_value_foreach ,
+.Nm wcjson_object_get ,
+.Nm wcjsondocvalues ,
+.Nm wcjsondocstrings ,
+.Nm wcjsondocfprint ,
+.Nm wcjsondocfprintasc ,
+.Nm wcjsondocsprint ,
+.Nm wcjsondocsprintasc
+.Nd wide character JSON documents
+.Sh SYNOPSIS
+.In wcjson-document.h
+.Ft int
+.Fn wcjsondocvalues "struct wcjson *ctx" "struct wcjson_document *document" "const wchar_t *text" "const size_t len"
+.Ft int
+.Fn wcjsondocstrings "struct wcjson *ctx" "struct wcjson_document *document"
+.Ft int
+.Fn wcjsondocfprint "FILE *f" "const struct wcjson_document *document"
+.Ft int
+.Fn wcjsondocfprintasc "FILE *f" "const struct wcjson_document *document"
+.Ft int
+.Fn wcjsondocsprint "wchar_t *s" "size_t *lenp" "const struct wcjson_document document"
+.Ft int
+.Fn wcjsondocsprintasc "wchar_t *s" "size_t *lenp" "const struct wcjson_document document"
+.Ft struct wcjson_value*
+.Fn wcjson_object_get "const struct wcjson_document *document" "const struct wcjson_value * object" "const wchar_t *key"
+.Fn wcjson_value_head "struct wcjson_document *d" "struct wcjson_value *v"
+.Fn wcjson_value_next "struct wcjson_document *d" "struct wcjson_value *v"
+.Fn wcjson_value_tail "struct wcjson_document *d" "struct wcjson_value *v"
+.Fn wcjson_value_prev "struct wcjson_document *d" "struct wcjson_value *v"
+.Fn wcjson_value_foreach "lvalue" "struct wcjson_document *d" "struct wcjson_value *v"
+.Sh DESCRIPTION
+The functions operate on the
+.Vt wcjson_document
+and
+.Vt wcjson_value
+structures. The
+.Vt wcjson_document
+structure is defined as follows:
+.Bd -literal -offset indent
+struct wcjson_document {
+	struct wcjson_value *values;
+	size_t v_nitems;
+	wchar_t *strings;
+	size_t s_nitems;
+	wchar_t *esc;
+	size_t e_nitems;
+};
+.Ed
+.Pp
+The elements of this structure are defined as follows:
+.Bl -tag -width w_nitems
+.It Fa values
+Array of values of the document.
+.It Fa v_nitems
+Number of items in the values array.
+.It Fa strings
+Array of strings of the document.
+.It Fa s_nitems
+Number of items in the strings array.
+.It Fa esc
+Array of escape sequences.
+.It Fa e_nitems
+Number of items in the esc array.
+.El
+.Pp
+The
+.Vt wcjson_value
+structure is defined as follows:
+.Bd -literal -offset indent
+struct wcjson_value {
+	unsigned is_null : 1;
+	unsigned is_boolean : 1;
+	unsigned is_true : 1;
+	unsigned is_string : 1;
+	unsigned is_number : 1;
+	unsigned is_object : 1;
+	unsigned is_array : 1;
+	unsigned is_pair : 1;
+	const wchar_t *string;
+	size_t s_len;
+	size_t idx;
+	size_t head_idx;
+	size_t tail_idx;
+	size_t prev_idx;
+	size_t next_idx;
+};
+.Ed
+.Pp
+The elements of this structure are defined as follows:
+.Bl -tag -width is_boolean
+.It Fa is_null
+Flag indicating the value represents a JSON null literal.
+.It Fa is_boolean
+Flag indicating the value represents a JSON boolean literal.
+.It Fa is_true
+Flag indicating a JSON true or false literal. 
+.It Fa is_string
+Flag indicating the value represents a JSON string.
+.It Fa is_number
+Flag indicating the value represents a JSON number.
+.It Fa is_object
+Flag indicating the value represents a JSON object.
+.It Fa is_array
+Flag indicating the value represents a JSON array.
+.It Fa is_pair
+Flag indicating the value represents a key value pair of a JSON object.
+.It Fa string
+Array holding the characters of a JSON string or number value.
+.It Fa s_len
+Number of items in the string array.
+.It Fa idx
+Index of the value in the docment values array.
+.It Fa head_idx
+Index of the first value of the child value list.
+.It Fa tail_idx
+Index of the last value of the child value list.
+.It Fa prev_idx
+Index of the previous value in the child value list.
+.It Fa next_idx
+Index of the next value in the child value list.
+.El
+.Pp
+The
+.Fn wcjsondocvalues
+function deserializes 
+.Fa len
+characters of JSON
+.Fa text
+to populate a
+.Fa document .
+The
+.Fa values
+member of the
+.Fa document
+needs to point to useable memory and the
+.Fa v_nitems
+member needs to be set to the number of items available in that array. On
+successful completion, that array holds the deserialized document structure and
+the
+.Fa v_nitems
+member is updated to the number of items used in that array. The
+.Fa string
+member of any
+.Vt wcjson_value
+in the
+.Fa values
+array point to
+.Fa text .
+Those strings are not zero terminated C strings so that the value of the
+.Fa s_len
+member needs to be used when working with those strings. The
+.Fn wcjsondocvalues
+function does not decode strings. Escape sequences will be preserved. The
+.Fa s_nitems
+member is set to the number of items needed in the
+.Fa strings
+array to create zero terminated C strings with any JSON escaping rules
+unapplied.
+.Pp
+The
+.Fn wcjsondocstrings
+function decodes any
+.Fa values
+in a
+.Fa document
+by unapplying JSON escaping rules and adding terminating zero characters.
+The
+.Fa strings
+member needs to point to useable memory and the
+.Fa s_nitems
+member needs to be set to the number of items available in that array. On
+successful completion, that array holds the decoded strings and the
+.Fa s_nitems
+member is updated to the number of items used in that array. The
+.Fa string
+member of any
+.Vt wcjson_value
+in the
+.Fa values
+array point to
+.Fa strings .
+The 
+.Fa e_nitems
+member is set to the number of items needed in the
+.Fa esc
+array to create JSON escape sequences when serializing the document.
+.Pp
+The
+.Fn wcjsondocfprint ,
+.Fn wcjsondocfprintasc ,
+.Fn wcjsondocsprint
+and
+.Fn wcjsondocsprintasc
+functions serialize a
+.Fa document
+to a file or a string. The
+.Fn wcjsondocfprintasc
+and
+.Fn wcjsondocsprintasc
+functions serialize to a 7 bit ASCII compatible representation, whereas the
+.Fn wcjsondocfprint
+and
+.Fn wcjsondocsprint
+functions serialize to wide characters with just the standard JSON escaping
+rules applied. The
+.Fa esc
+member needs to point to useable memory and the
+.Fa e_nitems
+member needs to be set to the number of items available in that array. For the
+.Fn wcjsondocsprint
+and
+.Fn wcjsondocsprintasc
+functions the
+.Fa s
+array needs to point to useable memory and
+.Fa lenp
+needs to be set to the number of items available in that array. On successful
+completion
+.Fa lenp
+is updated to the number of items used in that array.
+.Pp
+The
+.Fn wcjson_value_head ,
+.Fn wcjson_value_next ,
+.Fn wcjson_value_tail
+and
+.Fn wcjson_value_prev
+macros expand to accessor rvalue expressions for retrieving values from the
+child value list of a value.
+.Pp
+The
+.Fn wcjson_value_foreach
+macro expands to a loop expression for iterating the child value list of a
+value.
+.Pp
+The
+.Fn wcjson_object_get
+accessor function gets the value of a key value pair from a given object.
+.Sh RETURN VALUES
+The functions return 0 on success, or a negative value if an error occurs.
+The global variable
+.Va errno
+is set to indicate the error. The
+.Fn wcjsondocvalues
+and
+.Fn wcjsondocstrings
+functions provide status via
+.Fa ctx .
+The 
+.Fn wcjson_object_get
+function returns the value for the given key or NULL if no such value is found.
+.Sh ERRORS
+.Bl -tag -width Er
+.It Bq Er ERANGE
+A size of
+.Fa v_nitems ,
+.Fa s_nitems ,
+.Fa e_nitems
+or
+.Fa *lenp
+was too small.
+.It Bq Er EILSEQ
+A given input contained illegal data.
+.El.
+.Sh STANDARDS
+.Rs
+.%A T. Bray, Ed.
+.%D December 2017
+.%R RFC 8259
+.%T The JavaScript Object Notation (JSON) Data Interchange Format
+.Re
+.Pp
+.Rs
+.%A J. Klensin
+.%D February 2008
+.%R RFC 5137
+.%T ASCII Escaping of Unicode Characters
+.Re
+.Pp
+.Rs
+.%A F. Yergeau
+.%D November 2003
+.%R RFC 3629
+.%T UTF-8, a transformation format of ISO 10646
+.Re
+.Pp
+.Rs
+.%A P. Hoffman
+.%A F. Yergeau
+.%D February 2000
+.%R RFC 2781
+.%T UTF-16, an encoding of ISO 10646
+.Re
+.Sh AUTHORS
+.An -nosplit
+.An Christian Schulte Aq Mt cs@schulte.it .
+
