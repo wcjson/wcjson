@@ -147,7 +147,7 @@ struct wcjson_ops {
 /**
  * Processes JSON text from wide characters.
  * @param ctx Library context.
- * @param ops Callback functions to be called.
+ * @param ops Callback functions to be called - maybe NULL.
  * @param doc Document being parsed - maybe NULL.
  * @param txt The wide characters to process.
  * @param len The number of wide characters to process.

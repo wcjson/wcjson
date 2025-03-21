@@ -38,8 +38,6 @@ static const wchar_t *const lit_true = L"true";
 static const size_t lit_true_len = 4;
 static const wchar_t *const lit_false = L"false";
 static const size_t lit_false_len = 5;
-static const wchar_t *const empty = L"";
-static const size_t empty_len = 0;
 static const wchar_t *const digits = L"0123456789abcdef";
 
 enum tokens {
@@ -138,19 +136,24 @@ scan_literal(struct scan_state *ss, const wchar_t *lit, const size_t lit_len) {
 static void *parse_null(struct scan_state *ss, struct wcjson *ctx,
                         const struct wcjson_ops *ops, void *doc) {
   ctx->status = scan_literal(ss, lit_null, lit_null_len);
-  return ctx->status == WCJSON_OK ? ops->null_value(ctx, doc) : NULL;
+  return ctx->status == WCJSON_OK && ops != NULL ? ops->null_value(ctx, doc)
+                                                 : NULL;
 }
 
 static void *parse_true(struct scan_state *ss, struct wcjson *ctx,
                         const struct wcjson_ops *ops, void *doc) {
   ctx->status = scan_literal(ss, lit_true, lit_true_len);
-  return ctx->status == WCJSON_OK ? ops->bool_value(ctx, doc, true) : NULL;
+  return ctx->status == WCJSON_OK && ops != NULL
+             ? ops->bool_value(ctx, doc, true)
+             : NULL;
 }
 
 static void *parse_false(struct scan_state *ss, struct wcjson *ctx,
                          const struct wcjson_ops *ops, void *doc) {
   ctx->status = scan_literal(ss, lit_false, lit_false_len);
-  return ctx->status == WCJSON_OK ? ops->bool_value(ctx, doc, false) : NULL;
+  return ctx->status == WCJSON_OK && ops != NULL
+             ? ops->bool_value(ctx, doc, false)
+             : NULL;
 }
 
 static inline enum wcjson_status scan_int(struct scan_state *ss) {
@@ -288,7 +291,9 @@ static void *parse_number(struct scan_state *ss, struct wcjson *ctx,
       return NULL;
   }
 
-  return ops->number_value(ctx, doc, &ss->txt[start], ss->pos - start);
+  return ops != NULL
+             ? ops->number_value(ctx, doc, &ss->txt[start], ss->pos - start)
+             : NULL;
 }
 
 static inline void scan_unescaped(struct scan_state *ss) {
@@ -455,10 +460,12 @@ next_part:
   switch (ss->txt[ss->pos]) {
   case L'"':
     ss->pos++;
-    return ss->pos == start
-               ? ops->string_value(ctx, doc, empty, empty_len, false)
-               : ops->string_value(ctx, doc, &ss->txt[start],
-                                   ss->pos - start - 1, ss->escaped);
+    return ops != NULL
+               ? ss->pos == start
+                     ? ops->string_value(ctx, doc, L"", 0, false)
+                     : ops->string_value(ctx, doc, &ss->txt[start],
+                                         ss->pos - start - 1, ss->escaped)
+               : NULL;
 
   case L'\\':
     ss->escaped = true;
@@ -477,7 +484,7 @@ next_part:
 static void *parse_object(struct scan_state *ss, struct wcjson *ctx,
                           const struct wcjson_ops *ops, void *doc,
                           void *parent) {
-  void *obj = ops->object_start(ctx, doc, parent);
+  void *obj = ops != NULL ? ops->object_start(ctx, doc, parent) : NULL;
   void *key = NULL;
   bool key_seen = false;
   bool value_seen = false;
@@ -499,7 +506,9 @@ next_token:
     }
 
     ss->pos++;
-    ops->object_end(ctx, doc, obj);
+    if (ops != NULL)
+      ops->object_end(ctx, doc, obj);
+
     return obj;
   }
   case T_QUOTE: {
@@ -541,10 +550,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -556,10 +567,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -571,10 +584,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -586,10 +601,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -601,10 +618,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -616,10 +635,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -631,10 +652,12 @@ next_token:
       if (ctx->status != WCJSON_OK)
         return NULL;
 
-      ops->object_add(ctx, doc, obj, key, value);
+      if (ops != NULL) {
+        ops->object_add(ctx, doc, obj, key, value);
 
-      if (ctx->status != WCJSON_OK)
-        return NULL;
+        if (ctx->status != WCJSON_OK)
+          return NULL;
+      }
 
       key_seen = false;
       value_seen = true;
@@ -664,7 +687,7 @@ next_token:
 static void *parse_array(struct scan_state *ss, struct wcjson *ctx,
                          const struct wcjson_ops *ops, void *doc,
                          void *parent) {
-  void *arr = ops->array_start(ctx, doc, parent);
+  void *arr = ops != NULL ? ops->array_start(ctx, doc, parent) : NULL;
   bool value_seen = false;
   ++ss->pos;
 
@@ -679,7 +702,8 @@ next_token:
   switch (scan(ss)) {
   case T_ARR_END: {
     ss->pos++;
-    ops->array_end(ctx, doc, arr);
+    if (ops != NULL)
+      ops->array_end(ctx, doc, arr);
     return arr;
   }
   case T_COMMA: {
@@ -697,10 +721,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -711,10 +737,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -725,10 +753,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -739,10 +769,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -753,10 +785,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -767,10 +801,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -781,10 +817,12 @@ next_token:
     if (ctx->status != WCJSON_OK)
       return NULL;
 
-    ops->array_add(ctx, doc, arr, value);
+    if (ops != NULL) {
+      ops->array_add(ctx, doc, arr, value);
 
-    if (ctx->status != WCJSON_OK)
-      return NULL;
+      if (ctx->status != WCJSON_OK)
+        return NULL;
+    }
 
     value_seen = true;
     goto next_token;
@@ -798,7 +836,6 @@ next_token:
 static void parse_json_text(struct scan_state *ss, struct wcjson *ctx,
                             const struct wcjson_ops *ops, void *doc) {
   scan_ws(ss);
-  bool value = false;
 
   if (ss->pos == ss->len)
     return;
@@ -806,31 +843,24 @@ static void parse_json_text(struct scan_state *ss, struct wcjson *ctx,
   switch (scan(ss)) {
   case T_TRUE:
     parse_true(ss, ctx, ops, doc);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_FALSE:
     parse_false(ss, ctx, ops, doc);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_NULL:
     parse_null(ss, ctx, ops, doc);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_NUMBER:
     parse_number(ss, ctx, ops, doc);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_QUOTE:
     parse_string(ss, ctx, ops, doc);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_OBJ_START:
     parse_object(ss, ctx, ops, doc, NULL);
-    value = ctx->status == WCJSON_OK;
     break;
   case T_ARR_START:
     parse_array(ss, ctx, ops, doc, NULL);
-    value = ctx->status == WCJSON_OK;
     break;
   default:
     ctx->status = WCJSON_ABORT_INVALID;
@@ -839,7 +869,7 @@ static void parse_json_text(struct scan_state *ss, struct wcjson *ctx,
 
   scan_ws(ss);
 
-  if (!value || ss->pos != ss->len)
+  if (ctx->status == WCJSON_OK && ss->pos != ss->len)
     ctx->status = WCJSON_ABORT_INVALID;
 }
 
