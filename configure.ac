@@ -132,6 +132,9 @@ if test $wcjson_cv_wchar_t_is_utf8 = "yes"; then
   AC_DEFINE_UNQUOTED(WCHAR_T_UTF8, [1], [wchar_t is UTF-8])
 fi
 
+AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
+AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  tests/Makefile
