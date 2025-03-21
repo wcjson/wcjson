@@ -1,3 +1,3 @@
 # Code of Conduct
 
-Do not vomit into each other's faces.
+Do not vomit into each others' faces.
