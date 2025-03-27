@@ -48,6 +48,7 @@ extern "C" {
 
 extern char *__progname;
 int ascii = 0;
+int report = 0;
 
 static _Noreturn void fail(struct wcjson *ctx) {
   int ret = 3;
@@ -74,7 +75,7 @@ static _Noreturn void fail(struct wcjson *ctx) {
 
 static _Noreturn void usage(void) {
   fprintf(stderr,
-          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-m "
+          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-r] [-m "
           "bytes]\n",
           __progname);
   exit(3);
@@ -83,18 +84,21 @@ static _Noreturn void usage(void) {
 int main(int argc, char *argv[]) {
   int ch;
   char *i = NULL, *o = NULL, *d = NULL, *e = NULL, *ep = NULL;
-  size_t limit = CLI_DEFAULT_LIMIT, len;
+  size_t limit = CLI_DEFAULT_LIMIT, len, total_bytes = 0;
   FILE *in = stdin, *out = stdout;
   wchar_t *json = NULL, *strings = NULL, *esc = NULL, *outb = NULL;
   struct wcjson_value *values = NULL;
   void *p;
   wint_t wc;
+#ifdef HAVE_SETLOCALE
+  char *locale;
+#endif
 
   struct wcjson ctx = {
       .status = WCJSON_OK,
   };
 
-  while ((ch = getopt(argc, argv, "i:o:d:e:m:a")) != -1) {
+  while ((ch = getopt(argc, argv, "i:o:d:e:m:ar")) != -1) {
     switch (ch) {
     case 'i':
       i = optarg;
@@ -116,7 +120,7 @@ int main(int argc, char *argv[]) {
       e = optarg;
       break;
 #else
-      fputws(L"wcjson: setlocale: -e not supported on this platform\n" stderr);
+      fputws(L"wcjson: setlocale: -e not supported on this platform\n", stderr);
       exit(3);
 #endif
     case 'm':
@@ -136,6 +140,9 @@ int main(int argc, char *argv[]) {
     case 'a':
       ascii = 1;
       break;
+    case 'r':
+      report = 1;
+      break;
     default:
       usage();
     }
@@ -144,10 +151,13 @@ int main(int argc, char *argv[]) {
   argv += optind;
 
 #ifdef HAVE_SETLOCALE
-  if (setlocale(LC_CTYPE, d != NULL ? d : "") == NULL) {
+  locale = setlocale(LC_CTYPE, d != NULL ? d : "");
+  if (locale == NULL) {
     errno = EINVAL;
     goto err;
   }
+  if (report)
+    fwprintf(stdout, L"Input locale: %s\n", locale);
 #endif
 
   if (i != NULL)
@@ -183,6 +193,12 @@ int main(int argc, char *argv[]) {
 
   json = p;
 
+  if (report) {
+    total_bytes += len * sizeof(wchar_t);
+    fwprintf(stdout, L"Input characters: %lld\n", len);
+    fwprintf(stdout, L"Input characters (byte): %lld\n", len * sizeof(wchar_t));
+  }
+
   limit -= sizeof(wchar_t) * len;
 
   size_t v_nitems = limit / sizeof(struct wcjson_value);
@@ -210,6 +226,13 @@ int main(int argc, char *argv[]) {
   values = p;
   doc.values = values;
 
+  if (report) {
+    total_bytes += doc.v_nitems * sizeof(struct wcjson_value);
+    fwprintf(stdout, L"Input values: %lld\n", doc.v_nitems);
+    fwprintf(stdout, L"Input values (byte): %lld\n",
+             doc.v_nitems * sizeof(struct wcjson_value));
+  }
+
   limit -= sizeof(struct wcjson_value) * doc.v_nitems;
 
   size_t s_nitems = limit / sizeof(wchar_t);
@@ -227,6 +250,13 @@ int main(int argc, char *argv[]) {
   if (wcjsondocstrings(&ctx, &doc) < 0)
     goto err;
 
+  if (report) {
+    total_bytes += doc.s_nitems * sizeof(wchar_t);
+    fwprintf(stdout, L"Input string characters: %lld\n", doc.s_nitems);
+    fwprintf(stdout, L"Input string characters (byte): %lld\n",
+             doc.s_nitems * sizeof(wchar_t));
+  }
+
   limit -= doc.s_nitems * sizeof(wchar_t);
 
   size_t e_nitems = limit / sizeof(wchar_t);
@@ -241,11 +271,21 @@ int main(int argc, char *argv[]) {
 
   doc.esc = esc;
 
+  if (report) {
+    total_bytes += doc.e_nitems * sizeof(wchar_t);
+    fwprintf(stdout, L"Escape sequences characters: %lld\n", doc.e_nitems);
+    fwprintf(stdout, L"Escape sequences characters (byte): %lld\n",
+             doc.e_nitems * sizeof(wchar_t));
+  }
+
 #ifdef HAVE_SETLOCALE
-  if (setlocale(LC_CTYPE, e != NULL ? e : "") == NULL) {
+  locale = setlocale(LC_CTYPE, e != NULL ? e : "");
+  if (locale == NULL) {
     errno = EINVAL;
     goto err;
   }
+  if (report)
+    fwprintf(stdout, L"Output locale: %s\n", locale);
 #endif
 
   if (o != NULL)
@@ -258,7 +298,7 @@ int main(int argc, char *argv[]) {
 
   size_t o_nitems = limit / sizeof(wchar_t);
 
-  if (o_nitems > len * WCJSON_ESCAPE_MAX) {
+  if (report) {
     outb = malloc(o_nitems * sizeof(wchar_t));
     if (outb == NULL)
       goto err;
@@ -271,7 +311,12 @@ int main(int argc, char *argv[]) {
         goto err;
     }
 
-    if (fputws(outb, out) == -1)
+    if (report) {
+      total_bytes += o_nitems * sizeof(wchar_t);
+      fwprintf(stdout, L"Output characters: %lld\n", o_nitems);
+      fwprintf(stdout, L"Output characters (byte): %lld\n",
+               o_nitems * sizeof(wchar_t));
+    } else if (fputws(outb, out) == -1)
       goto err;
 
   } else {
@@ -282,6 +327,10 @@ int main(int argc, char *argv[]) {
       if (wcjsondocfprint(out, &doc) < 0)
         goto err;
     }
+    if (report) {
+      fwprintf(stdout, L"Output characters: n/a\n");
+      fwprintf(stdout, L"Output characters (byte): n/a\n");
+    }
   }
 
   if (ferror(out))
@@ -290,10 +339,14 @@ int main(int argc, char *argv[]) {
   if (ctx.status != WCJSON_OK)
     goto err;
 
+  if (report)
+    fwprintf(stdout, L"Total bytes: %lld\n", total_bytes);
+
   free(json);
   free(values);
   free(strings);
   free(esc);
+  free(outb);
   fclose(in);
   fclose(out);
   return 0;
@@ -307,6 +360,7 @@ err:
   free(values);
   free(strings);
   free(esc);
+  free(outb);
   fclose(in);
   fclose(out);
   fail(&ctx);
