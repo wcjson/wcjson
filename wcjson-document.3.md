@@ -1,6 +1,6 @@
-WCJSON-DOCUMENT(3) - Library Functions Manual
+# WCJSON-DOCUMENT(3) - Library Functions Manual
 
-# NAME
+## NAME
 
 **wcjson\_value\_head**,
 **wcjson\_value\_next**,
@@ -15,7 +15,7 @@ WCJSON-DOCUMENT(3) - Library Functions Manual
 **wcjsondocsprint**,
 **wcjsondocsprintasc** - wide character JSON documents
 
-# SYNOPSIS
+## SYNOPSIS
 
 **#include &lt;[wcjson-document.h](src/wcjson-document.h)>**
 
@@ -50,7 +50,7 @@ WCJSON-DOCUMENT(3) - Library Functions Manual
 
 **wcjson\_value\_foreach**(*lvalue*, *struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
 
-# DESCRIPTION
+## DESCRIPTION
 
 The functions operate on the
 *wcjson\_document*
@@ -305,7 +305,7 @@ The
 **wcjson\_value\_pair**()
 accessor function gets the value of a key value pair from a given object.
 
-# RETURN VALUES
+## RETURN VALUES
 
 The functions return 0 on success or a negative value if an error occurs.
 The global variable
@@ -321,7 +321,7 @@ The
 **wcjson\_value\_pair**()
 function returns the value for the given key or NULL if no such value is found.
 
-# ERRORS
+## ERRORS
 
 \[`ERANGE`]
 
@@ -337,7 +337,7 @@ function returns the value for the given key or NULL if no such value is found.
 
 > A given input contained illegal data.
 
-# STANDARDS
+## STANDARDS
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
