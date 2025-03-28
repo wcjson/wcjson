@@ -216,8 +216,12 @@ int main(int argc, char *argv[]) {
       .v_nitems = v_nitems,
   };
 
-  if (wcjsondocvalues(&ctx, &doc, json, len) < 0)
+  if (wcjsondocvalues(&ctx, &doc, json, len) < 0) {
+    if (ctx.errnum == ERANGE)
+      ctx.errnum = ENOMEM;
+
     goto err;
+  }
 
   p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems);
   if (p == NULL)
@@ -308,11 +312,19 @@ int main(int argc, char *argv[]) {
       goto err;
 
     if (ascii) {
-      if (wcjsondocsprintasc(outb, &o_nitems, &doc) < 0)
+      if (wcjsondocsprintasc(outb, &o_nitems, &doc) < 0) {
+        if (errno == ERANGE)
+          errno = ENOMEM;
+
         goto err;
+      }
     } else {
-      if (wcjsondocsprint(outb, &o_nitems, &doc) < 0)
+      if (wcjsondocsprint(outb, &o_nitems, &doc) < 0) {
+        if (errno == ERANGE)
+          errno = ENOMEM;
+
         goto err;
+      }
     }
 
     if (report) {
