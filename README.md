@@ -166,7 +166,7 @@ on return.
 
 ## RETURN VALUES
 
-The functions return 0 on success, or a negative value if a deserialization, decoding or
+The functions return 0 on success or a negative value if a deserialization, decoding or
 encoding error occurs.
 The
 **wctowcjsons**(),
@@ -498,7 +498,7 @@ accessor function gets the value of a key value pair from a given object.
 
 ## RETURN VALUES
 
-The functions return 0 on success, or a negative value if an error occurs.
+The functions return 0 on success or a negative value if an error occurs.
 The global variable
 *errno*
 is set to indicate the error. The
