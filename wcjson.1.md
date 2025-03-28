@@ -1,10 +1,10 @@
-WCJSON(1) - General Commands Manual
+# WCJSON(1) - General Commands Manual
 
-# NAME
+## NAME
 
 **wcjson** - transcode JSON text
 
-# SYNOPSIS
+## SYNOPSIS
 
 **wcjson**
 \[**-i**&nbsp;*file*]
@@ -15,7 +15,7 @@ WCJSON(1) - General Commands Manual
 \[**-r**]
 \[**-m**&nbsp;*bytes*]
 
-# DESCRIPTION
+## DESCRIPTION
 
 The
 **wcjson**
@@ -61,22 +61,22 @@ The options are as follows:
 
 > Maximum amount of memory the utility is allowed to allocate.
 
-# ENVIRONMENT
+## ENVIRONMENT
 
 `LC_CTYPE`
 
 > Character encoding used for decoding and encoding JSON text by default.
 
-# EXIT STATUS
+## EXIT STATUS
 
 The **wcjson** utility exits&#160;0 on success, and&#160;&gt;0 if an error occurs.
 
-# SEE ALSO
+## SEE ALSO
 
 [locale(1)](https://man.openbsd.org/locale),
 wcjson(3)
 
-# STANDARDS
+## STANDARDS
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
