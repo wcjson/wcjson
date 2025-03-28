@@ -297,6 +297,10 @@ int main(int argc, char *argv[]) {
   limit -= doc.e_nitems * sizeof(wchar_t);
 
   size_t o_nitems = limit / sizeof(wchar_t);
+  if (o_nitems == 0) {
+    errno = ENOMEM;
+    goto err;
+  }
 
   if (report) {
     outb = malloc(o_nitems * sizeof(wchar_t));
