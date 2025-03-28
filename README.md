@@ -392,7 +392,7 @@ member of the
 needs to point to useable memory and the
 *v\_nitems*
 member needs to be set to the number of items available in that array. On
-successful completion, that array holds the deserialized document structure and
+successful completion that array holds the deserialized document structure and
 the
 *v\_nitems*
 member is updated to the number of items used in that array.
@@ -428,7 +428,7 @@ The
 member needs to point to useable memory and the
 *s\_nitems*
 member needs to be set to the number of items available in that array. On
-successful completion, that array holds the decoded strings and the
+successful completion that array holds the decoded strings and the
 *s\_nitems*
 member is updated to the number of items used in that array. The
 *string*
