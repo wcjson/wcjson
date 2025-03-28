@@ -147,18 +147,19 @@ successful completion, that array holds the deserialized document structure and
 the
 .Fa v_nitems
 member is updated to the number of items used in that array. The
+.Fn wcjsondocvalues
+function does not decode strings. The
 .Fa string
 member of any
 .Vt wcjson_value
 in the
 .Fa values
-array point to
+array points to
 .Fa text .
 Those strings are not zero terminated C strings so that the value of the
 .Fa s_len
-member needs to be used when working with those strings. The
-.Fn wcjsondocvalues
-function does not decode strings. Escape sequences will be preserved. The
+member needs to be used when working with those strings.
+Escape sequences will be preserved. The
 .Fa s_nitems
 member is set to the number of items needed in the
 .Fa strings
@@ -185,7 +186,7 @@ member of any
 .Vt wcjson_value
 in the
 .Fa values
-array point to
+array points to
 .Fa strings .
 The 
 .Fa e_nitems
