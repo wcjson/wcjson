@@ -1,4 +1,4 @@
-.Dd March 27 2025
+.Dd March 27, 2025
 .Dt WCJSON-DOCUMENT 3
 .Os
 .Sh NAME
@@ -41,7 +41,8 @@ The functions operate on the
 .Vt wcjson_document
 and
 .Vt wcjson_value
-structures. The
+structures.
+The
 .Vt wcjson_document
 structure is defined as follows:
 .Bd -literal -offset indent
@@ -101,7 +102,7 @@ Flag indicating the value represents a JSON null literal.
 .It Fa is_boolean
 Flag indicating the value represents a JSON boolean literal.
 .It Fa is_true
-Flag indicating a JSON true or false literal. 
+Flag indicating a JSON true or false literal.
 .It Fa is_string
 Flag indicating the value represents a JSON string.
 .It Fa is_number
@@ -130,7 +131,7 @@ Index of the next value in the child value list.
 .Pp
 The
 .Fn wcjsondocvalues
-function deserializes 
+function deserializes
 .Fa len
 characters of JSON
 .Fa text
@@ -142,13 +143,15 @@ member of the
 .Fa document
 needs to point to useable memory and the
 .Fa v_nitems
-member needs to be set to the number of items available in that array. On
-successful completion that array holds the deserialized document structure and
-the
+member needs to be set to the number of items available in that array.
+On successful completion that array holds the deserialized document structure
+and the
 .Fa v_nitems
-member is updated to the number of items used in that array. The
+member is updated to the number of items used in that array.
+The
 .Fn wcjsondocvalues
-function does not decode strings. The
+function does not decode strings.
+The
 .Fa string
 member of any
 .Vt wcjson_value
@@ -159,7 +162,8 @@ array points to
 Those strings are not zero terminated C strings so that the value of the
 .Fa s_len
 member needs to be used when working with those strings.
-Escape sequences will be preserved. The
+Escape sequences will be preserved.
+The
 .Fa s_nitems
 member is set to the number of items needed in the
 .Fa strings
@@ -177,10 +181,11 @@ The
 .Fa strings
 member needs to point to useable memory and the
 .Fa s_nitems
-member needs to be set to the number of items available in that array. On
-successful completion that array holds the decoded strings and the
+member needs to be set to the number of items available in that array.
+On successful completion that array holds the decoded strings and the
 .Fa s_nitems
-member is updated to the number of items used in that array. The
+member is updated to the number of items used in that array.
+The
 .Fa string
 member of any
 .Vt wcjson_value
@@ -188,7 +193,7 @@ in the
 .Fa values
 array points to
 .Fa strings .
-The 
+The
 .Fa e_nitems
 member is set to the number of items needed in the
 .Fa esc
@@ -202,7 +207,8 @@ and
 .Fn wcjsondocsprintasc
 functions serialize a
 .Fa document
-to a file or a string. The
+to a file or a string.
+The
 .Fn wcjsondocfprintasc
 and
 .Fn wcjsondocsprintasc
@@ -211,11 +217,13 @@ functions serialize to a 7 bit ASCII compatible representation, whereas the
 and
 .Fn wcjsondocsprint
 functions serialize to wide characters with just the standard JSON escaping
-rules applied. The
+rules applied.
+The
 .Fa esc
 member needs to point to useable memory and the
 .Fa e_nitems
-member needs to be set to the number of items available in that array. For the
+member needs to be set to the number of items available in that array.
+For the
 .Fn wcjsondocsprint
 and
 .Fn wcjsondocsprintasc
@@ -223,8 +231,8 @@ functions the
 .Fa s
 array needs to point to useable memory and
 .Fa lenp
-needs to be set to the number of items available in that array. On successful
-completion
+needs to be set to the number of items available in that array.
+On successful completion
 .Fa lenp
 is updated to the number of items used in that array.
 .Pp
@@ -249,13 +257,14 @@ accessor function gets the value of a key value pair from a given object.
 The functions return 0 on success or a negative value if an error occurs.
 The global variable
 .Va errno
-is set to indicate the error. The
+is set to indicate the error.
+The
 .Fn wcjsondocvalues
 and
 .Fn wcjsondocstrings
 functions provide status via
 .Fa ctx .
-The 
+The
 .Fn wcjson_value_pair
 function returns the value for the given key or NULL if no such value is found.
 .Sh ERRORS
@@ -270,7 +279,7 @@ or
 was too small.
 .It Bq Er EILSEQ
 A given input contained illegal data.
-.El.
+.El
 .Sh STANDARDS
 .Rs
 .%A T. Bray, Ed.
@@ -303,4 +312,3 @@ A given input contained illegal data.
 .Sh AUTHORS
 .An -nosplit
 .An Christian Schulte Aq Mt cs@schulte.it .
-

@@ -1,4 +1,4 @@
-.Dd March 15 2025
+.Dd March 15, 2025
 .Dt WCJSON 1
 .Os
 .Sh NAME
@@ -21,14 +21,18 @@ utility transcodes JSON text.
 The options are as follows:
 .Bl -tag -width Ds
 .It Fl i Ar file
-Input file to read JSON text from. Defaults to standard input.
+Input file to read JSON text from.
+Defaults to standard input.
 .It Fl d Ar locale
-Character encoding to use for decoding JSON text. See
+Character encoding to use for decoding JSON text.
+See
 .Sx ENVIRONMENT .
 .It Fl o Ar file
-Output file to write JSON text to. Defaults to standard output.
+Output file to write JSON text to.
+Defaults to standard output.
 .It Fl e Ar locale
-Character encoding to use for encoding JSON text. See
+Character encoding to use for encoding JSON text.
+See
 .Sx ENVIRONMENT .
 .It Fl a
 Flag indicating to encode JSON text for 7bit ASCII compatibility (e.g. when
@@ -41,14 +45,15 @@ instead of writing JSON text.
 .It Fl m Ar bytes
 Maximum amount of memory the utility is allowed to allocate.
 .El
-.Sh EXIT STATUS
-.Ex -std wcjson
 .Sh ENVIRONMENT
 .Bl -tag -width LC_CTYPEX
 .It Ev LC_CTYPE
 Character encoding used for decoding and encoding JSON text by default.
+.El
+.Sh EXIT STATUS
+.Ex -std wcjson
 .Sh SEE ALSO
-.Xr locale 1
+.Xr locale 1 ,
 .Xr wcjson 3
 .Sh STANDARDS
 .Rs
@@ -82,4 +87,3 @@ Character encoding used for decoding and encoding JSON text by default.
 .Sh AUTHORS
 .An -nosplit
 .An Christian Schulte Aq Mt cs@schulte.it .
-

@@ -1,4 +1,4 @@
-.Dd March 15 2025
+.Dd March 15, 2025
 .Dt WCJSON 3
 .Os
 .Sh NAME
@@ -43,9 +43,10 @@ to
 .Fa d
 capable of storing
 .Fa *d_lenp
-characters by applying JSON escaping rules (a) for all characters requiring escaping
-according to the JSON grammar or additionally (b) for all characters not compatible with
-7bit ASCII. To ensure the destination
+characters by applying JSON escaping rules (a) for all characters requiring
+escaping according to the JSON grammar or additionally (b) for all characters
+not compatible with 7bit ASCII.
+To ensure the destination
 .Fa d
 is capable of storing the complete encoded representation of
 .Fa s
@@ -64,7 +65,8 @@ to
 .Fa d
 capable of storing
 .Fa *d_lenp
-characters by unapplying JSON escaping rules. To ensure the destination
+characters by unapplying JSON escaping rules.
+To ensure the destination
 .Fa d
 is capable of storing the complete decoded representation of
 .Fa s
@@ -83,8 +85,8 @@ to the number of characters written to
 .Fa d
 on return.
 .Sh RETURN VALUES
-The functions return 0 on success or a negative value if a deserialization, decoding or
-encoding error occurs.
+The functions return 0 on success or a negative value if a deserialization,
+decoding or encoding error occurs.
 The
 .Fn wctowcjsons ,
 .Fn wctoascjsons
@@ -92,7 +94,8 @@ and
 .Fn wcjsonstowc
 functions set the global variable
 .Va errno
-to indicate the error. The
+to indicate the error.
+The
 .Fn wcjson
 function provides status via
 .Fa ctx .
@@ -108,7 +111,7 @@ was too small.
 The source
 .Fa s
 cointained invalid data.
-.El.
+.El
 .Sh STANDARDS
 .Rs
 .%A T. Bray, Ed.
@@ -141,4 +144,3 @@ cointained invalid data.
 .Sh AUTHORS
 .An -nosplit
 .An Christian Schulte Aq Mt cs@schulte.it .
-
