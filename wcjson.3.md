@@ -1,13 +1,13 @@
-WCJSON(3) - Library Functions Manual
+# WCJSON(3) - Library Functions Manual
 
-# NAME
+## NAME
 
 **wcjson**,
 **wctowcjsons**,
 **wctoascjsons**,
 **wcjsonstowc** - wide character JSON
 
-# SYNOPSIS
+## SYNOPSIS
 
 **#include &lt;[wcjson.h](src/wcjson.h)>**
 
@@ -23,7 +23,7 @@ WCJSON(3) - Library Functions Manual
 *int*  
 **wcjsonstowc**(*const wchar\_t \*s*, *size\_t s\_len*, *wchar\_t \*d*, *size\_t \*d\_lenp*);
 
-# DESCRIPTION
+## DESCRIPTION
 
 The
 **wcjson**()
@@ -92,7 +92,7 @@ to the number of characters written to
 *d*
 on return.
 
-# RETURN VALUES
+## RETURN VALUES
 
 The functions return 0 on success or a negative value if a deserialization,
 decoding or encoding error occurs.
@@ -109,7 +109,7 @@ The
 function provides status via
 *ctx*.
 
-# ERRORS
+## ERRORS
 
 \[`ERANGE`]
 
@@ -125,7 +125,7 @@ function provides status via
 > *s*
 > cointained invalid data.
 
-# STANDARDS
+## STANDARDS
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
