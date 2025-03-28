@@ -5,4 +5,4 @@ Please see the individual manual pages [wcjson(1)](wcjson.1.md), [wcjson(3)](wcj
 # Releases
 
 Releases are provided via Github. The latest release is
-[v0.1](https://github.com/wcjson/wcjson/releases/tag/v0.1).
+[v0.2](https://github.com/wcjson/wcjson/releases/tag/v0.2).
