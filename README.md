@@ -1,6 +1,6 @@
 # Documentation
 
-Please see the individual man pages [wcjson.1](wcjson.1.md), [wcjson.3](wcjson.3.md) and [wcjson-document(3)](wcjson-document.3.md).
+Please see the individual manual pages [wcjson(1)](wcjson.1.md), [wcjson(3)](wcjson.3.md) and [wcjson-document(3)](wcjson-document.3.md).
 
 # Releases
 
