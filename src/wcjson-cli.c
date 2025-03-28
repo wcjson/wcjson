@@ -292,10 +292,7 @@ int main(int argc, char *argv[]) {
     fwprintf(stdout, L"Output locale: %s\n", locale);
 #endif
 
-  if (o != NULL)
-    out = fopen(o, "w");
-
-  if (out == NULL)
+  if (o != NULL && !report && (out = fopen(o, "w")) == NULL)
     goto err;
 
   limit -= doc.e_nitems * sizeof(wchar_t);
