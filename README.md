@@ -205,7 +205,7 @@ function provides status via
 **wcjson\_value\_tail**,
 **wcjson\_value\_prev**,
 **wcjson\_value\_foreach**,
-**wcjson\_object\_get**,
+**wcjson\_value\_pair**,
 **wcjsondocvalues**,
 **wcjsondocstrings**,
 **wcjsondocfprint**,
@@ -236,7 +236,7 @@ function provides status via
 **wcjsondocsprintasc**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*);
 
 *struct wcjson\_value\*&zwnj;*  
-**wcjson\_object\_get**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*object*, *const wchar\_t \*key*);
+**wcjson\_value\_pair**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*object*, *const wchar\_t \*key*);
 
 **wcjson\_value\_head**(*struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
 
@@ -493,7 +493,7 @@ macro expands to a loop expression for iterating the child value list of a
 value.
 
 The
-**wcjson\_object\_get**()
+**wcjson\_value\_pair**()
 accessor function gets the value of a key value pair from a given object.
 
 ## RETURN VALUES
@@ -508,7 +508,7 @@ and
 functions provide status via
 *ctx*.
 The
-**wcjson\_object\_get**()
+**wcjson\_value\_pair**()
 function returns the value for the given key or NULL if no such value is found.
 
 ## ERRORS
