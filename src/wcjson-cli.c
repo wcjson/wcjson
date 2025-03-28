@@ -302,7 +302,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  if (report) {
+  if (report || o_nitems > len * WCJSON_ESCAPE_MAX) {
     outb = malloc(o_nitems * sizeof(wchar_t));
     if (outb == NULL)
       goto err;
