@@ -236,7 +236,7 @@ function provides status via
 **wcjsondocsprintasc**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*);
 
 *struct wcjson\_value\*&zwnj;*  
-**wcjson\_object\_get**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \* object*, *const wchar\_t \*key*);
+**wcjson\_object\_get**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*object*, *const wchar\_t \*key*);
 
 **wcjson\_value\_head**(*struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
 
