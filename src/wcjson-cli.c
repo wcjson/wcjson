@@ -324,14 +324,15 @@ int main(int argc, char *argv[]) {
       goto err;
 
   } else {
-    if (ascii) {
-      if (wcjsondocfprintasc(out, &doc) < 0)
-        goto err;
+    if (!report) {
+      if (ascii) {
+        if (wcjsondocfprintasc(out, &doc) < 0)
+          goto err;
+      } else {
+        if (wcjsondocfprint(out, &doc) < 0)
+          goto err;
+      }
     } else {
-      if (wcjsondocfprint(out, &doc) < 0)
-        goto err;
-    }
-    if (report) {
       fwprintf(stdout, L"Output characters: n/a\n");
       fwprintf(stdout, L"Output characters (byte): n/a\n");
     }
