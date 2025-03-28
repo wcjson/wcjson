@@ -108,7 +108,7 @@ struct wcjson_document {
  * @param key The key to query that object for.
  * @return The value for key of o or NULL if no such value is found.
  */
-struct wcjson_value *wcjson_object_get(const struct wcjson_document *doc,
+struct wcjson_value *wcjson_value_pair(const struct wcjson_document *doc,
                                        const struct wcjson_value *obj,
                                        const wchar_t *key);
 

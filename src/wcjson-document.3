@@ -7,7 +7,7 @@
 .Nm wcjson_value_tail ,
 .Nm wcjson_value_prev ,
 .Nm wcjson_value_foreach ,
-.Nm wcjson_object_get ,
+.Nm wcjson_value_pair ,
 .Nm wcjsondocvalues ,
 .Nm wcjsondocstrings ,
 .Nm wcjsondocfprint ,
@@ -30,7 +30,7 @@
 .Ft int
 .Fn wcjsondocsprintasc "wchar_t *s" "size_t *lenp" "const struct wcjson_document document"
 .Ft struct wcjson_value*
-.Fn wcjson_object_get "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Fn wcjson_value_pair "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
 .Fn wcjson_value_head "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_next "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_tail "struct wcjson_document *d" "struct wcjson_value *v"
@@ -243,7 +243,7 @@ macro expands to a loop expression for iterating the child value list of a
 value.
 .Pp
 The
-.Fn wcjson_object_get
+.Fn wcjson_value_pair
 accessor function gets the value of a key value pair from a given object.
 .Sh RETURN VALUES
 The functions return 0 on success, or a negative value if an error occurs.
@@ -256,7 +256,7 @@ and
 functions provide status via
 .Fa ctx .
 The 
-.Fn wcjson_object_get
+.Fn wcjson_value_pair
 function returns the value for the given key or NULL if no such value is found.
 .Sh ERRORS
 .Bl -tag -width Er

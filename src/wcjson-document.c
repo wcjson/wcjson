@@ -72,7 +72,7 @@ struct doc_impl {
   size_t nlimit;
 };
 
-struct wcjson_value *wcjson_object_get(const struct wcjson_document *doc,
+struct wcjson_value *wcjson_value_pair(const struct wcjson_document *doc,
                                        const struct wcjson_value *obj,
                                        const wchar_t *key) {
   const size_t key_len = wcslen(key);
