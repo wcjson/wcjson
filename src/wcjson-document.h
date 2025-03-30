@@ -136,17 +136,21 @@ int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc);
  * Serializes a JSON document to a wide character file.
  * @param f The file to serialize to.
  * @param doc The document to serialize.
+ * @param value The value to serialize.
  * @return 0 on success, <0 on failure.
  */
-int wcjsondocfprint(FILE *f, const struct wcjson_document *doc);
+int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,
+                    const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a 7 bit ASCII file.
  * @param f The file to serialize to.
  * @param doc The document to serialize.
+ * @param value The value to serialize.
  * @return 0 on success, <0 on failure.
  */
-int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc);
+int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc,
+                       const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a wide character string.
@@ -154,10 +158,11 @@ int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc);
  * @param lenp Pointer to the number of characters available in s, the number of
  * characters written to s on return.
  * @param doc The document to serialize.
+ * @param value The value to serialize.
  * @return 0 on success, <0 on failure.
  */
-int wcjsondocsprint(wchar_t *s, size_t *lenp,
-                    const struct wcjson_document *doc);
+int wcjsondocsprint(wchar_t *s, size_t *lenp, const struct wcjson_document *doc,
+                    const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a 7 bit ASCII string.
@@ -165,10 +170,12 @@ int wcjsondocsprint(wchar_t *s, size_t *lenp,
  * @param lenp Pointer to the number of characters available in s, the number of
  * characters written to s on return.
  * @param doc The document to serialize.
+ * @param value The value to serialize.
  * @return 0 on success, <0 on failure.
  */
 int wcjsondocsprintasc(wchar_t *s, size_t *lenp,
-                       const struct wcjson_document *doc);
+                       const struct wcjson_document *doc,
+                       const struct wcjson_value *value);
 
 #ifdef __cplusplus
 }

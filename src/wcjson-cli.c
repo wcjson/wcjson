@@ -309,14 +309,14 @@ int main(int argc, char *argv[]) {
       goto err;
 
     if (ascii) {
-      if (wcjsondocsprintasc(outb, &o_nitems, &doc) < 0) {
+      if (wcjsondocsprintasc(outb, &o_nitems, &doc, doc.values) < 0) {
         if (errno == ERANGE)
           errno = ENOMEM;
 
         goto err;
       }
     } else {
-      if (wcjsondocsprint(outb, &o_nitems, &doc) < 0) {
+      if (wcjsondocsprint(outb, &o_nitems, &doc, doc.values) < 0) {
         if (errno == ERANGE)
           errno = ENOMEM;
 
@@ -335,10 +335,10 @@ int main(int argc, char *argv[]) {
   } else {
     if (!report) {
       if (ascii) {
-        if (wcjsondocfprintasc(out, &doc) < 0)
+        if (wcjsondocfprintasc(out, &doc, doc.values) < 0)
           goto err;
       } else {
-        if (wcjsondocfprint(out, &doc) < 0)
+        if (wcjsondocfprint(out, &doc, doc.values) < 0)
           goto err;
       }
     } else {

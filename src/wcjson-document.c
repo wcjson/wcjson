@@ -544,19 +544,21 @@ int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc) {
   return doc_unesc(ctx, &d, d.d->values);
 }
 
-int wcjsondocfprint(FILE *f, const struct wcjson_document *doc) {
-  return doc_fprint(f, false, doc, doc->values);
+int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,
+                    const struct wcjson_value *value) {
+  return doc_fprint(f, false, doc, value);
 }
 
-int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc) {
-  return doc_fprint(f, true, doc, doc->values);
+int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc,
+                       const struct wcjson_value *value) {
+  return doc_fprint(f, true, doc, value);
 }
 
-int wcjsondocsprint(wchar_t *s, size_t *lenp,
-                    const struct wcjson_document *doc) {
+int wcjsondocsprint(wchar_t *s, size_t *lenp, const struct wcjson_document *doc,
+                    const struct wcjson_value *value) {
   size_t s_len = *lenp;
   size_t t_len = s_len;
-  int r = doc_sprint(s, &t_len, false, doc, doc->values);
+  int r = doc_sprint(s, &t_len, false, doc, value);
 
   if (r < 0)
     return -1;
@@ -575,10 +577,11 @@ err_range:
 }
 
 int wcjsondocsprintasc(wchar_t *s, size_t *lenp,
-                       const struct wcjson_document *doc) {
+                       const struct wcjson_document *doc,
+                       const struct wcjson_value *value) {
   size_t s_len = *lenp;
   size_t t_len = s_len;
-  int r = doc_sprint(s, &t_len, true, doc, doc->values);
+  int r = doc_sprint(s, &t_len, true, doc, value);
 
   if (r < 0)
     return -1;
