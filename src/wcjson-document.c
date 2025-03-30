@@ -394,7 +394,7 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     wchar_t *dst = &d->d->strings[d->d->s_idx];
 
     if (wcjsonstowc(v->string, v->s_len, dst, &dst_len) < 0)
-      goto err;
+      goto err_decode;
 
     if (d->d->s_idx + dst_len + 1 > d->d->s_nitems)
       goto err_range;
@@ -439,6 +439,10 @@ err:
 err_range:
   ctx->status = WCJSON_ABORT_ERROR;
   ctx->errnum = ERANGE;
+  return -1;
+err_decode:
+  ctx->status = WCJSON_ABORT_ERROR;
+  ctx->errnum = errno;
   return -1;
 }
 
