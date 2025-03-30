@@ -53,11 +53,21 @@ struct wcjson_value {
 struct wcjson_document {
   struct wcjson_value *values;
   size_t v_nitems;
+  size_t v_idx;
   wchar_t *strings;
   size_t s_nitems;
+  size_t s_idx;
   wchar_t *esc;
   size_t e_nitems;
 };
+
+/**
+ + Gets the next unused value from a document.
+ * @param doc The document to get the next unsed value from.
+ * @return An uninitialized value or NULL if the document cannot provide more
+ * values.
+ */
+struct wcjson_value *wcjson_document_nextv(struct wcjson_document *doc);
 
 /**
  * Accessor macro to get the head JSON value from a list of JSON values.
@@ -111,6 +121,67 @@ struct wcjson_document {
 struct wcjson_value *wcjson_value_pair(const struct wcjson_document *doc,
                                        const struct wcjson_value *obj,
                                        const wchar_t *key);
+
+/**
+ * Adds a value to the head of the child value list of an array.
+ * @param doc The document containing the array and the value.
+ * @param arr The array to add a value to.
+ * @param val The value to add.
+ * @return 0 on success or <0 if adding fails.
+ */
+int wcjson_value_arraddhead(struct wcjson_document *doc,
+                            struct wcjson_value *arr, struct wcjson_value *val);
+
+/**
+ * Adds a value to the tail of the child value list of an array.
+ * @param doc The document containing the array and the value.
+ * @param arr The array to add a value to.
+ * @param val The value to add.
+ * @return 0 on success or <0 if adding fails.
+ */
+int wcjson_value_arraddtail(struct wcjson_document *doc,
+                            struct wcjson_value *arr, struct wcjson_value *val);
+
+/**
+ * Removes a value from the child value list of an array.
+ * @param doc The document containing the array and the value.
+ * @param arr The array to remove a value from.
+ * @param val The value to remove.
+ * @return 0 on success or <0 if removing fails.
+ */
+int wcjson_value_arremove(struct wcjson_document *doc, struct wcjson_value *arr,
+                          struct wcjson_value *val);
+
+/**
+ * Adds a key value pair the head of the child value list of an object.
+ * @param doc The document containing the object and the value.
+ * @param obj The object to add a value to.
+ * @param pair The pair to add.
+ * @return 0 on success or <0 if adding fails.
+ */
+int wcjson_value_objaddhead(struct wcjson_document *doc,
+                            struct wcjson_value *obj,
+                            struct wcjson_value *pair);
+
+/**
+ * Adds a key value pair to the tail of the child value list of an object.
+ * @param doc The document holding the object and the value.
+ * @param obj The object to add a value to.
+ * @param pair The pair to add.
+ * @return 0 on success or <0 if adding fails.
+ */
+int wcjson_value_objaddtail(struct wcjson_document *doc,
+                            struct wcjson_value *obj, struct wcjson_value *air);
+
+/**
+ * Removes a pair from the child value list of an object.
+ * @param doc The document containing the object and the pair.
+ * @param obj The object to remove a pair from.
+ * @param pair The pair to remove.
+ * @return 0 on success of <0 if removing fails.
+ */
+int wcjson_value_objremove(struct wcjson_document *doc,
+                           struct wcjson_value *obj, struct wcjson_value *pair);
 
 /**
  * Deserializes JSON text to populate a document.

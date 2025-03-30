@@ -38,6 +38,11 @@ extern "C" {
 #define DEFAULT_NESTING_LIMIT 256
 #endif
 
+#define VALUE_IS_VALID(v)                                                      \
+  ((v)->is_null || (v)->is_boolean || (v)->is_array || (v)->is_object ||       \
+   (((v)->is_string || (v)->is_number || (v)->is_pair) &&                      \
+    (v)->string != NULL))
+
 static void *doc_object_start(struct wcjson *, void *, void *);
 static void doc_object_add(struct wcjson *, void *, void *, void *, void *);
 static void doc_object_end(struct wcjson *, void *, void *);
@@ -66,33 +71,14 @@ static struct wcjson_ops doc_ops = {
 
 struct doc_impl {
   struct wcjson_document *d;
-  size_t v_idx;
-  size_t s_idx;
-  size_t e_idx;
   size_t nlimit;
 };
 
-struct wcjson_value *wcjson_value_pair(const struct wcjson_document *doc,
-                                       const struct wcjson_value *obj,
-                                       const wchar_t *key) {
-  const size_t key_len = wcslen(key);
-  struct wcjson_value *v;
-
-  if (obj->is_object)
-    wcjson_value_foreach(v, doc, obj) {
-      if (v->s_len == key_len && wcsncmp(v->string, key, v->s_len) == 0)
-        return wcjson_value_head(doc, v);
-    }
-
-  return NULL;
-}
-
-static inline struct wcjson_value *doc_next_value(struct wcjson *ctx,
-                                                  struct doc_impl *doc) {
-  if (doc->v_idx == doc->d->v_nitems)
+struct wcjson_value *wcjson_document_nextv(struct wcjson_document *doc) {
+  if (doc->v_idx == doc->v_nitems)
     goto err_range;
 
-  struct wcjson_value *v = &doc->d->values[doc->v_idx];
+  struct wcjson_value *v = &doc->values[doc->v_idx];
   v->is_null = 0;
   v->is_boolean = 0;
   v->is_true = 0;
@@ -110,9 +96,159 @@ static inline struct wcjson_value *doc_next_value(struct wcjson *ctx,
   v->next_idx = 0;
   return v;
 err_range:
-  ctx->status = WCJSON_ABORT_ERROR;
-  ctx->errnum = ERANGE;
+  errno = ERANGE;
   return NULL;
+}
+
+static inline struct wcjson_value *doc_next_value(struct wcjson *ctx,
+                                                  struct doc_impl *doc) {
+  struct wcjson_value *v = wcjson_document_nextv(doc->d);
+
+  if (v == NULL) {
+    ctx->status = WCJSON_ABORT_ERROR;
+    ctx->errnum = errno;
+  }
+
+  return v;
+}
+
+struct wcjson_value *wcjson_value_pair(const struct wcjson_document *doc,
+                                       const struct wcjson_value *obj,
+                                       const wchar_t *key) {
+  const size_t key_len = wcslen(key);
+  struct wcjson_value *v;
+
+  if (obj->is_object)
+    wcjson_value_foreach(v, doc, obj) {
+      if (v->s_len == key_len && wcsncmp(v->string, key, v->s_len) == 0)
+        return wcjson_value_head(doc, v);
+    }
+
+  return NULL;
+}
+
+int wcjson_value_arraddhead(struct wcjson_document *doc,
+                            struct wcjson_value *arr,
+                            struct wcjson_value *val) {
+  if (!(arr->is_array && VALUE_IS_VALID(val)))
+    goto err_inval;
+
+  if (arr->head_idx == 0) {
+    arr->head_idx = val->idx;
+    arr->tail_idx = val->idx;
+  } else {
+    val->prev_idx = 0;
+    val->next_idx = arr->head_idx;
+    doc->values[arr->head_idx].prev_idx = val->idx;
+    arr->head_idx = val->idx;
+  }
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
+}
+
+int wcjson_value_arraddtail(struct wcjson_document *doc,
+                            struct wcjson_value *arr,
+                            struct wcjson_value *val) {
+  if (!(arr->is_array && VALUE_IS_VALID(val)))
+    goto err_inval;
+
+  if (arr->head_idx == 0) {
+    arr->head_idx = val->idx;
+    arr->tail_idx = val->idx;
+  } else {
+    val->prev_idx = arr->tail_idx;
+    val->next_idx = 0;
+    doc->values[arr->tail_idx].next_idx = val->idx;
+    arr->tail_idx = val->idx;
+  }
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
+}
+
+int wcjson_value_arrremove(struct wcjson_document *doc,
+                           struct wcjson_value *arr, struct wcjson_value *val) {
+
+  if (!(arr->is_array && VALUE_IS_VALID(val)))
+    goto err_inval;
+
+  if (val->next_idx != 0)
+    doc->values[val->next_idx].prev_idx = val->prev_idx;
+
+  if (val->prev_idx != 0)
+    doc->values[val->prev_idx].next_idx = val->next_idx;
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
+}
+
+int wcjson_value_objaddhead(struct wcjson_document *doc,
+                            struct wcjson_value *obj,
+                            struct wcjson_value *pair) {
+  if (!(obj->is_object && pair->is_pair && VALUE_IS_VALID(pair)))
+    goto err_inval;
+
+  if (obj->head_idx == 0) {
+    obj->head_idx = pair->idx;
+    obj->tail_idx = pair->idx;
+  } else {
+    pair->prev_idx = 0;
+    pair->next_idx = obj->head_idx;
+    doc->values[obj->head_idx].prev_idx = pair->idx;
+    obj->head_idx = pair->idx;
+  }
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
+}
+
+int wcjson_value_objaddtail(struct wcjson_document *doc,
+                            struct wcjson_value *obj,
+                            struct wcjson_value *pair) {
+  if (!(obj->is_object && pair->is_pair && VALUE_IS_VALID(pair)))
+    goto err_inval;
+
+  if (obj->head_idx == 0) {
+    obj->head_idx = pair->idx;
+    obj->tail_idx = pair->idx;
+  } else {
+    pair->prev_idx = obj->tail_idx;
+    pair->next_idx = 0;
+    doc->values[obj->tail_idx].next_idx = pair->idx;
+    obj->tail_idx = pair->idx;
+  }
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
+}
+
+int wcjson_value_objremove(struct wcjson_document *doc,
+                           struct wcjson_value *obj,
+                           struct wcjson_value *pair) {
+  if (!(obj->is_object && VALUE_IS_VALID(pair)))
+    goto err_inval;
+
+  if (pair->next_idx != 0)
+    doc->values[pair->next_idx].prev_idx = pair->prev_idx;
+
+  if (pair->prev_idx != 0)
+    doc->values[pair->prev_idx].next_idx = pair->next_idx;
+
+  return 0;
+err_inval:
+  errno = EINVAL;
+  return -1;
 }
 
 static void *doc_object_start(struct wcjson *ctx, void *doc, void *parent) {
@@ -254,13 +390,13 @@ static void *doc_null_value(struct wcjson *ctx, void *doc) {
 static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
                      struct wcjson_value *v) {
   if (v->is_string || v->is_pair) {
-    size_t dst_len = d->d->s_nitems - d->s_idx;
-    wchar_t *dst = &d->d->strings[d->s_idx];
+    size_t dst_len = d->d->s_nitems - d->d->s_idx;
+    wchar_t *dst = &d->d->strings[d->d->s_idx];
 
     if (wcjsonstowc(v->string, v->s_len, dst, &dst_len) < 0)
       goto err;
 
-    if (d->s_idx + dst_len + 1 > d->d->s_nitems)
+    if (d->d->s_idx + dst_len + 1 > d->d->s_nitems)
       goto err_range;
 
     dst[dst_len] = L'\0';
@@ -268,14 +404,14 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     v->string = dst;
     v->s_len = dst_len;
 
-    d->s_idx += dst_len + 1;
+    d->d->s_idx += dst_len + 1;
     d->d->e_nitems = MAX((dst_len + 1) * WCJSON_ESCAPE_MAX, d->d->e_nitems);
     if (v->is_pair && doc_unesc(ctx, d, wcjson_value_head(d->d, v)) < 0)
       goto err;
 
   } else if (v->is_number) {
-    size_t dst_len = d->d->s_nitems - d->s_idx;
-    wchar_t *dst = &d->d->strings[d->s_idx];
+    size_t dst_len = d->d->s_nitems - d->d->s_idx;
+    wchar_t *dst = &d->d->strings[d->d->s_idx];
 
     if (dst_len < v->s_len + 1)
       goto err_range;
@@ -284,7 +420,7 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     dst[v->s_len] = L'\0';
 
     v->string = dst;
-    d->s_idx += v->s_len + 1;
+    d->d->s_idx += v->s_len + 1;
   } else if (v->is_array) {
     for (struct wcjson_value *n = wcjson_value_tail(d->d, v); n != NULL;
          n = wcjson_value_prev(d->d, n))
@@ -521,25 +657,20 @@ int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
   struct doc_impl d = {
       .d = doc,
       .nlimit = DEFAULT_NESTING_LIMIT,
-      .v_idx = 0,
   };
+  d.d->v_idx = 0;
+  d.d->s_idx = 0;
   d.d->s_nitems = 0;
   d.d->e_nitems = 0;
-  d.v_idx = 0;
-  int r = wcjson(ctx, &doc_ops, &d, txt, len);
-  if (r == 0)
-    d.d->v_nitems = d.v_idx;
-
-  return r;
+  return wcjson(ctx, &doc_ops, &d, txt, len);
 }
 
 int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc) {
   struct doc_impl d = {
       .d = doc,
       .nlimit = DEFAULT_NESTING_LIMIT,
-      .v_idx = 0,
-      .s_idx = 0,
   };
+  d.d->s_idx = 0;
   d.d->e_nitems = 0;
   return doc_unesc(ctx, &d, d.d->values);
 }

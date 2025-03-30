@@ -2,12 +2,19 @@
 .Dt WCJSON-DOCUMENT 3
 .Os
 .Sh NAME
+.Nm wcjson_document_nextv ,
 .Nm wcjson_value_head ,
 .Nm wcjson_value_next ,
 .Nm wcjson_value_tail ,
 .Nm wcjson_value_prev ,
 .Nm wcjson_value_foreach ,
 .Nm wcjson_value_pair ,
+.Nm wcjson_value_arraddhead ,
+.Nm wcjson_value_arraddtail ,
+.Nm wcjson_value_arrremove ,
+.Nm wcjson_value_objaddhead ,
+.Nm wcjson_value_objaddtail ,
+.Nm wcjson_value_objremove ,
 .Nm wcjsondocvalues ,
 .Nm wcjsondocstrings ,
 .Nm wcjsondocfprint ,
@@ -30,12 +37,26 @@
 .Ft int
 .Fn wcjsondocsprintasc "wchar_t *s" "size_t *lenp" "const struct wcjson_document document" "const struct wcjson_value *value"
 .Ft struct wcjson_value*
-.Fn wcjson_value_pair "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Fn wcjson_document_nextv "struct wcjson_document *document"
 .Fn wcjson_value_head "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_next "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_tail "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_prev "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_foreach "lvalue" "struct wcjson_document *d" "struct wcjson_value *v"
+.Ft struct wcjson_value*
+.Fn wcjson_value_pair "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Ft int
+.Fn wcjson_value_arraddhead "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Ft int
+.Fn wcjson_value_arraddtail "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Ft int
+.Fn wcjson_value_arrremove "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Ft int
+.Fn wcjson_value_objaddhead "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "size_t k_len" "struct wcjson_value *value"
+.Ft int
+.Fn wcjson_value_objaddtail "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "size_t k_len" "struct wcjson_value *value"
+.Ft int
+.Fn wcjson_value_objremove "struct wcjson_document *document" "struct wcjson_value *object" "struct wcjson_value *pair"
 .Sh DESCRIPTION
 The functions operate on the
 .Vt wcjson_document
@@ -49,8 +70,10 @@ structure is defined as follows:
 struct wcjson_document {
 	struct wcjson_value *values;
 	size_t v_nitems;
+	size_t v_idx;
 	wchar_t *strings;
 	size_t s_nitems;
+	size_t s_idx;
 	wchar_t *esc;
 	size_t e_nitems;
 };
@@ -62,10 +85,14 @@ The elements of this structure are defined as follows:
 Array of values of the document.
 .It Fa v_nitems
 Number of items in the values array.
+.It Fa v_idx
+Index of the next item in the values array.
 .It Fa strings
 Array of strings of the document.
 .It Fa s_nitems
 Number of items in the strings array.
+.It Fa s_idx
+Index of the next item in the strings array.
 .It Fa esc
 Array of escape sequences.
 .It Fa e_nitems
@@ -146,8 +173,9 @@ needs to point to useable memory and the
 member needs to be set to the number of items available in that array.
 On successful completion that array holds the deserialized document structure
 and the
-.Fa v_nitems
-member is updated to the number of items used in that array.
+.Fa v_idx
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
 The
 .Fn wcjsondocvalues
 function does not decode strings.
@@ -162,7 +190,6 @@ array points to
 Those strings are not zero terminated C strings so that the value of the
 .Fa s_len
 member needs to be used when working with those strings.
-Escape sequences will be preserved.
 The
 .Fa s_nitems
 member is set to the number of items needed in the
@@ -183,8 +210,9 @@ member needs to point to useable memory and the
 .Fa s_nitems
 member needs to be set to the number of items available in that array.
 On successful completion that array holds the decoded strings and the
-.Fa s_nitems
-member is updated to the number of items used in that array.
+.Fa s_idx
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
 The
 .Fa string
 member of any
@@ -237,6 +265,20 @@ On successful completion
 is updated to the number of items used in that array.
 .Pp
 The
+.Fn wcjson_document_nextv
+function gets the next useable value from a
+.Fa document .
+The
+.Fa values
+member needs to point to useable memory and the
+.Fa v_size
+member needs to be set to the number of items available in that array.
+On successful completion the
+.Fa v_idx
+member is increased by one indicating the number of elements used in that
+array - that is the index of the next usable item in that array.
+.Pp
+The
 .Fn wcjson_value_head ,
 .Fn wcjson_value_next ,
 .Fn wcjson_value_tail
@@ -252,7 +294,25 @@ value.
 .Pp
 The
 .Fn wcjson_value_pair
-accessor function gets the value of a key value pair from a given object.
+accessor function gets the value of a key value pair from an object.
+.Pp
+The
+.Fn wcjson_value_arraddtail
+and
+.Fn wcjson_value_arraddhead
+functions add a value to the child value list of an array.
+The
+.Fn wcjson_arrremove
+function removes a value from the child value list of an array.
+.Pp
+The
+.Fn wcjson_value_objaddhead
+and
+.Fn wcjson_value_objaddtail
+functions add a key value pair to the child value list of an object.
+The
+.Fn wcjson_value_objremove
+function removes a key value pair from the child value list of an object.
 .Sh RETURN VALUES
 The functions return 0 on success or a negative value if an error occurs.
 The global variable
@@ -266,9 +326,15 @@ functions provide status via
 .Fa ctx .
 The
 .Fn wcjson_value_pair
-function returns the value for the given key or NULL if no such value is found.
+function returns the first value matching key or NULL if no such value is found.
+The
+.Fn wcjson_document_nextv
+function returns the next useable value or NULL if the document cannot provide
+more values.
 .Sh ERRORS
 .Bl -tag -width Er
+.It Bq Er EINVAL
+A function was called with an invalid value.
 .It Bq Er ERANGE
 A size of
 .Fa v_nitems ,
@@ -278,7 +344,7 @@ or
 .Fa *lenp
 was too small.
 .It Bq Er EILSEQ
-A given input contained illegal data.
+An input contained illegal data.
 .El
 .Sh STANDARDS
 .Rs

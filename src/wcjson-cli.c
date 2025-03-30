@@ -223,12 +223,13 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems);
+  p = realloc(values, sizeof(struct wcjson_value) * doc.v_idx);
   if (p == NULL)
     goto err;
 
   values = p;
   doc.values = values;
+  doc.v_nitems = doc.v_idx;
 
   if (report) {
     total_bytes += doc.v_nitems * sizeof(struct wcjson_value);
