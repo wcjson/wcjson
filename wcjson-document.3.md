@@ -2,12 +2,25 @@
 
 ## NAME
 
+**wcjsondoc\_create\_null**,
+**wcjsondoc\_create\_bool**,
+**wcjsondoc\_create\_string**,
+**wcjsondoc\_create\_number**,
+**wcjsondoc\_create\_object**,
+**wcjsondoc\_create\_array**,
 **wcjson\_value\_head**,
 **wcjson\_value\_next**,
 **wcjson\_value\_tail**,
 **wcjson\_value\_prev**,
 **wcjson\_value\_foreach**,
-**wcjson\_value\_pair**,
+**wcjsondoc\_array\_add\_head**,
+**wcjsondoc\_array\_add\_tail**,
+**wcjsondoc\_array\_get**,
+**wcjsondoc\_array\_remove**,
+**wcjsondoc\_object\_add\_head**,
+**wcjsondoc\_object\_add\_tail**,
+**wcjsondoc\_object\_remove**,
+**wcjsondoc\_object\_get**,
 **wcjsondocvalues**,
 **wcjsondocstrings**,
 **wcjsondocfprint**,
@@ -26,19 +39,16 @@
 **wcjsondocstrings**(*struct wcjson \*ctx*, *struct wcjson\_document \*document*);
 
 *int*  
-**wcjsondocfprint**(*FILE \*f*, *const struct wcjson\_document \*document*);
+**wcjsondocfprint**(*FILE \*f*, *const struct wcjson\_document \*document*, *const struct wcjson\_value \*value*);
 
 *int*  
-**wcjsondocfprintasc**(*FILE \*f*, *const struct wcjson\_document \*document*);
+**wcjsondocfprintasc**(*FILE \*f*, *const struct wcjson\_document \*document*, *const struct wcjson\_value \*value*);
 
 *int*  
-**wcjsondocsprint**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*);
+**wcjsondocsprint**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*, *const struct wcjson\_value \*value*);
 
 *int*  
-**wcjsondocsprintasc**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*);
-
-*struct wcjson\_value\*&zwnj;*  
-**wcjson\_value\_pair**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*object*, *const wchar\_t \*key*);
+**wcjsondocsprintasc**(*wchar\_t \*s*, *size\_t \*lenp*, *const struct wcjson\_document document*, *const struct wcjson\_value \*value*);
 
 **wcjson\_value\_head**(*struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
 
@@ -49,6 +59,48 @@
 **wcjson\_value\_prev**(*struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
 
 **wcjson\_value\_foreach**(*lvalue*, *struct wcjson\_document \*d*, *struct wcjson\_value \*v*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_null**(*struct wcjson\_document \*document*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_bool**(*struct wcjson\_document \*document*, *const bool value*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_string**(*struct wcjson\_document \*document*, *const wchar\_t \*value*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_number**(*struct wcjson\_document \*document*, *const wchar\_t \*value*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_object**(*struct wcjson\_document \*document*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_create\_array**(*struct wcjson\_document \*doc*);
+
+*int*  
+**wcjsondoc\_array\_add\_head**(*const struct wcjson\_document \*document*, *struct wcjson\_value \*array*, *struct wcjson\_value \*value*);
+
+*int*  
+**wcjsondoc\_array\_add\_tail**(*const struct wcjson\_document \*document*, *struct wcjson\_value \*array*, *struct wcjson\_value \*value*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_array\_get**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*array*, *const size\_t index*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_array\_remove**(*const struct wcjson\_document \*document*, *struct wcjson\_value \*array*, *const size\_t index*);
+
+*int*  
+**wcjsondoc\_object\_add\_head**(*struct wcjson\_document \*document*, *struct wcjson\_value \*object*, *const wchar\_t \*key*, *const struct wcjson\_value \*value*);
+
+*int*  
+**wcjsondoc\_object\_add\_tail**(*struct wcjson\_document \*document*, *struct wcjson\_value \*object*, *const wchar\_t \*key*, *const struct wcjson\_value \*value*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_object\_get**(*const struct wcjson\_document \*document*, *const struct wcjson\_value \*object*, *const wchar\_t \*key*);
+
+*struct wcjson\_value \*&zwnj;*  
+**wcjsondoc\_object\_remove**(*const struct wcjson\_document \*document*, *struct wcjson\_value \*object*, *const wchar\_t \*key*);
 
 ## DESCRIPTION
 
@@ -64,8 +116,10 @@ structure is defined as follows:
 	struct wcjson_document {
 		struct wcjson_value *values;
 		size_t v_nitems;
+		size_t v_idx;
 		wchar_t *strings;
 		size_t s_nitems;
+		size_t s_idx;
 		wchar_t *esc;
 		size_t e_nitems;
 	};
@@ -80,6 +134,10 @@ The elements of this structure are defined as follows:
 
 > Number of items in the values array.
 
+*v\_idx*
+
+> Index of the next item in the values array.
+
 *strings*
 
 > Array of strings of the document.
@@ -87,6 +145,10 @@ The elements of this structure are defined as follows:
 *s\_nitems*
 
 > Number of items in the strings array.
+
+*s\_idx*
+
+> Index of the next item in the strings array.
 
 *esc*
 
@@ -197,8 +259,9 @@ needs to point to useable memory and the
 member needs to be set to the number of items available in that array.
 On successful completion that array holds the deserialized document structure
 and the
-*v\_nitems*
-member is updated to the number of items used in that array.
+*v\_idx*
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
 The
 **wcjsondocvalues**()
 function does not decode strings.
@@ -213,7 +276,6 @@ array points to
 Those strings are not zero terminated C strings so that the value of the
 *s\_len*
 member needs to be used when working with those strings.
-Escape sequences will be preserved.
 The
 *s\_nitems*
 member is set to the number of items needed in the
@@ -234,8 +296,9 @@ member needs to point to useable memory and the
 *s\_nitems*
 member needs to be set to the number of items available in that array.
 On successful completion that array holds the decoded strings and the
-*s\_nitems*
-member is updated to the number of items used in that array.
+*s\_idx*
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
 The
 *string*
 member of any
@@ -288,6 +351,26 @@ On successful completion
 is updated to the number of items used in that array.
 
 The
+**wcjsondoc\_create\_null**(),
+**wcjsondoc\_create\_bool**(),
+**wcjsondoc\_create\_string**(),
+**wcjsondoc\_create\_number**(),
+**wcjsondoc\_create\_object**()
+and
+**wcjsondoc\_create\_array**()
+functions get the next useable value from a
+*document*.
+The
+*values*
+member needs to point to useable memory and the
+*v\_size*
+member needs to be set to the number of items available in that array.
+On successful completion the
+*v\_idx*
+member is increased by one indicating the number of elements used in that
+array - that is the index of the next usable item in that array.
+
+The
 **wcjson\_value\_head**(),
 **wcjson\_value\_next**(),
 **wcjson\_value\_tail**()
@@ -302,8 +385,28 @@ macro expands to a loop expression for iterating the child value list of a
 value.
 
 The
-**wcjson\_value\_pair**()
-accessor function gets the value of a key value pair from a given object.
+**wcjsondoc\_array\_add\_head**()
+and
+**wcjsondoc\_array\_add\_tail**()
+functions add a value to an array.
+The
+**wcjsondoc\_array\_remove**()
+function removes a value from an array.
+The
+**wcjsondoc\_array\_get**()
+function gets a value from an array.
+
+The
+**wcjsondoc\_object\_add\_head**()
+and
+**wcjsondoc\_object\_add\_tail**()
+functions add a key value pair to an object.
+The
+**wcjsondoc\_object\_remove**()
+function removes a key value pair from an object.
+The
+**wcjsondoc\_object\_get**()
+function gets the value of a key value pair from an object.
 
 ## RETURN VALUES
 
@@ -318,10 +421,36 @@ and
 functions provide status via
 *ctx*.
 The
-**wcjson\_value\_pair**()
-function returns the value for the given key or NULL if no such value is found.
+**wcjsondoc\_object\_get**()
+and
+**wcjsondoc\_object\_remove**()
+functions return the first value matching
+*key*
+or NULL if no such value is found.
+The
+**wcjsondoc\_array\_get**()
+and
+**wcjsondoc\_array\_remove**()
+functions return the value at
+*index*
+or NULL if no such value is found.
+The
+**wcjsondoc\_create\_null**(),
+**wcjsondoc\_create\_bool**(),
+**wcjsondoc\_create\_string**(),
+**wcjsondoc\_create\_number**(),
+**wcjsondoc\_create\_object**()
+and
+**wcjsondoc\_create\_array**()
+functions return the next useable value or NULL if
+*document*
+cannot provide more values.
 
 ## ERRORS
+
+\[`EINVAL`]
+
+> A function was called with an invalid value.
 
 \[`ERANGE`]
 
@@ -335,7 +464,7 @@ function returns the value for the given key or NULL if no such value is found.
 
 \[`EILSEQ`]
 
-> A given input contained illegal data.
+> An input contained illegal data.
 
 ## STANDARDS
 

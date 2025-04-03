@@ -2,19 +2,25 @@
 .Dt WCJSON-DOCUMENT 3
 .Os
 .Sh NAME
-.Nm wcjson_document_nextv ,
+.Nm wcjsondoc_create_null ,
+.Nm wcjsondoc_create_bool ,
+.Nm wcjsondoc_create_string ,
+.Nm wcjsondoc_create_number ,
+.Nm wcjsondoc_create_object ,
+.Nm wcjsondoc_create_array ,
 .Nm wcjson_value_head ,
 .Nm wcjson_value_next ,
 .Nm wcjson_value_tail ,
 .Nm wcjson_value_prev ,
 .Nm wcjson_value_foreach ,
-.Nm wcjson_value_pair ,
-.Nm wcjson_value_arraddhead ,
-.Nm wcjson_value_arraddtail ,
-.Nm wcjson_value_arrremove ,
-.Nm wcjson_value_objaddhead ,
-.Nm wcjson_value_objaddtail ,
-.Nm wcjson_value_objremove ,
+.Nm wcjsondoc_array_add_head ,
+.Nm wcjsondoc_array_add_tail ,
+.Nm wcjsondoc_array_get ,
+.Nm wcjsondoc_array_remove ,
+.Nm wcjsondoc_object_add_head ,
+.Nm wcjsondoc_object_add_tail ,
+.Nm wcjsondoc_object_remove ,
+.Nm wcjsondoc_object_get ,
 .Nm wcjsondocvalues ,
 .Nm wcjsondocstrings ,
 .Nm wcjsondocfprint ,
@@ -36,27 +42,39 @@
 .Fn wcjsondocsprint "wchar_t *s" "size_t *lenp" "const struct wcjson_document document" "const struct wcjson_value *value"
 .Ft int
 .Fn wcjsondocsprintasc "wchar_t *s" "size_t *lenp" "const struct wcjson_document document" "const struct wcjson_value *value"
-.Ft struct wcjson_value*
-.Fn wcjson_document_nextv "struct wcjson_document *document"
 .Fn wcjson_value_head "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_next "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_tail "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_prev "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_foreach "lvalue" "struct wcjson_document *d" "struct wcjson_value *v"
-.Ft struct wcjson_value*
-.Fn wcjson_value_pair "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_null "struct wcjson_document *document"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_bool "struct wcjson_document *document" "const bool value"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_string "struct wcjson_document *document" "const wchar_t *value"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_number "struct wcjson_document *document" "const wchar_t *value"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_object "struct wcjson_document *document"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_create_array "struct wcjson_document *doc"
 .Ft int
-.Fn wcjson_value_arraddhead "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Fn wcjsondoc_array_add_head "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
 .Ft int
-.Fn wcjson_value_arraddtail "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Fn wcjsondoc_array_add_tail "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_array_get "const struct wcjson_document *document" "const struct wcjson_value *array" "const size_t index"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_array_remove "const struct wcjson_document *document" "struct wcjson_value *array" "const size_t index"
 .Ft int
-.Fn wcjson_value_arrremove "struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Fn wcjsondoc_object_add_head "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const struct wcjson_value *value"
 .Ft int
-.Fn wcjson_value_objaddhead "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "size_t k_len" "struct wcjson_value *value"
-.Ft int
-.Fn wcjson_value_objaddtail "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "size_t k_len" "struct wcjson_value *value"
-.Ft int
-.Fn wcjson_value_objremove "struct wcjson_document *document" "struct wcjson_value *object" "struct wcjson_value *pair"
+.Fn wcjsondoc_object_add_tail "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const struct wcjson_value *value"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_object_get "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Ft struct wcjson_value *
+.Fn wcjsondoc_object_remove "const struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key"
 .Sh DESCRIPTION
 The functions operate on the
 .Vt wcjson_document
@@ -265,8 +283,14 @@ On successful completion
 is updated to the number of items used in that array.
 .Pp
 The
-.Fn wcjson_document_nextv
-function gets the next useable value from a
+.Fn wcjsondoc_create_null ,
+.Fn wcjsondoc_create_bool ,
+.Fn wcjsondoc_create_string ,
+.Fn wcjsondoc_create_number ,
+.Fn wcjsondoc_create_object
+and
+.Fn wcjsondoc_create_array
+functions get the next useable value from a
 .Fa document .
 The
 .Fa values
@@ -293,26 +317,28 @@ macro expands to a loop expression for iterating the child value list of a
 value.
 .Pp
 The
-.Fn wcjson_value_pair
-accessor function gets the value of a key value pair from an object.
+.Fn wcjsondoc_array_add_head
+and
+.Fn wcjsondoc_array_add_tail
+functions add a value to an array.
+The
+.Fn wcjsondoc_array_remove
+function removes a value from an array.
+The
+.Fn wcjsondoc_array_get
+function gets a value from an array.
 .Pp
 The
-.Fn wcjson_value_arraddtail
+.Fn wcjsondoc_object_add_head
 and
-.Fn wcjson_value_arraddhead
-functions add a value to the child value list of an array.
+.Fn wcjsondoc_object_add_tail
+functions add a key value pair to an object.
 The
-.Fn wcjson_arrremove
-function removes a value from the child value list of an array.
-.Pp
+.Fn wcjsondoc_object_remove
+function removes a key value pair from an object.
 The
-.Fn wcjson_value_objaddhead
-and
-.Fn wcjson_value_objaddtail
-functions add a key value pair to the child value list of an object.
-The
-.Fn wcjson_value_objremove
-function removes a key value pair from the child value list of an object.
+.Fn wcjsondoc_object_get
+function gets the value of a key value pair from an object.
 .Sh RETURN VALUES
 The functions return 0 on success or a negative value if an error occurs.
 The global variable
@@ -325,12 +351,30 @@ and
 functions provide status via
 .Fa ctx .
 The
-.Fn wcjson_value_pair
-function returns the first value matching key or NULL if no such value is found.
+.Fn wcjsondoc_object_get
+and
+.Fn wcjsondoc_object_remove
+functions return the first value matching
+.Fa key
+or NULL if no such value is found.
 The
-.Fn wcjson_document_nextv
-function returns the next useable value or NULL if the document cannot provide
-more values.
+.Fn wcjsondoc_array_get
+and
+.Fn wcjsondoc_array_remove
+functions return the value at
+.Fa index
+or NULL if no such value is found.
+The
+.Fn wcjsondoc_create_null ,
+.Fn wcjsondoc_create_bool ,
+.Fn wcjsondoc_create_string ,
+.Fn wcjsondoc_create_number ,
+.Fn wcjsondoc_create_object
+and
+.Fn wcjsondoc_create_array
+functions return the next useable value or NULL if
+.Fa document
+cannot provide more values.
 .Sh ERRORS
 .Bl -tag -width Er
 .It Bq Er EINVAL

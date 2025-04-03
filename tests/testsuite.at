@@ -110,3 +110,9 @@ AT_CHECK([printf -- %s \"\\udbff\\udbff\" | wcjson -e C -a 2>/dev/null], [1], []
 AT_CHECK([printf -- %s \"\\u0000\" | wcjson -e C -a 2>/dev/null], [1], [], [])
 AT_CLEANUP
 
+AT_TESTED([test-cli])
+AT_SETUP([create/add/remove])
+AT_CHECK([test-cli create], [0], [{"key":@<:@null@:>@}])
+AT_CHECK([test-cli add], [0], [{"key1":"def","key":@<:@"abc",null,123@:>@,"key2":456}])
+AT_CHECK([test-cli remove], [0], [{"key1":"def","key":@<:@"abc",123@:>@}])
+AT_CLEANUP
