@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include <errno.h>
+#include <stdlib.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -91,6 +92,8 @@ static struct wcjson_value *wcjson_document_nextv(struct wcjson_document *doc) {
   v->is_pair = 0;
   v->string = NULL;
   v->s_len = 0;
+  v->mbstring = NULL;
+  v->mb_len = 0;
   v->idx = doc->v_idx++;
   v->head_idx = 0;
   v->tail_idx = 0;
@@ -514,6 +517,12 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
 
     d->d->s_idx += dst_len + 1;
     d->d->e_nitems = MAX((dst_len + 1) * WCJSON_ESCAPE_MAX, d->d->e_nitems);
+
+    size_t mblen = wcstombs(NULL, v->string, v->s_len);
+    if (mblen == -1)
+      goto err;
+
+    d->d->mb_nitems += mblen + 1;
     if (v->is_pair && doc_unesc(ctx, d, wcjson_value_head(d->d, v)) < 0)
       goto err;
 
@@ -529,6 +538,12 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
 
     v->string = dst;
     d->d->s_idx += v->s_len + 1;
+
+    size_t mblen = wcstombs(NULL, v->string, v->s_len);
+    if (mblen == -1)
+      goto err;
+
+    d->d->mb_nitems += mblen + 1;
   } else if (v->is_array) {
     for (struct wcjson_value *n = wcjson_value_tail(d->d, v); n != NULL;
          n = wcjson_value_prev(d->d, n))
@@ -551,6 +566,69 @@ err_range:
 err_decode:
   ctx->status = WCJSON_ABORT_ERROR;
   ctx->errnum = errno;
+  return -1;
+}
+
+static int doc_mbstrings(struct wcjson *ctx, struct doc_impl *d,
+                         struct wcjson_value *v) {
+  if (v->is_string || v->is_pair) {
+    size_t dst_len = d->d->mb_nitems - d->d->mb_idx;
+    char *dst = &d->d->mbstrings[d->d->mb_idx];
+    size_t mb_len = wcstombs(dst, v->string, dst_len);
+
+    if (mb_len == -1)
+      goto err;
+
+    if (mb_len == dst_len)
+      goto err_range;
+
+    if (d->d->mb_idx + mb_len + 1 > d->d->mb_nitems)
+      goto err_range;
+
+    v->mbstring = dst;
+    v->mb_len = mb_len;
+
+    d->d->mb_idx += mb_len + 1;
+
+    if (v->is_pair && doc_mbstrings(ctx, d, wcjson_value_head(d->d, v)) < 0)
+      goto err;
+
+  } else if (v->is_number) {
+    size_t dst_len = d->d->mb_nitems - d->d->mb_idx;
+    char *dst = &d->d->mbstrings[d->d->mb_idx];
+    size_t mb_len = wcstombs(dst, v->string, dst_len);
+
+    if (mb_len == -1)
+      goto err;
+
+    if (mb_len == dst_len)
+      goto err_range;
+
+    if (d->d->mb_idx + mb_len + 1 > d->d->mb_nitems)
+      goto err_range;
+
+    v->mbstring = dst;
+    v->mb_len = mb_len;
+
+    d->d->mb_idx += mb_len + 1;
+  } else if (v->is_array) {
+    for (struct wcjson_value *n = wcjson_value_tail(d->d, v); n != NULL;
+         n = wcjson_value_prev(d->d, n))
+      if (doc_mbstrings(ctx, d, n) < 0)
+        goto err;
+  } else if (v->is_object) {
+    for (struct wcjson_value *n = wcjson_value_tail(d->d, v); n != NULL;
+         n = wcjson_value_prev(d->d, n))
+      if (doc_mbstrings(ctx, d, n) < 0)
+        goto err;
+  }
+
+  return 0;
+err:
+  return -1;
+err_range:
+  ctx->status = WCJSON_ABORT_ERROR;
+  ctx->errnum = ERANGE;
   return -1;
 }
 
@@ -773,6 +851,7 @@ int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
   d.d->v_idx = 0;
   d.d->s_idx = 0;
   d.d->s_nitems = 0;
+  d.d->mb_nitems = 0;
   d.d->e_nitems = 0;
   return wcjson(ctx, &doc_ops, &d, txt, len);
 }
@@ -785,6 +864,15 @@ int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc) {
   d.d->s_idx = 0;
   d.d->e_nitems = 0;
   return doc_unesc(ctx, &d, d.d->values);
+}
+
+int wcjsondocmbstrings(struct wcjson *ctx, struct wcjson_document *doc) {
+  struct doc_impl d = {
+      .d = doc,
+      .nlimit = DEFAULT_NESTING_LIMIT,
+  };
+  d.d->mb_idx = 0;
+  return doc_mbstrings(ctx, &d, d.d->values);
 }
 
 int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,

@@ -87,6 +87,7 @@ int main(int argc, char *argv[]) {
   size_t limit = CLI_DEFAULT_LIMIT, len, total_bytes = 0;
   FILE *in = stdin, *out = stdout;
   wchar_t *json = NULL, *strings = NULL, *esc = NULL, *outb = NULL;
+  char *mbstrings = NULL;
   struct wcjson_value *values = NULL;
   void *p;
   wint_t wc;
@@ -264,6 +265,30 @@ int main(int argc, char *argv[]) {
 
   limit -= doc.s_nitems * sizeof(wchar_t);
 
+  size_t mb_nitems = limit / sizeof(char);
+  if (mb_nitems < doc.mb_nitems) {
+    errno = ENOMEM;
+    goto err;
+  }
+
+  mbstrings = malloc(doc.mb_nitems * sizeof(char));
+  if (mbstrings == NULL)
+    goto err;
+
+  doc.mbstrings = mbstrings;
+
+  if (wcjsondocmbstrings(&ctx, &doc) < 0)
+    goto err;
+
+  if (report) {
+    total_bytes += doc.mb_nitems * sizeof(char);
+    fwprintf(stdout, L"Input multibyte characters: %lld\n", doc.mb_nitems);
+    fwprintf(stdout, L"Input multibyte characters (byte): %lld\n",
+             doc.mb_nitems * sizeof(char));
+  }
+
+  limit -= doc.mb_nitems * sizeof(char);
+
   size_t e_nitems = limit / sizeof(wchar_t);
   if (e_nitems < doc.e_nitems) {
     errno = ENOMEM;
@@ -360,6 +385,7 @@ int main(int argc, char *argv[]) {
   free(json);
   free(values);
   free(strings);
+  free(mbstrings);
   free(esc);
   free(outb);
   fclose(in);
@@ -374,6 +400,7 @@ err:
   free(json);
   free(values);
   free(strings);
+  free(mbstrings);
   free(esc);
   free(outb);
   fclose(in);

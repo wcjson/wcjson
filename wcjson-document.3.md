@@ -23,6 +23,7 @@
 **wcjsondoc\_object\_get**,
 **wcjsondocvalues**,
 **wcjsondocstrings**,
+**wcjsondocmbstrings**,
 **wcjsondocfprint**,
 **wcjsondocfprintasc**,
 **wcjsondocsprint**,
@@ -37,6 +38,9 @@
 
 *int*  
 **wcjsondocstrings**(*struct wcjson \*ctx*, *struct wcjson\_document \*document*);
+
+*int*  
+**wcjsondocmbstrings**(*struct wcjson \*ctx*, *struct wcjson\_document \*document*);
 
 *int*  
 **wcjsondocfprint**(*FILE \*f*, *const struct wcjson\_document \*document*, *const struct wcjson\_value \*value*);
@@ -120,6 +124,9 @@ structure is defined as follows:
 		wchar_t *strings;
 		size_t s_nitems;
 		size_t s_idx;
+		char *mbstrings;
+		size_t mb_nitems;
+		size_t mb_idx;
 		wchar_t *esc;
 		size_t e_nitems;
 	};
@@ -150,6 +157,18 @@ The elements of this structure are defined as follows:
 
 > Index of the next item in the strings array.
 
+*mbstrings*
+
+> Array of multi byte strings of the document.
+
+*mb\_nitems*
+
+> Number of items in the mbstrings array.
+
+*mb\_idx*
+
+> Index of the next item in the mbstrings array.
+
 *esc*
 
 > Array of escape sequences.
@@ -173,6 +192,8 @@ structure is defined as follows:
 		unsigned is_pair : 1;
 		const wchar_t *string;
 		size_t s_len;
+		const char *mbstring;
+		size_t mb_len;
 		size_t idx;
 		size_t head_idx;
 		size_t tail_idx;
@@ -221,6 +242,14 @@ The elements of this structure are defined as follows:
 *s\_len*
 
 > Number of items in the string array.
+
+*mbstring*
+
+> Array holding the multi byte characters of a JSON string or number value.
+
+*mb\_len*
+
+> Number of items in the mbstring array.
 
 *idx*
 
@@ -312,6 +341,40 @@ The
 member is set to the number of items needed in the
 *esc*
 array to create JSON escape sequences when serializing the document.
+The
+*mb\_nitems*
+member is set to the number of items needed in the
+*mbstrings*
+array to create multi byte strings.
+
+The
+**wcjsondocmbstrings**()
+function creates multi byte strings by converting all
+*string*
+members of all
+*values*
+in a
+*document*
+to
+*mbstring*
+multi byte strings.
+The
+*mbstrings*
+member needs to point to useable memory and the
+*mb\_nitems*
+member needs to be set to the number of items available in that array.
+On Successful completion that array holds the multi byte strings and the
+*mb\_idx*
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
+The
+*mbstring*
+member of any
+*wcjson\_value*
+in the
+*values*
+array points to
+*mbstrings*.
 
 The
 **wcjsondocfprint**(),
@@ -465,6 +528,10 @@ cannot provide more values.
 \[`EILSEQ`]
 
 > An input contained illegal data.
+
+## SEE ALSO
+
+[wcstombs(3)](https://man.openbsd.org/wcstombs)
 
 ## STANDARDS
 

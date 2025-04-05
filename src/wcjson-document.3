@@ -23,6 +23,7 @@
 .Nm wcjsondoc_object_get ,
 .Nm wcjsondocvalues ,
 .Nm wcjsondocstrings ,
+.Nm wcjsondocmbstrings ,
 .Nm wcjsondocfprint ,
 .Nm wcjsondocfprintasc ,
 .Nm wcjsondocsprint ,
@@ -34,6 +35,8 @@
 .Fn wcjsondocvalues "struct wcjson *ctx" "struct wcjson_document *document" "const wchar_t *text" "const size_t len"
 .Ft int
 .Fn wcjsondocstrings "struct wcjson *ctx" "struct wcjson_document *document"
+.Ft int
+.Fn wcjsondocmbstrings "struct wcjson *ctx" "struct wcjson_document *document"
 .Ft int
 .Fn wcjsondocfprint "FILE *f" "const struct wcjson_document *document" "const struct wcjson_value *value"
 .Ft int
@@ -92,6 +95,9 @@ struct wcjson_document {
 	wchar_t *strings;
 	size_t s_nitems;
 	size_t s_idx;
+	char *mbstrings;
+	size_t mb_nitems;
+	size_t mb_idx;
 	wchar_t *esc;
 	size_t e_nitems;
 };
@@ -111,6 +117,12 @@ Array of strings of the document.
 Number of items in the strings array.
 .It Fa s_idx
 Index of the next item in the strings array.
+.It Fa mbstrings
+Array of multi byte strings of the document.
+.It Fa mb_nitems
+Number of items in the mbstrings array.
+.It Fa mb_idx
+Index of the next item in the mbstrings array.
 .It Fa esc
 Array of escape sequences.
 .It Fa e_nitems
@@ -132,6 +144,8 @@ struct wcjson_value {
 	unsigned is_pair : 1;
 	const wchar_t *string;
 	size_t s_len;
+	const char *mbstring;
+	size_t mb_len;
 	size_t idx;
 	size_t head_idx;
 	size_t tail_idx;
@@ -162,6 +176,10 @@ Flag indicating the value represents a key value pair of a JSON object.
 Array holding the characters of a JSON string or number value.
 .It Fa s_len
 Number of items in the string array.
+.It Fa mbstring
+Array holding the multi byte characters of a JSON string or number value.
+.It Fa mb_len
+Number of items in the mbstring array.
 .It Fa idx
 Index of the value in the docment values array.
 .It Fa head_idx
@@ -244,6 +262,40 @@ The
 member is set to the number of items needed in the
 .Fa esc
 array to create JSON escape sequences when serializing the document.
+The
+.Fa mb_nitems
+member is set to the number of items needed in the
+.Fa mbstrings
+array to create multi byte strings.
+.Pp
+The
+.Fn wcjsondocmbstrings
+function creates multi byte strings by converting all
+.Fa string
+members of all
+.Fa values
+in a
+.Fa document
+to
+.Fa mbstring
+multi byte strings.
+The
+.Fa mbstrings
+member needs to point to useable memory and the
+.Fa mb_nitems
+member needs to be set to the number of items available in that array.
+On Successful completion that array holds the multi byte strings and the
+.Fa mb_idx
+member holds the number of items used in that array - that is the index of
+the next useable item in that array.
+The
+.Fa mbstring
+member of any
+.Vt wcjson_value
+in the
+.Fa values
+array points to
+.Fa mbstrings .
 .Pp
 The
 .Fn wcjsondocfprint ,
@@ -390,6 +442,8 @@ was too small.
 .It Bq Er EILSEQ
 An input contained illegal data.
 .El
+.Sh SEE ALSO
+.Xr wcstombs 3
 .Sh STANDARDS
 .Rs
 .%A T. Bray, Ed.

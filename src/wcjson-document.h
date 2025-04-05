@@ -42,6 +42,8 @@ struct wcjson_value {
   unsigned is_pair : 1;
   const wchar_t *string;
   size_t s_len;
+  const char *mbstring;
+  size_t mb_len;
   size_t idx;
   size_t head_idx;
   size_t tail_idx;
@@ -57,6 +59,9 @@ struct wcjson_document {
   wchar_t *strings;
   size_t s_nitems;
   size_t s_idx;
+  char *mbstrings;
+  size_t mb_nitems;
+  size_t mb_idx;
   wchar_t *esc;
   size_t e_nitems;
 };
@@ -253,13 +258,22 @@ int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
                     const wchar_t *txt, const size_t len);
 
 /**
- * Decodes any values in a document by unapplying JSON escaping rules and
- * adding terminating zero characters.
+ * Decodes all string and number values in a document by unapplying JSON
+ * escaping rules and adding terminating zero characters.
  * @param ctx Library context.
  * @param doc Document to decode.
  * @return 0 on success, <0 on failure.
  */
 int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc);
+
+/**
+ * Creates multi byte strings for all string and number values in a document by
+ * converting wide character values to multibyte character values.
+ * @param ctx Library context.
+ * @param doc Document to process.
+ * @return 0 on success, <0 on failure.
+ */
+int wcjsondocmbstrings(struct wcjson *ctx, struct wcjson_document *doc);
 
 /**
  * Serializes a JSON document to a wide character file.
