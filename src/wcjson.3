@@ -5,7 +5,8 @@
 .Nm wcjson ,
 .Nm wctowcjsons ,
 .Nm wctoascjsons ,
-.Nm wcjsonstowc
+.Nm wcjsonstowc ,
+.Nm WCJSON_INITIALIZER
 .Nd wide character JSON
 .Sh SYNOPSIS
 .In wcjson.h
@@ -84,6 +85,12 @@ functions set
 to the number of characters written to
 .Fa d
 on return.
+.Pp
+The
+.Vt WCJSON_INITIALIZER
+macro expands to a rvalue expression for initializing a
+.Fa struct wcjson
+structure.
 .Sh RETURN VALUES
 The functions return 0 on success or a negative value if a deserialization,
 decoding or encoding error occurs.

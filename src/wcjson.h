@@ -56,6 +56,9 @@ struct wcjson {
   int errnum;
 };
 
+#define WCJSON_INITIALIZER                                                     \
+  { .status = WCJSON_OK, .errnum = 0, }
+
 /** Parser callback functions. */
 struct wcjson_ops {
   /**

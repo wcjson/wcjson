@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libwcjson.la libwcjson-document.la
 libwcjson_la_SOURCES = wcjson.c
-libwcjson_la_LDFLAGS = -version-info 0:1:0
+libwcjson_la_LDFLAGS = -version-info 0:2:0
 libwcjson_document_la_SOURCES = wcjson-document.c
 libwcjson_document_la_LDFLAGS = -version-info 0:0:0
 libwcjson_document_la_LIBADD = libwcjson.la
