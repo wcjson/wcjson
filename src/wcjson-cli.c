@@ -95,9 +95,7 @@ int main(int argc, char *argv[]) {
   char *locale;
 #endif
 
-  struct wcjson ctx = {
-      .status = WCJSON_OK,
-  };
+  struct wcjson wcjson = WCJSON_INITIALIZER;
 
   while ((ch = getopt(argc, argv, "i:o:d:e:m:ar")) != -1) {
     switch (ch) {
@@ -217,9 +215,9 @@ int main(int argc, char *argv[]) {
       .v_nitems = v_nitems,
   };
 
-  if (wcjsondocvalues(&ctx, &doc, json, len) < 0) {
-    if (ctx.errnum == ERANGE)
-      ctx.errnum = ENOMEM;
+  if (wcjsondocvalues(&wcjson, &doc, json, len) < 0) {
+    if (wcjson.errnum == ERANGE)
+      wcjson.errnum = ENOMEM;
 
     goto err;
   }
@@ -253,7 +251,7 @@ int main(int argc, char *argv[]) {
 
   doc.strings = strings;
 
-  if (wcjsondocstrings(&ctx, &doc) < 0)
+  if (wcjsondocstrings(&wcjson, &doc) < 0)
     goto err;
 
   if (report) {
@@ -277,7 +275,7 @@ int main(int argc, char *argv[]) {
 
   doc.mbstrings = mbstrings;
 
-  if (wcjsondocmbstrings(&ctx, &doc) < 0)
+  if (wcjsondocmbstrings(&wcjson, &doc) < 0)
     goto err;
 
   if (report) {
@@ -376,7 +374,7 @@ int main(int argc, char *argv[]) {
   if (ferror(out))
     goto err;
 
-  if (ctx.status != WCJSON_OK)
+  if (wcjson.status != WCJSON_OK)
     goto err;
 
   if (report)
@@ -392,9 +390,9 @@ int main(int argc, char *argv[]) {
   fclose(out);
   return 0;
 err:
-  if (ctx.status == WCJSON_OK) {
-    ctx.status = WCJSON_ABORT_ERROR;
-    ctx.errnum = errno;
+  if (wcjson.status == WCJSON_OK) {
+    wcjson.status = WCJSON_ABORT_ERROR;
+    wcjson.errnum = errno;
   }
 
   free(json);
@@ -405,7 +403,7 @@ err:
   free(outb);
   fclose(in);
   fclose(out);
-  fail(&ctx);
+  fail(&wcjson);
 }
 
 #ifdef __cplusplus
