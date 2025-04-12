@@ -347,7 +347,7 @@ functions get the next useable value from a
 The
 .Fa values
 member needs to point to useable memory and the
-.Fa v_size
+.Fa v_nitems
 member needs to be set to the number of items available in that array.
 On successful completion the
 .Fa v_idx
@@ -436,6 +436,7 @@ A function was called with an invalid value.
 A size of
 .Fa v_nitems ,
 .Fa s_nitems ,
+.Fa mb_nitems ,
 .Fa e_nitems
 or
 .Fa *lenp

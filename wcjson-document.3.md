@@ -426,7 +426,7 @@ functions get the next useable value from a
 The
 *values*
 member needs to point to useable memory and the
-*v\_size*
+*v\_nitems*
 member needs to be set to the number of items available in that array.
 On successful completion the
 *v\_idx*
@@ -478,9 +478,10 @@ The global variable
 *errno*
 is set to indicate the error.
 The
-**wcjsondocvalues**()
-and
+**wcjsondocvalues**(),
 **wcjsondocstrings**()
+and
+**wcjsondocmbstrings**()
 functions provide status via
 *ctx*.
 The
@@ -520,6 +521,7 @@ cannot provide more values.
 > A size of
 > *v\_nitems*,
 > *s\_nitems*,
+> *mb\_nitems*,
 > *e\_nitems*
 > or
 > *\*lenp*

@@ -5,7 +5,8 @@
 **wcjson**,
 **wctowcjsons**,
 **wctoascjsons**,
-**wcjsonstowc** - wide character JSON
+**wcjsonstowc**,
+**WCJSON\_INITIALIZER** - wide character JSON
 
 ## SYNOPSIS
 
@@ -91,6 +92,12 @@ functions set
 to the number of characters written to
 *d*
 on return.
+
+The
+**WCJSON\_INITIALIZER**()
+macro expands to a rvalue expression for initializing a
+*wcjson*
+structure.
 
 ## RETURN VALUES
 
