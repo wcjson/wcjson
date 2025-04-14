@@ -131,10 +131,20 @@ int main(int argc, char *argv[]) {
         usage();
       }
 
-      if (ep[0] != '\0' || m <= 0)
+      if (m <= 0)
         usage();
 
       limit = m;
+
+      if (ep[0] == 'k')
+        limit *= 1024;
+      else if (ep[0] == 'm')
+        limit *= 1024 * 1024;
+      else if (ep[0] == 'g')
+        limit *= 1024 * 1024 * 1024;
+      else if (ep[0] != '\0')
+        usage();
+
       break;
     case 'a':
       ascii = 1;
@@ -213,98 +223,100 @@ int main(int argc, char *argv[]) {
   struct wcjson_document doc = {
       .values = values,
       .v_nitems = v_nitems,
+      .v_next = 0,
   };
 
-  if (wcjsondocvalues(&wcjson, &doc, json, len) < 0) {
+  int r = wcjsondocvalues(&wcjson, &doc, json, len);
+
+  if (report) {
+    fwprintf(stdout, L"Values: %lld\n", doc.v_nitems_cnt);
+    fwprintf(stdout, L"Values (byte): %lld\n",
+             doc.v_nitems_cnt * sizeof(struct wcjson_value));
+    fwprintf(stdout, L"Wide string characters: %lld\n", doc.s_nitems_cnt);
+    fwprintf(stdout, L"Wide string characters (byte): %lld\n",
+             doc.s_nitems_cnt * sizeof(wchar_t));
+    total_bytes += doc.s_nitems_cnt * sizeof(wchar_t);
+    total_bytes += doc.v_nitems_cnt * sizeof(struct wcjson_value);
+  }
+
+  if (r < 0) {
     if (wcjson.errnum == ERANGE)
       wcjson.errnum = ENOMEM;
 
     goto err;
   }
 
-  p = realloc(values, sizeof(struct wcjson_value) * doc.v_idx);
+  p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems_cnt);
   if (p == NULL)
     goto err;
 
   values = p;
   doc.values = values;
-  doc.v_nitems = doc.v_idx;
+  doc.v_nitems = doc.v_nitems_cnt;
 
-  if (report) {
-    total_bytes += doc.v_nitems * sizeof(struct wcjson_value);
-    fwprintf(stdout, L"Input values: %lld\n", doc.v_nitems);
-    fwprintf(stdout, L"Input values (byte): %lld\n",
-             doc.v_nitems * sizeof(struct wcjson_value));
-  }
-
-  limit -= sizeof(struct wcjson_value) * doc.v_nitems;
+  limit -= sizeof(struct wcjson_value) * doc.v_nitems_cnt;
 
   size_t s_nitems = limit / sizeof(wchar_t);
-  if (s_nitems < doc.s_nitems) {
+  if (s_nitems < doc.s_nitems_cnt) {
     errno = ENOMEM;
     goto err;
   }
 
-  strings = malloc(doc.s_nitems * sizeof(wchar_t));
+  strings = malloc(doc.s_nitems_cnt * sizeof(wchar_t));
   if (strings == NULL)
     goto err;
 
   doc.strings = strings;
+  doc.s_nitems = doc.s_nitems_cnt;
+  doc.s_next = 0;
 
   if (wcjsondocstrings(&wcjson, &doc) < 0)
     goto err;
 
   if (report) {
-    total_bytes += doc.s_nitems * sizeof(wchar_t);
-    fwprintf(stdout, L"Input string characters: %lld\n", doc.s_nitems);
-    fwprintf(stdout, L"Input string characters (byte): %lld\n",
-             doc.s_nitems * sizeof(wchar_t));
+    total_bytes += doc.mb_nitems_cnt * sizeof(char);
+    total_bytes += doc.e_nitems_cnt * sizeof(wchar_t);
+    fwprintf(stdout, L"Multibyte string characters: %lld\n", doc.mb_nitems_cnt);
+    fwprintf(stdout, L"Multibyte string  characters (byte): %lld\n",
+             doc.mb_nitems_cnt * sizeof(char));
+    fwprintf(stdout, L"Escape sequence characters: %lld\n", doc.e_nitems_cnt);
+    fwprintf(stdout, L"Escape sequence characters (byte): %lld\n",
+             doc.e_nitems_cnt * sizeof(wchar_t));
   }
 
-  limit -= doc.s_nitems * sizeof(wchar_t);
+  limit -= doc.s_nitems_cnt * sizeof(wchar_t);
 
   size_t mb_nitems = limit / sizeof(char);
-  if (mb_nitems < doc.mb_nitems) {
+  if (mb_nitems < doc.mb_nitems_cnt) {
     errno = ENOMEM;
     goto err;
   }
 
-  mbstrings = malloc(doc.mb_nitems * sizeof(char));
+  mbstrings = malloc(doc.mb_nitems_cnt * sizeof(char));
   if (mbstrings == NULL)
     goto err;
 
   doc.mbstrings = mbstrings;
+  doc.mb_nitems = doc.mb_nitems_cnt;
+  doc.mb_next = 0;
 
   if (wcjsondocmbstrings(&wcjson, &doc) < 0)
     goto err;
 
-  if (report) {
-    total_bytes += doc.mb_nitems * sizeof(char);
-    fwprintf(stdout, L"Input multibyte characters: %lld\n", doc.mb_nitems);
-    fwprintf(stdout, L"Input multibyte characters (byte): %lld\n",
-             doc.mb_nitems * sizeof(char));
-  }
-
-  limit -= doc.mb_nitems * sizeof(char);
+  limit -= doc.mb_nitems_cnt * sizeof(char);
 
   size_t e_nitems = limit / sizeof(wchar_t);
-  if (e_nitems < doc.e_nitems) {
+  if (e_nitems < doc.e_nitems_cnt) {
     errno = ENOMEM;
     goto err;
   }
 
-  esc = malloc(doc.e_nitems * sizeof(wchar_t));
+  esc = malloc(doc.e_nitems_cnt * sizeof(wchar_t));
   if (esc == NULL)
     goto err;
 
   doc.esc = esc;
-
-  if (report) {
-    total_bytes += doc.e_nitems * sizeof(wchar_t);
-    fwprintf(stdout, L"Escape sequences characters: %lld\n", doc.e_nitems);
-    fwprintf(stdout, L"Escape sequences characters (byte): %lld\n",
-             doc.e_nitems * sizeof(wchar_t));
-  }
+  doc.e_nitems = doc.e_nitems_cnt;
 
 #ifdef HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, e != NULL ? e : "");
@@ -319,7 +331,7 @@ int main(int argc, char *argv[]) {
   if (o != NULL && !report && (out = fopen(o, "w")) == NULL)
     goto err;
 
-  limit -= doc.e_nitems * sizeof(wchar_t);
+  limit -= doc.e_nitems_cnt * sizeof(wchar_t);
 
   size_t o_nitems = limit / sizeof(wchar_t);
   if (o_nitems == 0) {

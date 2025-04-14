@@ -60,6 +60,7 @@ The options are as follows:
 **-m** *bytes*
 
 > Maximum amount of memory the utility is allowed to allocate.
+> The suffixes k for kilobyte, m for megabyte and g for gigabyte may be appended.
 
 ## ENVIRONMENT
 
@@ -74,7 +75,7 @@ The **wcjson** utility exits&#160;0 on success, and&#160;&gt;0 if an error occur
 ## SEE ALSO
 
 [locale(1)](https://man.openbsd.org/locale),
-wcjson(3)
+[wcjson(3)](wcjson.3.md)
 
 ## STANDARDS
 

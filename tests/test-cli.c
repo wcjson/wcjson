@@ -51,22 +51,22 @@ struct {
 };
 
 static int doc_create(struct wcjson_document *doc) {
-  struct wcjson_value *obj = wcjsondoc_create_object(doc);
+  struct wcjson_value *obj = wcjson_value_object(doc);
   if (obj == NULL)
     return -1;
 
-  struct wcjson_value *arr = wcjsondoc_create_array(doc);
+  struct wcjson_value *arr = wcjson_value_array(doc);
   if (arr == NULL)
     return -1;
 
-  struct wcjson_value *n = wcjsondoc_create_null(doc);
+  struct wcjson_value *n = wcjson_value_null(doc);
   if (n == NULL)
     return -1;
 
-  if (wcjsondoc_array_add_head(doc, arr, n) < 0)
+  if (wcjson_array_add_head(doc, arr, n) < 0)
     return -1;
 
-  if (wcjsondoc_object_add_head(doc, obj, L"key", arr) < 0)
+  if (wcjson_object_add_head(doc, obj, L"key", 3, arr) < 0)
     return -1;
 
   return 0;
@@ -76,36 +76,36 @@ static int doc_add(struct wcjson_document *doc) {
   if (doc_create(doc) < 0)
     return -1;
 
-  struct wcjson_value *t1 = wcjsondoc_create_string(doc, L"abc");
+  struct wcjson_value *t1 = wcjson_value_string(doc, L"abc", 3);
   if (t1 == NULL)
     return -1;
 
-  struct wcjson_value *t2 = wcjsondoc_create_number(doc, L"123");
+  struct wcjson_value *t2 = wcjson_value_number(doc, L"123", 3);
   if (t2 == NULL)
     return -1;
 
-  struct wcjson_value *t3 = wcjsondoc_create_string(doc, L"def");
+  struct wcjson_value *t3 = wcjson_value_string(doc, L"def", 3);
   if (t3 == NULL)
     return -1;
 
-  struct wcjson_value *t4 = wcjsondoc_create_number(doc, L"456");
+  struct wcjson_value *t4 = wcjson_value_number(doc, L"456", 3);
   if (t4 == NULL)
     return -1;
 
-  struct wcjson_value *arr = wcjsondoc_object_get(doc, doc->values, L"key");
+  struct wcjson_value *arr = wcjson_object_get(doc, doc->values, L"key", 3);
   if (arr == NULL)
     return -1;
 
-  if (wcjsondoc_array_add_head(doc, arr, t1) < 0)
+  if (wcjson_array_add_head(doc, arr, t1) < 0)
     return -1;
 
-  if (wcjsondoc_array_add_tail(doc, arr, t2) < 0)
+  if (wcjson_array_add_tail(doc, arr, t2) < 0)
     return -1;
 
-  if (wcjsondoc_object_add_head(doc, doc->values, L"key1", t3) < 0)
+  if (wcjson_object_add_head(doc, doc->values, L"key1", 4, t3) < 0)
     return -1;
 
-  if (wcjsondoc_object_add_tail(doc, doc->values, L"key2", t4) < 0)
+  if (wcjson_object_add_tail(doc, doc->values, L"key2", 4, t4) < 0)
     return -1;
 
   return 0;
@@ -118,14 +118,15 @@ static int test_create(int argc, char *argv[]) {
   struct wcjson_document doc = {
       .values = values,
       .v_nitems = nitems(values),
+      .v_next = 0,
       .strings = strings,
       .s_nitems = nitems(strings),
+      .s_next = 0,
       .esc = esc,
       .e_nitems = nitems(esc),
   };
-  struct wcjson ctx = {
-      .status = WCJSON_OK,
-  };
+
+  struct wcjson ctx = WCJSON_INITIALIZER;
 
   if (doc_create(&doc) < 0)
     return -1;
@@ -146,14 +147,15 @@ static int test_add(int argc, char *argv[]) {
   struct wcjson_document doc = {
       .values = values,
       .v_nitems = nitems(values),
+      .v_next = 0,
       .strings = strings,
       .s_nitems = nitems(strings),
+      .s_next = 0,
       .esc = esc,
       .e_nitems = nitems(esc),
   };
-  struct wcjson ctx = {
-      .status = WCJSON_OK,
-  };
+
+  struct wcjson ctx = WCJSON_INITIALIZER;
 
   if (doc_add(&doc) < 0)
     return -1;
@@ -174,26 +176,27 @@ static int test_remove(int argc, char *argv[]) {
   struct wcjson_document doc = {
       .values = values,
       .v_nitems = nitems(values),
+      .v_next = 0,
       .strings = strings,
       .s_nitems = nitems(strings),
+      .s_next = 0,
       .esc = esc,
       .e_nitems = nitems(esc),
   };
-  struct wcjson ctx = {
-      .status = WCJSON_OK,
-  };
+
+  struct wcjson ctx = WCJSON_INITIALIZER;
 
   if (doc_add(&doc) < 0)
     return -1;
 
-  struct wcjson_value *arr = wcjsondoc_object_get(&doc, doc.values, L"key");
+  struct wcjson_value *arr = wcjson_object_get(&doc, doc.values, L"key", 3);
   if (arr == NULL)
     return -1;
 
-  if (wcjsondoc_array_remove(&doc, arr, 1) == NULL)
+  if (wcjson_array_remove(&doc, arr, 1) == NULL)
     return -1;
 
-  if (wcjsondoc_object_remove(&doc, doc.values, L"key2") == NULL)
+  if (wcjson_object_remove(&doc, doc.values, L"key2", 4) == NULL)
     return -1;
 
   if (wcjsondocstrings(&ctx, &doc) < 0)

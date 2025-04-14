@@ -2,25 +2,27 @@
 .Dt WCJSON-DOCUMENT 3
 .Os
 .Sh NAME
-.Nm wcjsondoc_create_null ,
-.Nm wcjsondoc_create_bool ,
-.Nm wcjsondoc_create_string ,
-.Nm wcjsondoc_create_number ,
-.Nm wcjsondoc_create_object ,
-.Nm wcjsondoc_create_array ,
+.Nm wcjson_value_null ,
+.Nm wcjson_value_bool ,
+.Nm wcjson_value_string ,
+.Nm wcjson_value_number ,
+.Nm wcjson_value_object ,
+.Nm wcjson_value_array ,
 .Nm wcjson_value_head ,
 .Nm wcjson_value_next ,
 .Nm wcjson_value_tail ,
 .Nm wcjson_value_prev ,
 .Nm wcjson_value_foreach ,
-.Nm wcjsondoc_array_add_head ,
-.Nm wcjsondoc_array_add_tail ,
-.Nm wcjsondoc_array_get ,
-.Nm wcjsondoc_array_remove ,
-.Nm wcjsondoc_object_add_head ,
-.Nm wcjsondoc_object_add_tail ,
-.Nm wcjsondoc_object_remove ,
-.Nm wcjsondoc_object_get ,
+.Nm wcjson_array_add_head ,
+.Nm wcjson_array_add_tail ,
+.Nm wcjson_array_get ,
+.Nm wcjson_array_remove ,
+.Nm wcjson_object_add_head ,
+.Nm wcjson_object_add_tail ,
+.Nm wcjson_object_get ,
+.Nm wcjson_object_remove ,
+.Nm wcjson_document_string ,
+.Nm wcjson_document_mbstring ,
 .Nm wcjsondocvalues ,
 .Nm wcjsondocstrings ,
 .Nm wcjsondocmbstrings ,
@@ -51,33 +53,37 @@
 .Fn wcjson_value_prev "struct wcjson_document *d" "struct wcjson_value *v"
 .Fn wcjson_value_foreach "lvalue" "struct wcjson_document *d" "struct wcjson_value *v"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_null "struct wcjson_document *document"
+.Fn wcjson_value_null "struct wcjson_document *document"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_bool "struct wcjson_document *document" "const bool value"
+.Fn wcjson_value_bool "struct wcjson_document *document" "const bool value"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_string "struct wcjson_document *document" "const wchar_t *value"
+.Fn wcjson_value_string "struct wcjson_document *document" "const wchar_t *value" "const size_t len"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_number "struct wcjson_document *document" "const wchar_t *value"
+.Fn wcjson_value_number "struct wcjson_document *document" "const wchar_t *value" "const size_t len"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_object "struct wcjson_document *document"
+.Fn wcjson_value_object "struct wcjson_document *document"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_create_array "struct wcjson_document *doc"
+.Fn wcjson_value_array "struct wcjson_document *doc"
 .Ft int
-.Fn wcjsondoc_array_add_head "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Fn wcjson_array_add_head "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
 .Ft int
-.Fn wcjsondoc_array_add_tail "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
+.Fn wcjson_array_add_tail "const struct wcjson_document *document" "struct wcjson_value *array" "struct wcjson_value *value"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_array_get "const struct wcjson_document *document" "const struct wcjson_value *array" "const size_t index"
+.Fn wcjson_array_get "const struct wcjson_document *document" "const struct wcjson_value *array" "const size_t index"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_array_remove "const struct wcjson_document *document" "struct wcjson_value *array" "const size_t index"
+.Fn wcjson_array_remove "const struct wcjson_document *document" "struct wcjson_value *array" "const size_t index"
 .Ft int
-.Fn wcjsondoc_object_add_head "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const struct wcjson_value *value"
+.Fn wcjson_object_add_head "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const size_t key_len" "const struct wcjson_value *value"
 .Ft int
-.Fn wcjsondoc_object_add_tail "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const struct wcjson_value *value"
+.Fn wcjson_object_add_tail "struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const size_t key_len" "const struct wcjson_value *value"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_object_get "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key"
+.Fn wcjson_object_get "const struct wcjson_document *document" "const struct wcjson_value *object" "const wchar_t *key" "const size_t key_len"
 .Ft struct wcjson_value *
-.Fn wcjsondoc_object_remove "const struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key"
+.Fn wcjson_object_remove "const struct wcjson_document *document" "struct wcjson_value *object" "const wchar_t *key" "const size_t key_len"
+.Ft wchar_t *
+.Fn wcjson_document_string "struct wcjson_document *document" "const wchar_t *s" "const size_t len"
+.Ft char *
+.Fn wcjson_document_mbstring "struct wcjson_document *document" "const char *s" "const size_t len"
 .Sh DESCRIPTION
 The functions operate on the
 .Vt wcjson_document
@@ -91,15 +97,19 @@ structure is defined as follows:
 struct wcjson_document {
 	struct wcjson_value *values;
 	size_t v_nitems;
-	size_t v_idx;
+	size_t v_nitems_cnt;
+	size_t v_next;
 	wchar_t *strings;
 	size_t s_nitems;
-	size_t s_idx;
+	size_t s_nitems_cnt;
+	size_t s_next;
 	char *mbstrings;
 	size_t mb_nitems;
-	size_t mb_idx;
+	size_t mb_nitems_cnt;
+	size_t mb_next;
 	wchar_t *esc;
 	size_t e_nitems;
+	size_t e_nitems_cnt;
 };
 .Ed
 .Pp
@@ -108,25 +118,33 @@ The elements of this structure are defined as follows:
 .It Fa values
 Array of values of the document.
 .It Fa v_nitems
-Number of items in the values array.
-.It Fa v_idx
+Number of items the values array is capable of holding.
+.It Fa v_nitems_cnt
+Number of items the values array needs to be capable of holding.
+.It Fa v_next
 Index of the next item in the values array.
 .It Fa strings
 Array of strings of the document.
 .It Fa s_nitems
-Number of items in the strings array.
-.It Fa s_idx
+Number of items the strings array is capable of holding.
+.It Fa s_nitems_cnt
+Number of items the strings array needs to be capable of holding.
+.It Fa s_next
 Index of the next item in the strings array.
 .It Fa mbstrings
-Array of multi byte strings of the document.
+Array of multibyte strings of the document.
 .It Fa mb_nitems
-Number of items in the mbstrings array.
-.It Fa mb_idx
+Number of items the mbstrings array is capable of holding.
+.It Fa mb_nitems_cnt
+Number of items the mbstrings array needs to be capable of holding.
+.It Fa mb_next
 Index of the next item in the mbstrings array.
 .It Fa esc
 Array of escape sequences.
 .It Fa e_nitems
-Number of items in the esc array.
+Number of items the esc array is capable of holding.
+.It Fa e_nitems_cnt
+Number of items the esc array needs to be capable of holding.
 .El
 .Pp
 The
@@ -177,7 +195,7 @@ Array holding the characters of a JSON string or number value.
 .It Fa s_len
 Number of items in the string array.
 .It Fa mbstring
-Array holding the multi byte characters of a JSON string or number value.
+Array holding the multibyte characters of a JSON string or number value.
 .It Fa mb_len
 Number of items in the mbstring array.
 .It Fa idx
@@ -204,14 +222,35 @@ The
 .Fa values
 member of the
 .Fa document
-needs to point to useable memory and the
+should point to available memory, the
 .Fa v_nitems
-member needs to be set to the number of items available in that array.
-On successful completion that array holds the deserialized document structure
-and the
-.Fa v_idx
-member holds the number of items used in that array - that is the index of
-the next useable item in that array.
+member should be set to the number of items available in that array and the
+.Fa v_next
+member should be set to the index of the next item in that array.
+On successful completion that array holds the deserialized document structure,
+the
+.Fa v_next
+member holds the index of the next item in that array, the
+.Fa v_nitems_cnt
+member holds the number of items the
+.Fa values
+array needs to be capable of holding for the document to get populated and the
+.Fa s_nitems_cnt
+member holds the number of items the
+.Fa strings
+array needs to be capable of holding for decoding strings and adding terminating
+zero characters using the
+.Fn wcjsondocstrings
+function.
+If the
+.Fa values
+member is NULL, only the
+.Fa v_nitems_cnt
+and
+.Fa s_nitems_cnt
+members are updated and
+.Fa text
+is only validated to contain well formed JSON text.
 The
 .Fn wcjsondocvalues
 function does not decode strings.
@@ -223,15 +262,10 @@ in the
 .Fa values
 array points to
 .Fa text .
-Those strings are not zero terminated C strings so that the value of the
+Those strings may contain escape sequences and are not zero terminated C
+strings so that the value of the
 .Fa s_len
 member needs to be used when working with those strings.
-The
-.Fa s_nitems
-member is set to the number of items needed in the
-.Fa strings
-array to create zero terminated C strings with any JSON escaping rules
-unapplied.
 .Pp
 The
 .Fn wcjsondocstrings
@@ -242,13 +276,27 @@ in a
 by unapplying JSON escaping rules and adding terminating zero characters.
 The
 .Fa strings
-member needs to point to useable memory and the
+member of the
+.Fa document
+needs to point to available memory, the
 .Fa s_nitems
-member needs to be set to the number of items available in that array.
-On successful completion that array holds the decoded strings and the
-.Fa s_idx
-member holds the number of items used in that array - that is the index of
-the next useable item in that array.
+member needs to be set to the number of items available in that array and the
+.Fa s_next
+member needs to be set to the index of the next item in that array.
+On successful completion that array holds the decoded strings, the
+.Fa s_next
+member holds the index of the next item in that array, the
+.Fa mb_nitems_cnt
+member holds the number of items the
+.Fa mbstrings
+array needs to be capable of holding for creating multibyte strings using the
+.Fn wcjsondocmbstrings
+function and the
+.Fa e_nitems_cnt
+member holds the number of items the
+.Fa esc
+array needs to be capable of holding for creating JSON escape sequences when
+serializing the document.
 The
 .Fa string
 member of any
@@ -256,21 +304,12 @@ member of any
 in the
 .Fa values
 array points to
-.Fa strings .
-The
-.Fa e_nitems
-member is set to the number of items needed in the
-.Fa esc
-array to create JSON escape sequences when serializing the document.
-The
-.Fa mb_nitems
-member is set to the number of items needed in the
-.Fa mbstrings
-array to create multi byte strings.
+.Fa strings
+after successfull completion.
 .Pp
 The
 .Fn wcjsondocmbstrings
-function creates multi byte strings by converting all
+function creates multibyte strings by converting all
 .Fa string
 members of all
 .Fa values
@@ -278,24 +317,28 @@ in a
 .Fa document
 to
 .Fa mbstring
-multi byte strings.
+multibyte strings.
 The
 .Fa mbstrings
-member needs to point to useable memory and the
+member of the
+.Fa document
+needs to point to available memory, the
 .Fa mb_nitems
-member needs to be set to the number of items available in that array.
-On Successful completion that array holds the multi byte strings and the
-.Fa mb_idx
-member holds the number of items used in that array - that is the index of
-the next useable item in that array.
+member needs to be set to the number of items available in that array and the
+.Fa mb_next
+member needs to be set to the index of the next item in that array.
+On Successful completion that array holds the multibyte strings and the
+.Fa mb_next
+member holds the index of the next item in that array.
 The
-.Fa mbstring
+.Fa mbstrings
 member of any
 .Vt wcjson_value
 in the
 .Fa values
 array points to
-.Fa mbstrings .
+.Fa mbstrings
+after successful completion.
 .Pp
 The
 .Fn wcjsondocfprint ,
@@ -318,7 +361,7 @@ functions serialize to wide characters with just the standard JSON escaping
 rules applied.
 The
 .Fa esc
-member needs to point to useable memory and the
+member needs to point to available memory and the
 .Fa e_nitems
 member needs to be set to the number of items available in that array.
 For the
@@ -327,7 +370,7 @@ and
 .Fn wcjsondocsprintasc
 functions the
 .Fa s
-array needs to point to useable memory and
+array needs to point to available memory and
 .Fa lenp
 needs to be set to the number of items available in that array.
 On successful completion
@@ -335,24 +378,27 @@ On successful completion
 is updated to the number of items used in that array.
 .Pp
 The
-.Fn wcjsondoc_create_null ,
-.Fn wcjsondoc_create_bool ,
-.Fn wcjsondoc_create_string ,
-.Fn wcjsondoc_create_number ,
-.Fn wcjsondoc_create_object
+.Fn wcjson_value_null ,
+.Fn wcjson_value_bool ,
+.Fn wcjson_value_string ,
+.Fn wcjson_value_number ,
+.Fn wcjson_value_object
 and
-.Fn wcjsondoc_create_array
-functions get the next useable value from a
+.Fn wcjson_value_array
+functions get the next available value from a
 .Fa document .
 The
 .Fa values
-member needs to point to useable memory and the
+member of the
+.Fa document
+needs to point to available memory, the
 .Fa v_nitems
-member needs to be set to the number of items available in that array.
+member needs to be set to the number of items available in that array and the
+.Fa v_next
+member needs to be set to the index of the next item in that array.
 On successful completion the
-.Fa v_idx
-member is increased by one indicating the number of elements used in that
-array - that is the index of the next usable item in that array.
+.Fa v_next
+member holds the index of the next item in that array.
 .Pp
 The
 .Fn wcjson_value_head ,
@@ -369,30 +415,67 @@ macro expands to a loop expression for iterating the child value list of a
 value.
 .Pp
 The
-.Fn wcjsondoc_array_add_head
+.Fn wcjson_array_add_head
 and
-.Fn wcjsondoc_array_add_tail
+.Fn wcjson_array_add_tail
 functions add a value to an array.
 The
-.Fn wcjsondoc_array_remove
+.Fn wcjson_array_remove
 function removes a value from an array.
 The
-.Fn wcjsondoc_array_get
+.Fn wcjson_array_get
 function gets a value from an array.
 .Pp
 The
-.Fn wcjsondoc_object_add_head
+.Fn wcjson_object_add_head
 and
-.Fn wcjsondoc_object_add_tail
+.Fn wcjson_object_add_tail
 functions add a key value pair to an object.
 The
-.Fn wcjsondoc_object_remove
+.Fn wcjson_object_remove
 function removes a key value pair from an object.
 The
-.Fn wcjsondoc_object_get
+.Fn wcjson_object_get
 function gets the value of a key value pair from an object.
+.Pp
+The
+.Fn wcjson_document_string
+function adds the wide string
+.Fa s
+of length
+.Fa len
+to
+.Fa document .
+The
+.Fa strings
+member of the
+.Fa document
+needs to point to available memory, the
+.Fa s_nitems
+member needs to be set to the number of items available in that array and the
+.Fa s_next
+member needs to be set to the index of the next item in that array.
+.Pp
+The
+.Fn wcjson_document_mbstring
+function adds the multibyte string
+.Fa s
+of length
+.Fa len
+to
+.Fa document .
+The
+.Fa mbstrings
+member of the
+.Fa document
+needs to point to available memory, the
+.Fa mb_nitems
+member needs to be set to the number of items available in that array and the
+.Fa mb_next
+member needs to be set to the index of the next item in that array.
 .Sh RETURN VALUES
-The functions return 0 on success or a negative value if an error occurs.
+The functions return 0 on success, or a negative value or NULL if an error
+occurs.
 The global variable
 .Va errno
 is set to indicate the error.
@@ -404,30 +487,36 @@ and
 functions provide status via
 .Fa ctx .
 The
-.Fn wcjsondoc_object_get
+.Fn wcjson_object_get
 and
-.Fn wcjsondoc_object_remove
+.Fn wcjson_object_remove
 functions return the first value matching
 .Fa key
 or NULL if no such value is found.
 The
-.Fn wcjsondoc_array_get
+.Fn wcjson_array_get
 and
-.Fn wcjsondoc_array_remove
+.Fn wcjson_array_remove
 functions return the value at
 .Fa index
 or NULL if no such value is found.
 The
-.Fn wcjsondoc_create_null ,
-.Fn wcjsondoc_create_bool ,
-.Fn wcjsondoc_create_string ,
-.Fn wcjsondoc_create_number ,
-.Fn wcjsondoc_create_object
+.Fn wcjson_value_null ,
+.Fn wcjson_value_bool ,
+.Fn wcjson_value_string ,
+.Fn wcjson_value_number ,
+.Fn wcjson_value_object
 and
-.Fn wcjsondoc_create_array
-functions return the next useable value or NULL if
+.Fn wcjson_value_array
+functions return the next available value from the
 .Fa document
-cannot provide more values.
+or NULL if no such value can be provided.
+The
+.Fn wcjson_document_string
+and
+.Fn wcjson_document_mbstring
+functions return a pointer to the added string or NULL if no such string can
+be provided.
 .Sh ERRORS
 .Bl -tag -width Er
 .It Bq Er EINVAL
