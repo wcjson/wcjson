@@ -416,7 +416,7 @@ needs to point to available memory, the
 member needs to be set to the number of items available in that array and the
 *mb\_next*
 member needs to be set to the index of the next item in that array.
-On Successful completion that array holds the multibyte strings and the
+On successful completion that array holds the multibyte strings and the
 *mb\_next*
 member holds the index of the next item in that array.
 The
