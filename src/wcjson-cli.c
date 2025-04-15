@@ -165,6 +165,9 @@ int main(int argc, char *argv[]) {
     errno = EINVAL;
     goto err;
   }
+#ifdef SETLOCALE_SETS_ERRNO
+  errno = 0;
+#endif
   if (report)
     fwprintf(stdout, L"Input locale: %s\n", locale);
 #endif
@@ -324,6 +327,9 @@ int main(int argc, char *argv[]) {
     errno = EINVAL;
     goto err;
   }
+#ifdef SETLOCALE_SETS_ERRNO
+  errno = 0;
+#endif
   if (report)
     fwprintf(stdout, L"Output locale: %s\n", locale);
 #endif

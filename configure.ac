@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.6], [cs@schulte.it])
+AC_INIT([wcjson], [0.7], [cs@schulte.it])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -132,6 +132,22 @@ wchar_t *s = L"\U0010FFFF";],
 
 if test $wcjson_cv_wchar_t_is_utf8 = "yes"; then
   AC_DEFINE_UNQUOTED(WCHAR_T_UTF8, [1], [wchar_t is UTF-8])
+fi
+
+AC_CACHE_CHECK([whether setlocale updates errno on success],
+               wcjson_cv_setlocale_sets_errno,
+               [AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM([
+#include <locale.h>
+#include <errno.h>],
+  [errno = 0;
+   char *locale = setlocale(LC_CTYPE, "C.UTF-8");
+   return locale != NULL && errno != 0 ? 0 : 1;])],
+                [wcjson_cv_setlocale_sets_errno="yes"],
+                [wcjson_cv_setlocale_sets_errno="no"])])
+
+if test $wcjson_cv_setlocale_sets_errno = "yes"; then
+  AC_DEFINE_UNQUOTED(SETLOCALE_SETS_ERRNO, [1], [setlocale updates errno on success])
 fi
 
 AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
