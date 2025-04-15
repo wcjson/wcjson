@@ -16,7 +16,7 @@ testing so far. For example, if the configure script does not work
 for you on your platform, chances are great you are on your way to create your
 first pull request providing the changes needed to make it work for you there.
 For the use cases this library has been written for - namely not forcing
-the heap on users, full support of unicode and wide strings - things are
+the heap on users, full support for unicode and wide strings - things are
 working quite well so far. That does not mean the API may not change in the
 v0.x range of releases in incompatible ways if things do not fit a usecase
 I did not think about when writing it.
