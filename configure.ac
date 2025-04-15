@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.72])
 AC_INIT([wcjson], [0.7], [cs@schulte.it])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
