@@ -970,6 +970,9 @@ err_range:
 
 int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
                     const wchar_t *txt, const size_t len) {
+  int saved_errno = errno;
+  errno = 0;
+
   struct doc_impl d = {
       .d = doc,
       .nlimit = DEFAULT_NESTING_LIMIT,
@@ -986,6 +989,7 @@ int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
     r = -1;
   }
 
+  errno = saved_errno;
   return r;
 }
 
