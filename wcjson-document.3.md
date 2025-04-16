@@ -269,7 +269,8 @@ The elements of this structure are defined as follows:
 
 *s\_len*
 
-> Number of items in the string array.
+> Number of characters in the string array excluding any terminating zero
+> character.
 
 *mbstring*
 
@@ -277,7 +278,8 @@ The elements of this structure are defined as follows:
 
 *mb\_len*
 
-> Number of items in the mbstring array.
+> Number of characters in the mbstring array excluding any terminating zero
+> character.
 
 *idx*
 
@@ -450,7 +452,9 @@ functions serialize to wide characters with just the standard JSON escaping
 rules applied.
 The
 *esc*
-member needs to point to available memory and the
+member of the
+*document*
+needs to point to available memory and the
 *e\_nitems*
 member needs to be set to the number of items available in that array.
 For the

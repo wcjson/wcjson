@@ -193,11 +193,13 @@ Flag indicating the value represents a key value pair of a JSON object.
 .It Fa string
 Array holding the characters of a JSON string or number value.
 .It Fa s_len
-Number of items in the string array.
+Number of characters in the string array excluding any terminating zero
+character.
 .It Fa mbstring
 Array holding the multibyte characters of a JSON string or number value.
 .It Fa mb_len
-Number of items in the mbstring array.
+Number of characters in the mbstring array excluding any terminating zero
+character.
 .It Fa idx
 Index of the value in the docment values array.
 .It Fa head_idx
@@ -361,7 +363,9 @@ functions serialize to wide characters with just the standard JSON escaping
 rules applied.
 The
 .Fa esc
-member needs to point to available memory and the
+member of the
+.Fa document
+needs to point to available memory and the
 .Fa e_nitems
 member needs to be set to the number of items available in that array.
 For the
