@@ -265,21 +265,19 @@ The elements of this structure are defined as follows:
 
 *string*
 
-> Array holding the characters of a JSON string or number value.
+> Array holding items of a JSON string or number value.
 
 *s\_len*
 
-> Number of characters in the string array excluding any terminating zero
-> character.
+> Number of items in the string array excluding any terminating items.
 
 *mbstring*
 
-> Array holding the multibyte characters of a JSON string or number value.
+> Array holding multibyte items of a JSON string or number value.
 
 *mb\_len*
 
-> Number of characters in the mbstring array excluding any terminating zero
-> character.
+> Number of items in the mbstring array excluding any terminating items.
 
 *idx*
 
