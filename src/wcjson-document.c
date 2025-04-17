@@ -308,6 +308,12 @@ struct wcjson_value *wcjson_array_remove(const struct wcjson_document *doc,
 
     if (val->prev_idx != 0)
       doc->values[val->prev_idx].next_idx = val->next_idx;
+
+    if (arr->head_idx == val->idx)
+      arr->head_idx = val->next_idx;
+
+    if (arr->tail_idx == val->idx)
+      arr->tail_idx = val->prev_idx;
   }
 
   return val;
@@ -387,6 +393,12 @@ struct wcjson_value *wcjson_object_remove(const struct wcjson_document *doc,
 
       if (v->prev_idx != 0)
         doc->values[v->prev_idx].next_idx = v->next_idx;
+
+      if (obj->head_idx == v->idx)
+        obj->head_idx = v->next_idx;
+
+      if (obj->tail_idx == v->idx)
+        obj->tail_idx = v->prev_idx;
 
       return wcjson_value_head(doc, v);
     }
