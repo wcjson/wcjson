@@ -276,7 +276,7 @@ wchar_t *wcjson_document_string(struct wcjson_document *doc, const wchar_t *s,
  * Adds a multibyte string to a document.
  * @param doc The document to add a multibyte string to.
  * @param s The string to add.
- * @param len THe number of characters of the string excluding the terminating
+ * @param len The number of characters of the string excluding the terminating
  * zero character.
  * @return A pointer to the string or NULL if the document cannot holds the
  * string.
