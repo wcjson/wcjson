@@ -23,4 +23,4 @@ Add any other context about the problem here.
 Add a description of any testcases attached to the issue.
 
 **Testsuite**
-Please include the contents of the `src/testsuite.log` file here.
+Please include the contents of the `tests/testsuite.log` file here.
