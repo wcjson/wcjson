@@ -413,8 +413,10 @@ err:
   free(mbstrings);
   free(esc);
   free(outb);
-  fclose(in);
-  fclose(out);
+  if (in != NULL)
+    fclose(in);
+  if (out != NULL)
+    fclose(out);
   fail(&wcjson);
 }
 
