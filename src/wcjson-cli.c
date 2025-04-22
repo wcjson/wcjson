@@ -368,19 +368,17 @@ int main(int argc, char *argv[]) {
     } else if (fputws(outb, out) == -1)
       goto err;
 
-  } else {
-    if (!report) {
-      if (ascii) {
-        if (wcjsondocfprintasc(out, &doc, doc.values) < 0)
-          goto err;
-      } else {
-        if (wcjsondocfprint(out, &doc, doc.values) < 0)
-          goto err;
-      }
+  } else if (!report) {
+    if (ascii) {
+      if (wcjsondocfprintasc(out, &doc, doc.values) < 0)
+        goto err;
     } else {
-      fwprintf(stdout, L"Output characters: n/a\n");
-      fwprintf(stdout, L"Output characters (byte): n/a\n");
+      if (wcjsondocfprint(out, &doc, doc.values) < 0)
+        goto err;
     }
+  } else {
+    fwprintf(stdout, L"Output characters: n/a\n");
+    fwprintf(stdout, L"Output characters (byte): n/a\n");
   }
 
   if (ferror(out))
