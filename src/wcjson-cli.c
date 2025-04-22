@@ -159,6 +159,9 @@ int main(int argc, char *argv[]) {
   argc -= optind;
   argv += optind;
 
+  if (argc || *argv)
+    usage();
+
 #if HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, d != NULL ? d : "");
   if (locale == NULL) {
