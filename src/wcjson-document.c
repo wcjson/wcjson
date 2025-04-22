@@ -922,7 +922,6 @@ int static doc_sprint(wchar_t *s, size_t *lenp, bool asc,
         goto err;
 
       s_len -= t_len;
-      s += t_len;
     }
   } else if (v->is_number) {
     __copy(v->string, v->s_len);
