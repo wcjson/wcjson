@@ -31,7 +31,7 @@ extern "C" {
 #include <stdlib.h>
 #include <wchar.h>
 
-#ifdef HAVE_CONFIG_H
+#if HAVE_CONFIG_H
 #include "config.h"
 #endif
 
@@ -39,7 +39,7 @@ extern "C" {
 #define CLI_DEFAULT_LIMIT 16384
 #endif
 
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
   struct wcjson_value *values = NULL;
   void *p;
   wint_t wc;
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE
   char *locale;
 #endif
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
       o = optarg;
       break;
     case 'd':
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE
       d = optarg;
       break;
 #else
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
 #endif
       break;
     case 'e':
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE
       e = optarg;
       break;
 #else
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
   argc -= optind;
   argv += optind;
 
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, d != NULL ? d : "");
   if (locale == NULL) {
     errno = EINVAL;
@@ -318,7 +318,7 @@ int main(int argc, char *argv[]) {
   doc.esc = esc;
   doc.e_nitems = doc.e_nitems_cnt;
 
-#ifdef HAVE_SETLOCALE
+#if HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, e != NULL ? e : "");
   if (locale == NULL) {
     errno = EINVAL;

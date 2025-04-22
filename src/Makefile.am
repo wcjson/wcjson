@@ -10,3 +10,5 @@ dist_man_MANS = wcjson.1 wcjson.3 wcjson-document.3
 bin_PROGRAMS = wcjson
 wcjson_SOURCES = wcjson-cli.c
 wcjson_LDADD = libwcjson.la libwcjson-document.la
+
+AM_CPPFLAGS=	-I$(top_srcdir)/compat

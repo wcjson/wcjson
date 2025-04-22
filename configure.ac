@@ -9,6 +9,8 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/wcjson.h])
 AC_CONFIG_TESTDIR([tests])
 AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_LIBOBJ_DIR([compat])
+AC_CANONICAL_HOST
 AC_LANG([C])
 
 # Automake macros first
@@ -140,5 +142,6 @@ AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  tests/Makefile
-                 tests/atlocal])
+                 tests/atlocal
+                 compat/Makefile])
 AC_OUTPUT
