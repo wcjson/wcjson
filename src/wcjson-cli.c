@@ -145,6 +145,11 @@ int main(int argc, char *argv[]) {
       else if (ep[0] != '\0')
         usage();
 
+      if (limit < m) {
+        errno = ERANGE;
+        goto err;
+      }
+
       break;
     case 'a':
       ascii = 1;
@@ -333,11 +338,8 @@ int main(int argc, char *argv[]) {
   if (o != NULL && !report && (out = fopen(o, "w")) == NULL)
     goto err;
 
-  limit -= doc.e_nitems_cnt * sizeof(wchar_t);
-
   if (report) {
     limit -= doc.e_nitems_cnt * sizeof(wchar_t);
-
     size_t o_nitems = limit / sizeof(wchar_t);
     if (o_nitems == 0) {
       errno = ENOMEM;
@@ -368,14 +370,12 @@ int main(int argc, char *argv[]) {
     fwprintf(stdout, L"Output characters: %lld\n", o_nitems);
     fwprintf(stdout, L"Output characters (byte): %lld\n",
              o_nitems * sizeof(wchar_t));
-
+    fwprintf(stdout, L"Free memory (byte): %lld\n", limit);
   } else if (ascii) {
     if (wcjsondocfprintasc(out, &doc, doc.values) < 0)
       goto err;
-  } else {
-    if (wcjsondocfprint(out, &doc, doc.values) < 0)
-      goto err;
-  }
+  } else if (wcjsondocfprint(out, &doc, doc.values) < 0)
+    goto err;
 
   if (ferror(out))
     goto err;
