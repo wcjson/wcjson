@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  json = malloc(json_len * sizeof(wchar_t));
+  json = calloc(json_len, sizeof(wchar_t));
   if (json == NULL)
     goto err;
 
@@ -199,8 +199,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  p = realloc(json, sizeof(wchar_t) * len);
-  if (p == NULL)
+  if ((p = realloc(json, sizeof(wchar_t) * len)) == NULL)
     goto err;
 
   json = p;
@@ -219,7 +218,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  values = malloc(v_nitems * sizeof(struct wcjson_value));
+  values = calloc(v_nitems, sizeof(struct wcjson_value));
   if (values == NULL)
     goto err;
 
@@ -249,8 +248,8 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems_cnt);
-  if (p == NULL)
+  if ((p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems_cnt)) ==
+      NULL)
     goto err;
 
   values = p;
@@ -265,7 +264,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  strings = malloc(doc.s_nitems_cnt * sizeof(wchar_t));
+  strings = calloc(doc.s_nitems_cnt, sizeof(wchar_t));
   if (strings == NULL)
     goto err;
 
@@ -295,7 +294,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  mbstrings = malloc(doc.mb_nitems_cnt * sizeof(char));
+  mbstrings = calloc(doc.mb_nitems_cnt, sizeof(char));
   if (mbstrings == NULL)
     goto err;
 
@@ -314,7 +313,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  esc = malloc(doc.e_nitems_cnt * sizeof(wchar_t));
+  esc = calloc(doc.e_nitems_cnt, sizeof(wchar_t));
   if (esc == NULL)
     goto err;
 
@@ -345,7 +344,7 @@ int main(int argc, char *argv[]) {
       goto err;
     }
 
-    outb = malloc(o_nitems * sizeof(wchar_t));
+    outb = calloc(o_nitems, sizeof(wchar_t));
     if (outb == NULL)
       goto err;
 

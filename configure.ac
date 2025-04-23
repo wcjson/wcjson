@@ -46,7 +46,6 @@ AC_CHECK_SIZEOF([wchar_t])
 
 # Checks for library functions.
 AC_CHECK_FUNCS([setlocale])
-AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 
 # Defaults
