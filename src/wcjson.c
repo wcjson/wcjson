@@ -325,63 +325,14 @@ static inline uint16_t scan_hex4(struct scan_state *ss) {
   uint16_t r = 0;
 
   for (int e = 3; ss->pos < ss->len && e >= 0; ss->pos++, e--)
-    switch (ss->txt[ss->pos]) {
-    case L'0':
-      break;
-    case L'1':
-      r += 1 * (1 << (e << 2));
-      break;
-    case L'2':
-      r += 2 * (1 << (e << 2));
-      break;
-    case L'3':
-      r += 3 * (1 << (e << 2));
-      break;
-    case L'4':
-      r += 4 * (1 << (e << 2));
-      break;
-    case L'5':
-      r += 5 * (1 << (e << 2));
-      break;
-    case L'6':
-      r += 6 * (1 << (e << 2));
-      break;
-    case L'7':
-      r += 7 * (1 << (e << 2));
-      break;
-    case L'8':
-      r += 8 * (1 << (e << 2));
-      break;
-    case L'9':
-      r += 9 * (1 << (e << 2));
-      break;
-    case L'A':
-    case L'a':
-      r += 0xa * (1 << (e << 2));
-      break;
-    case L'B':
-    case L'b':
-      r += 0xb * (1 << (e << 2));
-      break;
-    case L'C':
-    case L'c':
-      r += 0xc * (1 << (e << 2));
-      break;
-    case L'D':
-    case L'd':
-      r += 0xd * (1 << (e << 2));
-      break;
-    case L'E':
-    case L'e':
-      r += 0xe * (1 << (e << 2));
-      break;
-    case L'F':
-    case L'f':
-      r += 0xf * (1 << (e << 2));
-      break;
-    default:
+    if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
+      r += (ss->txt[ss->pos] - L'0') * (1 << (e << 2));
+    else if (ss->txt[ss->pos] >= L'a' && ss->txt[ss->pos] <= L'f')
+      r += (ss->txt[ss->pos] - L'a' + 10) * (1 << (e << 2));
+    else if (ss->txt[ss->pos] >= L'A' && ss->txt[ss->pos] <= L'F')
+      r += (ss->txt[ss->pos] - L'A' + 10) * (1 << (e << 2));
+    else
       return r;
-    }
 
   return r;
 }
