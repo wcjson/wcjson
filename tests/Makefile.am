@@ -1,7 +1,6 @@
 check_PROGRAMS = test-cli
 test_cli_SOURCES = test-cli.c
-test_cli_LDADD = $(abs_top_builddir)/src/libwcjson.la \
-	$(abs_top_builddir)/src/libwcjson-document.la
+test_cli_LDADD = $(abs_top_builddir)/src/libwcjson.la
 
 # The ':;' works around a Bash 3.2 bug when the output is not writable.
 $(srcdir)/package.m4: $(top_srcdir)/configure.ac
