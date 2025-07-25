@@ -32,13 +32,7 @@ extern "C" {
 
 #include "wcjson.h"
 
-static const wchar_t *const lit_null = L"null";
-static const size_t lit_null_len = 4;
-static const wchar_t *const lit_true = L"true";
-static const size_t lit_true_len = 4;
-static const wchar_t *const lit_false = L"false";
-static const size_t lit_false_len = 5;
-static const wchar_t *const digits = L"0123456789abcdef";
+static const wchar_t *const hex_digits = L"0123456789abcdef";
 
 enum tokens {
   T_OBJ_START,
@@ -90,19 +84,10 @@ static enum tokens scan(struct scan_state *ss) {
   case L'n':
     return T_NULL;
   case L'-':
-  case L'0':
-  case L'1':
-  case L'2':
-  case L'3':
-  case L'4':
-  case L'5':
-  case L'6':
-  case L'7':
-  case L'8':
-  case L'9':
     return T_NUMBER;
   default:
-    return T_UNKNOWN;
+    return (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9') ? T_NUMBER
+                                                                  : T_UNKNOWN;
   }
 }
 
@@ -135,14 +120,14 @@ scan_literal(struct scan_state *ss, const wchar_t *lit, const size_t lit_len) {
 
 static void *parse_null(struct scan_state *ss, struct wcjson *ctx,
                         const struct wcjson_ops *ops, void *doc) {
-  ctx->status = scan_literal(ss, lit_null, lit_null_len);
+  ctx->status = scan_literal(ss, L"null", 4);
   return ctx->status == WCJSON_OK && ops != NULL ? ops->null_value(ctx, doc)
                                                  : NULL;
 }
 
 static void *parse_true(struct scan_state *ss, struct wcjson *ctx,
                         const struct wcjson_ops *ops, void *doc) {
-  ctx->status = scan_literal(ss, lit_true, lit_true_len);
+  ctx->status = scan_literal(ss, L"true", 4);
   return ctx->status == WCJSON_OK && ops != NULL
              ? ops->bool_value(ctx, doc, true)
              : NULL;
@@ -150,7 +135,7 @@ static void *parse_true(struct scan_state *ss, struct wcjson *ctx,
 
 static void *parse_false(struct scan_state *ss, struct wcjson *ctx,
                          const struct wcjson_ops *ops, void *doc) {
-  ctx->status = scan_literal(ss, lit_false, lit_false_len);
+  ctx->status = scan_literal(ss, L"false", 5);
   return ctx->status == WCJSON_OK && ops != NULL
              ? ops->bool_value(ctx, doc, false)
              : NULL;
@@ -170,23 +155,17 @@ static inline enum wcjson_status scan_int(struct scan_state *ss) {
       zero = ss->pos == start;
       digits = true;
       break;
-    case L'1':
-    case L'2':
-    case L'3':
-    case L'4':
-    case L'5':
-    case L'6':
-    case L'7':
-    case L'8':
-    case L'9':
-      if (zero)
-        return WCJSON_ABORT_INVALID;
-
-      zero = false;
-      digits = true;
-      break;
     default:
-      goto out;
+      if (ss->txt[ss->pos] >= L'1' && ss->txt[ss->pos] <= L'9') {
+        if (zero)
+          return WCJSON_ABORT_INVALID;
+
+        zero = false;
+        digits = true;
+        break;
+      } else
+        goto out;
+      break;
     }
 
 out:
@@ -201,22 +180,10 @@ static inline enum wcjson_status scan_frac(struct scan_state *ss) {
   bool digits = false;
 
   for (; ss->pos < ss->len; ss->pos++)
-    switch (ss->txt[ss->pos]) {
-    case L'0':
-    case L'1':
-    case L'2':
-    case L'3':
-    case L'4':
-    case L'5':
-    case L'6':
-    case L'7':
-    case L'8':
-    case L'9':
+    if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
       digits = true;
-      break;
-    default:
+    else
       goto out;
-    }
 
 out:
   return digits ? WCJSON_OK : WCJSON_ABORT_INVALID;
@@ -239,20 +206,12 @@ static inline enum wcjson_status scan_exp(struct scan_state *ss) {
 
       op = true;
       break;
-    case L'0':
-    case L'1':
-    case L'2':
-    case L'3':
-    case L'4':
-    case L'5':
-    case L'6':
-    case L'7':
-    case L'8':
-    case L'9':
-      digits = true;
-      break;
     default:
-      goto out;
+      if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
+        digits = true;
+      else
+        goto out;
+      break;
     }
 
 out:
@@ -850,10 +809,10 @@ static inline int uhex4(uint32_t n, wchar_t *s, size_t *len) {
 
   *s++ = L'\\';
   *s++ = L'u';
-  *s++ = digits[(n >> 12) & 0xf];
-  *s++ = digits[(n >> 8) & 0xf];
-  *s++ = digits[(n >> 4) & 0xf];
-  *s++ = digits[n & 0xf];
+  *s++ = hex_digits[(n >> 12) & 0xf];
+  *s++ = hex_digits[(n >> 8) & 0xf];
+  *s++ = hex_digits[(n >> 4) & 0xf];
+  *s++ = hex_digits[n & 0xf];
   *len -= *len - 6;
   return 0;
 }
