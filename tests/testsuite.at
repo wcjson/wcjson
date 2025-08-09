@@ -10,6 +10,7 @@ AT_CHECK([printf -- %s "   null" | wcjson], [0], [null])
 AT_CHECK([printf -- %s "null   " | wcjson], [0], [null])
 AT_CHECK([printf -- %s "   null   " | wcjson], [0], [null])
 AT_CHECK([printf -- %s n | wcjson 2>/dev/null], [2], [], [])
+AT_CHECK([printf -- %s "nill" | wcjson 2>/dev/null], [1], [], [])
 AT_CLEANUP
 
 AT_SETUP([true])
@@ -18,6 +19,7 @@ AT_CHECK([printf -- %s "   true" | wcjson], [0], [true])
 AT_CHECK([printf -- %s "true   " | wcjson], [0], [true])
 AT_CHECK([printf -- %s "   true   " | wcjson], [0], [true])
 AT_CHECK([printf -- %s t | wcjson 2>/dev/null], [2], [], [])
+AT_CHECK([printf -- %s "treu" | wcjson 2>/dev/null], [1], [], [])
 AT_CLEANUP
 
 AT_SETUP([false])
@@ -26,6 +28,7 @@ AT_CHECK([printf -- %s "   false" | wcjson], [0], [false])
 AT_CHECK([printf -- %s "false   " | wcjson], [0], [false])
 AT_CHECK([printf -- %s "   false   " | wcjson], [0], [false])
 AT_CHECK([printf -- %s f | wcjson 2>/dev/null], [2], [], [])
+AT_CHECK([printf -- %s "flase" | wcjson 2>/dev/null], [1], [], [])
 AT_CLEANUP
 
 AT_SETUP([number])
