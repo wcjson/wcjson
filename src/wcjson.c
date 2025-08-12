@@ -91,8 +91,8 @@ static enum token scan(struct scan_state *ss) {
   }
 }
 
-static inline void scan_ws(struct scan_state *ss) {
-  for (; ss->pos < ss->len; ss->pos++)
+static inline enum wcjson_status scan_ws(struct scan_state *ss) {
+  for (; ss->pos < ss->len; ss->pos++) {
     switch (ss->txt[ss->pos]) {
     case L'\t':
     case L'\n':
@@ -100,17 +100,27 @@ static inline void scan_ws(struct scan_state *ss) {
     case L' ':
       break;
     default:
-      return;
+      return WCJSON_OK;
     }
+
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+  }
+
+  return WCJSON_OK;
 }
 
 static inline enum wcjson_status
 scan_literal(struct scan_state *ss, const wchar_t *lit, const size_t lit_len) {
   size_t i = 0;
 
-  for (; ss->pos < ss->len && i < lit_len; ss->pos++, i++)
+  for (; ss->pos < ss->len && i < lit_len; ss->pos++, i++) {
     if (ss->txt[ss->pos] != lit[i])
       return WCJSON_ABORT_INVALID;
+
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+  }
 
   if (i < lit_len)
     return WCJSON_ABORT_END_OF_INPUT;
@@ -146,7 +156,7 @@ static inline enum wcjson_status scan_int(struct scan_state *ss) {
   bool zero = false;
   const size_t start = ss->pos;
 
-  for (; ss->pos < ss->len; ss->pos++)
+  for (; ss->pos < ss->len; ss->pos++) {
     switch (ss->txt[ss->pos]) {
     case L'0':
       if (zero)
@@ -168,6 +178,10 @@ static inline enum wcjson_status scan_int(struct scan_state *ss) {
       break;
     }
 
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+  }
+
 out:
   return digits ? WCJSON_OK : WCJSON_ABORT_INVALID;
 }
@@ -176,14 +190,21 @@ static inline enum wcjson_status scan_frac(struct scan_state *ss) {
   if (ss->txt[ss->pos] != L'.')
     return WCJSON_OK;
 
+  if (ss->pos == SIZE_MAX)
+    return WCJSON_ABORT_END_OF_INPUT;
+
   ss->pos++;
   bool digits = false;
 
-  for (; ss->pos < ss->len; ss->pos++)
+  for (; ss->pos < ss->len; ss->pos++) {
     if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
       digits = true;
     else
       goto out;
+
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+  }
 
 out:
   return digits ? WCJSON_OK : WCJSON_ABORT_INVALID;
@@ -193,11 +214,14 @@ static inline enum wcjson_status scan_exp(struct scan_state *ss) {
   if (ss->txt[ss->pos] != L'e' && ss->txt[ss->pos] != L'E')
     return WCJSON_OK;
 
+  if (ss->pos == SIZE_MAX)
+    return WCJSON_ABORT_END_OF_INPUT;
+
   ss->pos++;
   bool op = false;
   bool digits = false;
 
-  for (; ss->pos < ss->len; ss->pos++)
+  for (; ss->pos < ss->len; ss->pos++) {
     switch (ss->txt[ss->pos]) {
     case L'-':
     case L'+':
@@ -214,6 +238,10 @@ static inline enum wcjson_status scan_exp(struct scan_state *ss) {
       break;
     }
 
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+  }
+
 out:
   return digits ? WCJSON_OK : WCJSON_ABORT_INVALID;
 }
@@ -222,8 +250,13 @@ static void *parse_number(struct scan_state *ss, struct wcjson *ctx,
                           const struct wcjson_ops *ops, void *doc) {
   const size_t start = ss->pos;
 
-  if (ss->txt[ss->pos] == L'-')
+  if (ss->txt[ss->pos] == L'-') {
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
+      return NULL;
+    }
     ss->pos++;
+  }
 
   if (ss->pos < ss->len) {
     ctx->status = scan_int(ss);
@@ -255,7 +288,7 @@ static void *parse_number(struct scan_state *ss, struct wcjson *ctx,
              : NULL;
 }
 
-static inline void scan_unescaped(struct scan_state *ss) {
+static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
 #ifdef __limit
 #error "__limit macro already defined - rename"
 #endif
@@ -276,13 +309,19 @@ static inline void scan_unescaped(struct scan_state *ss) {
           (ss->txt[ss->pos] >= (wchar_t)0x5d &&
            ss->txt[ss->pos] <= (wchar_t)__limit)))
       break;
+
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
   }
+
+  return WCJSON_OK;
 #undef __limit
 }
 
 static inline uint16_t scan_hex4(struct scan_state *ss) {
   uint16_t r = 0;
 
+  // Caller needs to check for ss->pos > SIZE_MAX - 4 wrap around.
   for (int e = 3; ss->pos < ss->len && e >= 0; ss->pos++, e--)
     if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
       r += (ss->txt[ss->pos] - L'0') * (1 << (e << 2));
@@ -297,7 +336,7 @@ static inline uint16_t scan_hex4(struct scan_state *ss) {
 }
 
 static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
-  if (++ss->pos == ss->len)
+  if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
     return WCJSON_ABORT_END_OF_INPUT;
 
   switch (ss->txt[ss->pos]) {
@@ -309,16 +348,24 @@ static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
   case L'n':
   case L'r':
   case L't':
+    if (ss->pos == SIZE_MAX)
+      return WCJSON_ABORT_END_OF_INPUT;
+
     ++ss->pos;
     return WCJSON_OK;
   case L'u':
-    if (++ss->pos == ss->len)
+    if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
       return WCJSON_ABORT_END_OF_INPUT;
 
     size_t start = ss->pos;
+
+    // scan_hex4() does not check for ss->pos wrap around.
+    if (ss->pos > SIZE_MAX - (size_t)4)
+      return WCJSON_ABORT_INVALID;
+
     uint16_t unescaped = scan_hex4(ss);
 
-    if (ss->pos - start != 4 || unescaped < 0x20)
+    if (ss->pos - start != (size_t)4 || unescaped < 0x20)
       return WCJSON_ABORT_INVALID;
 
     if (unescaped >= 0xd800 && unescaped <= 0xdfff) {
@@ -326,19 +373,25 @@ static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
       if (unescaped > 0xdbff || ss->txt[ss->pos] != L'\\')
         return WCJSON_ABORT_INVALID;
 
-      if (++ss->pos == ss->len)
+      if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
         return WCJSON_ABORT_END_OF_INPUT;
 
       if (ss->txt[ss->pos] != L'u')
         return WCJSON_ABORT_INVALID;
 
-      if (++ss->pos == ss->len)
+      if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
         return WCJSON_ABORT_END_OF_INPUT;
 
       start = ss->pos;
+
+      // scan_hex4() does not chek ss->pos for wrap around.
+      if (ss->pos > SIZE_MAX - (size_t)4)
+        return WCJSON_ABORT_INVALID;
+
       unescaped = scan_hex4(ss);
 
-      if (ss->pos - start != 4 || unescaped < 0xdc00 || unescaped > 0xdfff)
+      if (ss->pos - start != (size_t)4 || unescaped < 0xdc00 ||
+          unescaped > 0xdfff)
         return WCJSON_ABORT_INVALID;
     }
 
@@ -352,7 +405,7 @@ static void *parse_string(struct scan_state *ss, struct wcjson *ctx,
                           const struct wcjson_ops *ops, void *doc) {
   ss->escaped = false;
 
-  if (++ss->pos == ss->len) {
+  if (ss->pos == SIZE_MAX || ++ss->pos == ss->len) {
     ctx->status = WCJSON_ABORT_END_OF_INPUT;
     return NULL;
   }
@@ -360,7 +413,10 @@ static void *parse_string(struct scan_state *ss, struct wcjson *ctx,
   size_t start = ss->pos;
 
 next_part:
-  scan_unescaped(ss);
+  ctx->status = scan_unescaped(ss);
+
+  if (ctx->status != WCJSON_OK)
+    return NULL;
 
   if (ss->pos == ss->len) {
     ctx->status = WCJSON_ABORT_END_OF_INPUT;
@@ -369,6 +425,11 @@ next_part:
 
   switch (ss->txt[ss->pos]) {
   case L'"':
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
+      return NULL;
+    }
+
     ss->pos++;
     return ops != NULL
                ? ss->pos == start
@@ -398,10 +459,19 @@ static void *parse_object(struct scan_state *ss, struct wcjson *ctx,
   void *key = NULL;
   bool key_seen = false;
   bool value_seen = false;
+
+  if (ss->pos == SIZE_MAX) {
+    ctx->status = WCJSON_ABORT_END_OF_INPUT;
+    return NULL;
+  }
+
   ++ss->pos;
 
 next_token:
-  scan_ws(ss);
+  ctx->status = scan_ws(ss);
+
+  if (ctx->status != WCJSON_OK)
+    return NULL;
 
   if (ss->pos == ss->len) {
     ctx->status = WCJSON_ABORT_END_OF_INPUT;
@@ -412,6 +482,11 @@ next_token:
   case T_OBJ_END: {
     if (key_seen) {
       ctx->status = WCJSON_ABORT_INVALID;
+      return NULL;
+    }
+
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
       return NULL;
     }
 
@@ -441,12 +516,15 @@ next_token:
       return NULL;
     }
 
-    if (++ss->pos == ss->len) {
+    if (ss->pos == SIZE_MAX || ++ss->pos == ss->len) {
       ctx->status = WCJSON_ABORT_END_OF_INPUT;
       return NULL;
     }
 
-    scan_ws(ss);
+    ctx->status = scan_ws(ss);
+
+    if (ctx->status != WCJSON_OK)
+      return NULL;
 
     if (ss->pos == ss->len) {
       ctx->status = WCJSON_ABORT_END_OF_INPUT;
@@ -585,6 +663,12 @@ next_token:
       return NULL;
     }
     value_seen = false;
+
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
+      return NULL;
+    }
+
     ++ss->pos;
     goto next_token;
   }
@@ -599,10 +683,19 @@ static void *parse_array(struct scan_state *ss, struct wcjson *ctx,
                          void *parent) {
   void *arr = ops != NULL ? ops->array_start(ctx, doc, parent) : NULL;
   bool value_seen = false;
+
+  if (ss->pos == SIZE_MAX) {
+    ctx->status = WCJSON_ABORT_END_OF_INPUT;
+    return NULL;
+  }
+
   ++ss->pos;
 
 next_token:
-  scan_ws(ss);
+  ctx->status = scan_ws(ss);
+
+  if (ctx->status != WCJSON_OK)
+    return NULL;
 
   if (ss->pos == ss->len) {
     ctx->status = WCJSON_ABORT_END_OF_INPUT;
@@ -611,9 +704,16 @@ next_token:
 
   switch (scan(ss)) {
   case T_ARR_END: {
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
+      return NULL;
+    }
+
     ss->pos++;
+
     if (ops != NULL)
       ops->array_end(ctx, doc, arr);
+
     return arr;
   }
   case T_COMMA: {
@@ -622,6 +722,12 @@ next_token:
       return NULL;
     }
     value_seen = false;
+
+    if (ss->pos == SIZE_MAX) {
+      ctx->status = WCJSON_ABORT_END_OF_INPUT;
+      return NULL;
+    }
+
     ++ss->pos;
     goto next_token;
   }
@@ -745,7 +851,10 @@ next_token:
 
 static void parse_json_text(struct scan_state *ss, struct wcjson *ctx,
                             const struct wcjson_ops *ops, void *doc) {
-  scan_ws(ss);
+  ctx->status = scan_ws(ss);
+
+  if (ctx->status != WCJSON_OK)
+    return;
 
   if (ss->pos == ss->len)
     return;
@@ -777,7 +886,10 @@ static void parse_json_text(struct scan_state *ss, struct wcjson *ctx,
     return;
   }
 
-  scan_ws(ss);
+  if (ctx->status != WCJSON_OK)
+    return;
+
+  ctx->status = scan_ws(ss);
 
   if (ctx->status == WCJSON_OK && ss->pos != ss->len)
     ctx->status = WCJSON_ABORT_INVALID;
@@ -1078,7 +1190,7 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 
           cp = scan_hex4(&ss);
 
-          if (ss.pos != 4 || cp < 0x20)
+          if (ss.pos != (size_t)4 || cp < 0x20)
             goto err_ilseq;
 
           s += ss.pos;
@@ -1102,7 +1214,7 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 
             ls = scan_hex4(&ss);
 
-            if (ss.pos != 4)
+            if (ss.pos != (size_t)4)
               goto err_ilseq;
 
             s += ss.pos;
@@ -1162,6 +1274,9 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 #elif
 #error "Wide character literal encoding implementation not found."
 #endif
+          if (s_len == SIZE_MAX)
+            goto err_range;
+
           s_len++;
           break;
         default:
@@ -1172,7 +1287,7 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 
     } while (--s_len != 0 && --d_len != 0);
 
-    if (s_len != 0)
+    if (s_len != 0 || d_len == 0)
       goto err_range;
     else
       d_len--;
