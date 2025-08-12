@@ -34,7 +34,7 @@ extern "C" {
 
 static const wchar_t *const hex_digits = L"0123456789abcdef";
 
-enum tokens {
+enum token {
   T_OBJ_START,
   T_OBJ_END,
   T_ARR_START,
@@ -61,7 +61,7 @@ static void *parse_array(struct scan_state *, struct wcjson *,
 static void *parse_object(struct scan_state *, struct wcjson *,
                           const struct wcjson_ops *, void *, void *);
 
-static enum tokens scan(struct scan_state *ss) {
+static enum token scan(struct scan_state *ss) {
   switch (ss->txt[ss->pos]) {
   case L'{':
     return T_OBJ_START;
