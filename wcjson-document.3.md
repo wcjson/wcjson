@@ -476,7 +476,7 @@ The
 **wcjson\_value\_object**()
 and
 **wcjson\_value\_array**()
-functions get the next available value from a
+functions add a value to a
 *document*.
 The
 *values*
@@ -640,21 +640,21 @@ be provided.
 
 T. Bray, Ed.,
 *The JavaScript Object Notation (JSON) Data Interchange Format*,
-[RFC 8259](https://www.rfc-editor.org/info/rfc8259),
+[RFC 8259](http://www.rfc-editor.org/rfc/rfc8259.html),
 December 2017.
 
 J. Klensin,
 *ASCII Escaping of Unicode Characters*,
-[RFC 5137](https://www.rfc-editor.org/info/rfc5137),
+[RFC 5137](http://www.rfc-editor.org/rfc/rfc5137.html),
 February 2008.
 
 F. Yergeau,
 *UTF-8, a transformation format of ISO 10646*,
-[RFC 3629](https://www.rfc-editor.org/info/rfc3629),
+[RFC 3629](http://www.rfc-editor.org/rfc/rfc3629.html),
 November 2003.
 
 P. Hoffman,
 F. Yergeau,
 *UTF-16, an encoding of ISO 10646*,
-[RFC 2781](https://www.rfc-editor.org/info/rfc2781),
+[RFC 2781](http://www.rfc-editor.org/rfc/rfc2781.html),
 February 2000.
