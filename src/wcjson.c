@@ -915,7 +915,7 @@ int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops, void *doc,
   return ctx->status == WCJSON_OK ? 0 : -1;
 }
 
-static inline int uhex4(uint32_t n, wchar_t *s, size_t *len) {
+static inline int uhex4(wchar_t n, wchar_t *s, size_t *len) {
   if (*len < 6)
     return -1;
 

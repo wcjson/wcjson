@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
       if (m <= 0)
         usage();
 
-      limit = m;
+      limit = (size_t)m;
 
       if (ep[0] == 'k')
         limit *= 1024;
@@ -144,11 +144,6 @@ int main(int argc, char *argv[]) {
         limit *= 1024 * 1024 * 1024;
       else if (ep[0] != '\0')
         usage();
-
-      if (limit < m) {
-        errno = ERANGE;
-        goto err;
-      }
 
       break;
     case 'a':

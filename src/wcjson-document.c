@@ -648,7 +648,7 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     d->d->e_nitems_cnt = MAX(dst_len * WCJSON_ESCAPE_MAX + 1, d->d->e_nitems);
 
     size_t mblen = wcstombs(NULL, v->string, v->s_len);
-    if (mblen == -1)
+    if (mblen == (size_t)-1)
       goto err;
 
     d->d->mb_nitems_cnt += mblen + 1;
@@ -674,7 +674,7 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     d->d->s_next = s_next;
 
     size_t mblen = wcstombs(NULL, v->string, v->s_len);
-    if (mblen == -1)
+    if (mblen == (size_t)-1)
       goto err;
 
     d->d->mb_nitems_cnt += mblen + 1;
@@ -710,7 +710,7 @@ static int doc_mbstrings(struct wcjson *ctx, struct doc_impl *d,
     char *dst = &d->d->mbstrings[d->d->mb_next];
     size_t mb_len = wcstombs(dst, v->string, dst_len);
 
-    if (mb_len == -1)
+    if (mb_len == (size_t)-1)
       goto err;
 
     if (mb_len == dst_len)
@@ -734,7 +734,7 @@ static int doc_mbstrings(struct wcjson *ctx, struct doc_impl *d,
     char *dst = &d->d->mbstrings[d->d->mb_next];
     size_t mb_len = wcstombs(dst, v->string, dst_len);
 
-    if (mb_len == -1)
+    if (mb_len == (size_t)-1)
       goto err;
 
     if (mb_len == dst_len)

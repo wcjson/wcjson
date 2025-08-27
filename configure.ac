@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.14], [cs@schulte.it])
+AC_INIT([wcjson], [0.15], [cs@schulte.it])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -137,6 +137,29 @@ fi
 
 AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
 AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
+AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [CFLAGS="$CFLAGS -Wstrict-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-prototypes], [CFLAGS="$CFLAGS -Wmissing-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-declarations], [CFLAGS="$CFLAGS -Wmissing-declarations"])
+AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
+AX_CHECK_COMPILE_FLAG([-Wpointer-arith], [CFLAGS="$CFLAGS -Wpointer-arith"])
+AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CFLAGS="$CFLAGS -Wcast-qual"])
+AX_CHECK_COMPILE_FLAG([-Wsign-compare], [CFLAGS="$CFLAGS -Wsign-compare"])
+AX_CHECK_COMPILE_FLAG([-Walloca], [CFLAGS="$CFLAGS -Walloca"])
+AX_CHECK_COMPILE_FLAG([-Warray-parameter], [CFLAGS="$CFLAGS -Warray-parameter"])
+AX_CHECK_COMPILE_FLAG([-Wbad-function-cast], [CFLAGS="$CFLAGS -Wbad-function-cast"])
+AX_CHECK_COMPILE_FLAG([-Wbool-operation], [CFLAGS="$CFLAGS -Wbool-operation"])
+AX_CHECK_COMPILE_FLAG([-Wcast-align], [CFLAGS="$CFLAGS -Wcast-align"])
+AX_CHECK_COMPILE_FLAG([-Wcast-function-type], [CFLAGS="$CFLAGS -Wcast-function-type"])
+AX_CHECK_COMPILE_FLAG([-Wcomment], [CFLAGS="$CFLAGS -Wcomment"])
+AX_CHECK_COMPILE_FLAG([-Wconditional-uninitialized], [CFLAGS="$CFLAGS -Wconditional-uninitialized"])
+AX_CHECK_COMPILE_FLAG([-Wconversion], [CFLAGS="$CFLAGS -Wconversion"])
+AX_CHECK_COMPILE_FLAG([-Wdeprecated], [CFLAGS="$CFLAGS -Wdeprecated"])
+AX_CHECK_COMPILE_FLAG([-Wfloat-conversion], [CFLAGS="$CFLAGS -Wfloat-conversion"])
+AX_CHECK_COMPILE_FLAG([-Wformat-pedantic], [CFLAGS="$CFLAGS -Wformat-pedantic"])
+AX_CHECK_COMPILE_FLAG([-Wformat-signedness], [CFLAGS="$CFLAGS -Wformat-signedness"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CFLAGS="$CFLAGS -Wno-unused-parameter"])
+
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
