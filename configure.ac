@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.16], [cs@schulte.it])
+AC_INIT([wcjson], [0.17], [cs@schulte.it], [wcjson-0.17.tar.gz], [http://wcjson.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
 AC_CONFIG_MACRO_DIR([m4])
