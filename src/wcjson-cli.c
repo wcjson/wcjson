@@ -43,6 +43,10 @@ extern "C" {
 #include <unistd.h>
 #endif
 
+#if HAVE_LIBBSD
+#include <bsd/stdlib.h>
+#endif
+
 #include "wcjson-document.h"
 #include "wcjson.h"
 
