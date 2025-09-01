@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  if ((p = realloc(json, sizeof(wchar_t) * len)) == NULL)
+  if ((p = recallocarray(json, json_len, len, sizeof(wchar_t))) == NULL)
     goto err;
 
   json = p;
@@ -248,8 +248,8 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  if ((p = realloc(values, sizeof(struct wcjson_value) * doc.v_nitems_cnt)) ==
-      NULL)
+  if ((p = recallocarray(values, v_nitems, doc.v_nitems_cnt,
+                         sizeof(struct wcjson_value))) == NULL)
     goto err;
 
   values = p;
