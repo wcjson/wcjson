@@ -867,7 +867,7 @@ err_range:
   return -1;
 }
 
-int static doc_sprint(wchar_t *s, size_t *lenp, bool asc,
+static int doc_sprint(wchar_t *s, size_t *lenp, bool asc,
                       const struct wcjson_document *d,
                       const struct wcjson_value *v) {
 #ifdef __copy

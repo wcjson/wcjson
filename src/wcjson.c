@@ -318,8 +318,8 @@ static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
 #undef __limit
 }
 
-static inline uint16_t scan_hex4(struct scan_state *ss) {
-  uint16_t r = 0;
+static inline int scan_hex4(struct scan_state *ss) {
+  int r = 0;
 
   // Caller needs to check for ss->pos > SIZE_MAX - 4 wrap around.
   for (int e = 3; ss->pos < ss->len && e >= 0; ss->pos++, e--)
@@ -363,7 +363,7 @@ static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
     if (ss->pos > SIZE_MAX - (size_t)4)
       return WCJSON_ABORT_INVALID;
 
-    uint16_t unescaped = scan_hex4(ss);
+    int unescaped = scan_hex4(ss);
 
     if (ss->pos - start != (size_t)4 || unescaped < 0x20)
       return WCJSON_ABORT_INVALID;
@@ -1130,8 +1130,8 @@ int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 
 int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
   struct scan_state ss = {0};
-  uint32_t cp;
-  uint16_t ls;
+  int cp;
+  int ls;
   size_t d_len = *d_lenp;
 
   if (s_len != 0) {

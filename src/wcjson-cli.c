@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
     goto err;
 
   for (len = 0, wc = getwc(in); len < json_len && wc != WEOF; wc = getwc(in))
-    json[len++] = wc;
+    json[len++] = (wchar_t)wc;
 
   if (ferror(in))
     goto err;
