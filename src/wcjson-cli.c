@@ -226,11 +226,10 @@ int main(int argc, char *argv[]) {
   if (values == NULL)
     goto err;
 
-  struct wcjson_document doc = {
-      .values = values,
-      .v_nitems = v_nitems,
-      .v_next = 0,
-  };
+  struct wcjson_document doc = WCJSON_DOCUMENT_INITIALIZER;
+  doc.values = values;
+  doc.v_nitems = v_nitems;
+  doc.v_next = 0;
 
   int r = wcjsondocvalues(&wcjson, &doc, json, len);
 

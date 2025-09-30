@@ -29,7 +29,8 @@
 .Nm wcjsondocfprint ,
 .Nm wcjsondocfprintasc ,
 .Nm wcjsondocsprint ,
-.Nm wcjsondocsprintasc
+.Nm wcjsondocsprintasc ,
+.Nm WCJSON_DOCUMENT_INITIALIZER
 .Nd wide character JSON documents
 .Sh SYNOPSIS
 .In wcjson-document.h
@@ -210,6 +211,9 @@ Index of the previous value in the child value list.
 Index of the next value in the child value list.
 .El
 .Pp
+The
+.Fn WCJSON_DOCUMENT_INITIALIZER
+macro expands to a rvalue expression for initializing an empty document.
 The
 .Fn wcjsondocvalues
 function deserializes

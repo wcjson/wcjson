@@ -29,7 +29,8 @@
 **wcjsondocfprint**,
 **wcjsondocfprintasc**,
 **wcjsondocsprint**,
-**wcjsondocsprintasc** - wide character JSON documents
+**wcjsondocsprintasc**,
+**WCJSON\_DOCUMENT\_INITIALIZER** - wide character JSON documents
 
 ## SYNOPSIS
 
@@ -299,6 +300,9 @@ The elements of this structure are defined as follows:
 
 > Index of the next value in the child value list.
 
+The
+**WCJSON\_DOCUMENT\_INITIALIZER**()
+macro expands to a rvalue expression for initializing an empty document.
 The
 **wcjsondocvalues**()
 function deserializes

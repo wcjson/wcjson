@@ -70,6 +70,24 @@ struct wcjson_document {
   size_t e_nitems_cnt;
 };
 
+#define WCJSON_DOCUMENT_INITIALIZER                                            \
+  {                                                                            \
+      .values = NULL,                                                          \
+      .v_nitems = 0,                                                           \
+      .v_nitems_cnt = 0,                                                       \
+      .v_next = 0,                                                             \
+      .strings = NULL,                                                         \
+      .s_nitems = 0,                                                           \
+      .s_nitems_cnt = 0,                                                       \
+      .mbstrings = NULL,                                                       \
+      .mb_nitems = 0,                                                          \
+      .mb_nitems_cnt = 0,                                                      \
+      .mb_next = 0,                                                            \
+      .esc = NULL,                                                             \
+      .e_nitems = 0,                                                           \
+      .e_nitems_cnt = 0,                                                       \
+  }
+
 /**
  * Creates a null value in a document.
  * @param doc The document to create the value in.
