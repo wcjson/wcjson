@@ -303,6 +303,7 @@ The elements of this structure are defined as follows:
 The
 **WCJSON\_DOCUMENT\_INITIALIZER**()
 macro expands to a rvalue expression for initializing an empty document.
+
 The
 **wcjsondocvalues**()
 function deserializes
