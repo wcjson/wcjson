@@ -358,6 +358,7 @@ static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
       return WCJSON_ABORT_END_OF_INPUT;
 
     ++ss->pos;
+    ss->escaped = true;
     return WCJSON_OK;
   case L'u':
     if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
@@ -392,6 +393,8 @@ static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
 
       if (unescaped < 0xdc00 || unescaped > 0xdfff)
         return WCJSON_ABORT_INVALID;
+
+      ss->escaped = true;
     }
 
     return WCJSON_OK;
@@ -438,7 +441,6 @@ next_part:
                : NULL;
 
   case L'\\':
-    ss->escaped = true;
     ctx->status = scan_escaped(ss);
 
     if (ctx->status != WCJSON_OK)
