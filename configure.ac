@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.20], [cs@schulte.it], [wcjson], [http://wcjson.de])
+AC_INIT([wcjson], [0.21], [cs@schulte.it], [wcjson], [http://wcjson.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -52,7 +52,7 @@ AC_CHECK_LIB(bsd, recallocarray)
 
 AC_ARG_WITH([default-memory-limit],
   [AS_HELP_STRING([--with-default-memory-limit],
-    [Default value in bytes for the -m command line optionn (default 16k)])],
+    [Default value in bytes for the -m command line option (default 16k)])],
   [case $with_default_memory_limit in
     yes) AC_MSG_ERROR([[--with-default-memory-limit needs an argument]])
     ;;

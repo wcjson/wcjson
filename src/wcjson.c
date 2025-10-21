@@ -318,7 +318,7 @@ static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
 #undef __limit
 }
 
-static inline enum wcjson_status scan_hex4(int *r, struct scan_state *ss) {
+static inline enum wcjson_status scan_hex4(uint16_t *r, struct scan_state *ss) {
   *r = 0;
 
   for (int e = 3; ss->pos < ss->len && e >= 0; ss->pos++, e--) {
@@ -339,7 +339,7 @@ static inline enum wcjson_status scan_hex4(int *r, struct scan_state *ss) {
 }
 
 static inline enum wcjson_status scan_escaped(struct scan_state *ss) {
-  int unescaped;
+  uint16_t unescaped;
   enum wcjson_status status;
 
   if (ss->pos == SIZE_MAX || ++ss->pos == ss->len)
@@ -1132,8 +1132,8 @@ int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
   struct scan_state ss = {0};
   enum wcjson_status status;
-  int cp;
-  int ls;
+  uint32_t cp;
+  uint16_t hs, ls;
   size_t d_len = *d_lenp;
 
   if (s_len != 0) {
@@ -1190,17 +1190,17 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
           ss.txt = s;
           ss.len = s_len;
 
-          status = scan_hex4(&cp, &ss);
+          status = scan_hex4(&hs, &ss);
 
-          if (status != WCJSON_OK || cp < 0x20)
+          if (status != WCJSON_OK || hs < 0x20)
             goto err_ilseq;
 
           s += ss.pos;
           s_len -= ss.pos;
 
-          if (cp >= 0xd800 && cp <= 0xdfff) {
+          if (hs >= 0xd800 && hs <= 0xdfff) {
             // UTF 16 surrogates
-            if (cp > 0xdbff || s_len == 0 || --s_len == 0 || *s != L'\\')
+            if (hs > 0xdbff || s_len == 0 || --s_len == 0 || *s != L'\\')
               goto err_ilseq;
 
             s++;
@@ -1225,8 +1225,12 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
             if (ls < 0xdc00 || ls > 0xdfff)
               goto err_ilseq;
 
-            cp = (((cp & 0b1111111111) << 10) | (ls & 0b1111111111)) + 0x10000;
-          }
+            cp = hs & 0b1111111111;
+            cp <<= 10;
+            cp |= ls & 0b1111111111;
+            cp += 0x10000;
+          } else
+            cp = hs;
 #if defined(WCHAR_T_UTF32)
           *d++ = (wchar_t)cp;
 #elif defined(WCHAR_T_UTF16)

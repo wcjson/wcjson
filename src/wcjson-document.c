@@ -281,14 +281,12 @@ struct wcjson_value *wcjson_array_get(const struct wcjson_document *doc,
   if (!arr->is_array)
     goto err_inval;
 
-  if (arr->is_array) {
-    struct wcjson_value *v;
-    size_t i = 0;
+  struct wcjson_value *v;
+  size_t i = 0;
 
-    wcjson_value_foreach(v, doc, arr) {
-      if (i++ == idx)
-        return v;
-    }
+  wcjson_value_foreach(v, doc, arr) {
+    if (i++ == idx)
+      return v;
   }
 
   return NULL;
