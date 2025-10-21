@@ -323,11 +323,11 @@ static inline enum wcjson_status scan_hex4(uint16_t *r, struct scan_state *ss) {
 
   for (int e = 3; ss->pos < ss->len && e >= 0; ss->pos++, e--) {
     if (ss->txt[ss->pos] >= L'0' && ss->txt[ss->pos] <= L'9')
-      *r += (ss->txt[ss->pos] - L'0') * (1 << (e << 2));
+      *r += (uint16_t)((ss->txt[ss->pos] - L'0') * (1 << (e << 2)));
     else if (ss->txt[ss->pos] >= L'a' && ss->txt[ss->pos] <= L'f')
-      *r += (ss->txt[ss->pos] - L'a' + 10) * (1 << (e << 2));
+      *r += (uint16_t)((ss->txt[ss->pos] - L'a' + 10) * (1 << (e << 2)));
     else if (ss->txt[ss->pos] >= L'A' && ss->txt[ss->pos] <= L'F')
-      *r += (ss->txt[ss->pos] - L'A' + 10) * (1 << (e << 2));
+      *r += (uint16_t)((ss->txt[ss->pos] - L'A' + 10) * (1 << (e << 2)));
     else
       return WCJSON_ABORT_INVALID;
 
