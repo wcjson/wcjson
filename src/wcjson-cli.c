@@ -23,6 +23,10 @@
 extern "C" {
 #endif
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <errno.h>
 #include <limits.h>
 #include <locale.h>
@@ -30,10 +34,6 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
-
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #ifndef CLI_DEFAULT_LIMIT
 #define CLI_DEFAULT_LIMIT 16384

@@ -23,12 +23,12 @@
 extern "C" {
 #endif
 
-#include <errno.h>
-#include <stdint.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <errno.h>
+#include <stdint.h>
 
 #include "wcjson.h"
 
