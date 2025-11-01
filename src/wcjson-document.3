@@ -447,7 +447,7 @@ function gets the value of a key value pair from an object.
 .Pp
 The
 .Fn wcjson_document_string
-function adds the wide string
+function copies the wide string
 .Fa s
 of length
 .Fa len
@@ -461,11 +461,11 @@ needs to point to available memory, the
 .Fa s_nitems
 member needs to be set to the number of items available in that array and the
 .Fa s_next
-member needs to be set to the index of the next item in that array.
+member needs to be set to the index of the item in that array.
 .Pp
 The
 .Fn wcjson_document_mbstring
-function adds the multibyte string
+function copies the multibyte string
 .Fa s
 of length
 .Fa len
@@ -479,7 +479,7 @@ needs to point to available memory, the
 .Fa mb_nitems
 member needs to be set to the number of items available in that array and the
 .Fa mb_next
-member needs to be set to the index of the next item in that array.
+member needs to be set to the index of the item in that array.
 .Sh RETURN VALUES
 The functions return 0 on success, or a negative value or NULL if an error
 occurs.
