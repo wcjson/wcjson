@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.22], [cs@schulte.it], [wcjson], [http://wcjson.de])
+AC_INIT([wcjson], [0.23], [cs@schulte.it], [wcjson], [http://wcjson.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -135,6 +135,7 @@ if test $wcjson_cv_wchar_t_is_utf8 = "yes"; then
   AC_DEFINE_UNQUOTED(WCHAR_T_UTF8, [1], [wchar_t is UTF-8])
 fi
 
+AX_CHECK_COMPILE_FLAG([-std=c2x], [CFLAGS="$CFLAGS -std=c2x"])
 AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
 AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
 AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])

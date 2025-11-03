@@ -35,6 +35,9 @@ extern "C" {
 #include <stdlib.h>
 #include <wchar.h>
 
+#define OPTPARSE_IMPLEMENTATION
+#include "optparse.h"
+
 #ifndef CLI_DEFAULT_LIMIT
 #define CLI_DEFAULT_LIMIT 16384
 #endif
@@ -93,6 +96,7 @@ int main(int argc, char *argv[]) {
   wchar_t *json = NULL, *strings = NULL, *esc = NULL, *outb = NULL;
   char *mbstrings = NULL;
   struct wcjson_value *values = NULL;
+  struct optparse options = {0};
   void *p;
   wint_t wc;
 #if HAVE_SETLOCALE
@@ -100,18 +104,20 @@ int main(int argc, char *argv[]) {
 #endif
 
   struct wcjson wcjson = WCJSON_INITIALIZER;
+  optparse_init(&options, argv);
+  options.permute = 0;
 
-  while ((ch = getopt(argc, argv, "i:o:d:e:m:ar")) != -1) {
+  while ((ch = optparse(&options, "i:o:d:e:m:ar")) != -1) {
     switch (ch) {
     case 'i':
-      i = optarg;
+      i = options.optarg;
       break;
     case 'o':
-      o = optarg;
+      o = options.optarg;
       break;
     case 'd':
 #if HAVE_SETLOCALE
-      d = optarg;
+      d = options.optarg;
       break;
 #else
       fputws(L"wcjson: setlocale: -d not supported on this platform\n", stderr);
@@ -120,7 +126,7 @@ int main(int argc, char *argv[]) {
       break;
     case 'e':
 #if HAVE_SETLOCALE
-      e = optarg;
+      e = options.optarg;
       break;
 #else
       fputws(L"wcjson: setlocale: -e not supported on this platform\n", stderr);
@@ -128,10 +134,10 @@ int main(int argc, char *argv[]) {
 #endif
     case 'm':
       errno = 0;
-      const long long m = strtoll(optarg, &ep, 0);
+      const long long m = strtoll(options.optarg, &ep, 0);
 
       if (errno != 0) {
-        perror(optarg);
+        perror(options.optarg);
         usage();
       }
 
@@ -160,8 +166,8 @@ int main(int argc, char *argv[]) {
       usage();
     }
   }
-  argc -= optind;
-  argv += optind;
+  argc -= options.optind;
+  argv += options.optind;
 
   if (argc || *argv)
     usage();
