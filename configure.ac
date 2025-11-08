@@ -136,6 +136,7 @@ if test $wcjson_cv_wchar_t_is_utf8 = "yes"; then
 fi
 
 AX_CHECK_COMPILE_FLAG([-std=c2x], [CFLAGS="$CFLAGS -std=c2x"])
+AX_CHECK_COMPILE_FLAG([-pedantic], [CFLAGS="$CFLAGS -pedantic"])
 AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
 AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
 AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])
