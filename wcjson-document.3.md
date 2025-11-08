@@ -536,7 +536,7 @@ function gets the value of a key value pair from an object.
 
 The
 **wcjson\_document\_string**()
-function adds the wide string
+function copies the wide string
 *s*
 of length
 *len*
@@ -550,11 +550,11 @@ needs to point to available memory, the
 *s\_nitems*
 member needs to be set to the number of items available in that array and the
 *s\_next*
-member needs to be set to the index of the next item in that array.
+member needs to be set to the index of the item in that array.
 
 The
 **wcjson\_document\_mbstring**()
-function adds the multibyte string
+function copies the multibyte string
 *s*
 of length
 *len*
@@ -568,7 +568,7 @@ needs to point to available memory, the
 *mb\_nitems*
 member needs to be set to the number of items available in that array and the
 *mb\_next*
-member needs to be set to the index of the next item in that array.
+member needs to be set to the index of the item in that array.
 
 ## RETURN VALUES
 
