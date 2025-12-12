@@ -42,16 +42,7 @@ extern "C" {
 #define CLI_DEFAULT_LIMIT 16384
 #endif
 
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if HAVE_LIBBSD
-#include <bsd/stdlib.h>
-#endif
-
 #include "wcjson-document.h"
-#include "wcjson.h"
 
 extern char *__progname;
 int ascii = 0;
@@ -116,22 +107,19 @@ int main(int argc, char *argv[]) {
       o = options.optarg;
       break;
     case 'd':
-#if HAVE_SETLOCALE
       d = options.optarg;
-      break;
-#else
+#ifndef HAVE_SETLOCALE
       fputws(L"wcjson: setlocale: -d not supported on this platform\n", stderr);
       exit(3);
 #endif
       break;
     case 'e':
-#if HAVE_SETLOCALE
       e = options.optarg;
-      break;
-#else
+#ifndef HAVE_SETLOCALE
       fputws(L"wcjson: setlocale: -e not supported on this platform\n", stderr);
       exit(3);
 #endif
+      break;
     case 'm':
       errno = 0;
       const long long m = strtoll(options.optarg, &ep, 0);
@@ -180,6 +168,8 @@ int main(int argc, char *argv[]) {
   }
   if (report)
     fwprintf(stdout, L"Input locale: %s\n", locale);
+#else
+  fprintf(stderr, "%s\n", d != NULL ? d : "");
 #endif
 
   if (i != NULL)
@@ -209,7 +199,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  if ((p = recallocarray(json, json_len, len, sizeof(wchar_t))) == NULL)
+  if ((p = realloc(json, len * sizeof(wchar_t))) == NULL)
     goto err;
 
   json = p;
@@ -257,8 +247,8 @@ int main(int argc, char *argv[]) {
     goto err;
   }
 
-  if ((p = recallocarray(values, v_nitems, doc.v_nitems_cnt,
-                         sizeof(struct wcjson_value))) == NULL)
+  if ((p = realloc(values, doc.v_nitems_cnt * sizeof(struct wcjson_value))) ==
+      NULL)
     goto err;
 
   values = p;
@@ -337,6 +327,8 @@ int main(int argc, char *argv[]) {
   }
   if (report)
     fwprintf(stdout, L"Output locale: %s\n", locale);
+#else
+  fprintf(stderr, "%s\n", e != NULL ? e : "");
 #endif
 
   if (o != NULL && !report && (out = fopen(o, "w")) == NULL)

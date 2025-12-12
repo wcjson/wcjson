@@ -28,11 +28,15 @@ AC_PROG_MAKE_SET
 
 LT_INIT
 
+AX_CHECK_COMPILE_FLAG([-std=c2x],
+                      [CFLAGS="$CFLAGS -std=c2x"])
+AX_CHECK_COMPILE_FLAG([-pedantic],
+                      [CFLAGS="$CFLAGS -pedantic"])
+
 # Checks for libraries.
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h
-                  unistd.h
                   wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -46,7 +50,6 @@ AC_CHECK_SIZEOF([wchar_t])
 # Checks for library functions.
 AC_CHECK_FUNCS([setlocale])
 AC_FUNC_REALLOC
-AC_CHECK_LIB(bsd, recallocarray)
 
 # Defaults
 
@@ -90,7 +93,7 @@ AC_CACHE_CHECK([whether the wide literal encoding is UTF-32],
                [AC_RUN_IFELSE(
   [AC_LANG_PROGRAM([
 #ifdef HAVE_WCHAR_H
-#include<wchar.h>
+#include <wchar.h>
 #endif
 wchar_t *s = L"\U0010FFFF";],
   [return sizeof(wchar_t) >= 4 && wcslen(s) == 1 && *s == 0x10FFFF ? 0 : 1;])],
@@ -135,32 +138,54 @@ if test $wcjson_cv_wchar_t_is_utf8 = "yes"; then
   AC_DEFINE_UNQUOTED(WCHAR_T_UTF8, [1], [wchar_t is UTF-8])
 fi
 
-AX_CHECK_COMPILE_FLAG([-std=c2x], [CFLAGS="$CFLAGS -std=c2x"])
-AX_CHECK_COMPILE_FLAG([-pedantic], [CFLAGS="$CFLAGS -pedantic"])
-AX_CHECK_COMPILE_FLAG([-Werror], [CFLAGS="$CFLAGS -Werror"])
-AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
-AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])
-AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [CFLAGS="$CFLAGS -Wstrict-prototypes"])
-AX_CHECK_COMPILE_FLAG([-Wmissing-prototypes], [CFLAGS="$CFLAGS -Wmissing-prototypes"])
-AX_CHECK_COMPILE_FLAG([-Wmissing-declarations], [CFLAGS="$CFLAGS -Wmissing-declarations"])
-AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
-AX_CHECK_COMPILE_FLAG([-Wpointer-arith], [CFLAGS="$CFLAGS -Wpointer-arith"])
-AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CFLAGS="$CFLAGS -Wcast-qual"])
-AX_CHECK_COMPILE_FLAG([-Wsign-compare], [CFLAGS="$CFLAGS -Wsign-compare"])
-AX_CHECK_COMPILE_FLAG([-Walloca], [CFLAGS="$CFLAGS -Walloca"])
-AX_CHECK_COMPILE_FLAG([-Warray-parameter], [CFLAGS="$CFLAGS -Warray-parameter"])
-AX_CHECK_COMPILE_FLAG([-Wbad-function-cast], [CFLAGS="$CFLAGS -Wbad-function-cast"])
-AX_CHECK_COMPILE_FLAG([-Wbool-operation], [CFLAGS="$CFLAGS -Wbool-operation"])
-AX_CHECK_COMPILE_FLAG([-Wcast-align], [CFLAGS="$CFLAGS -Wcast-align"])
-AX_CHECK_COMPILE_FLAG([-Wcast-function-type], [CFLAGS="$CFLAGS -Wcast-function-type"])
-AX_CHECK_COMPILE_FLAG([-Wcomment], [CFLAGS="$CFLAGS -Wcomment"])
-AX_CHECK_COMPILE_FLAG([-Wconditional-uninitialized], [CFLAGS="$CFLAGS -Wconditional-uninitialized"])
-AX_CHECK_COMPILE_FLAG([-Wconversion], [CFLAGS="$CFLAGS -Wconversion"])
-AX_CHECK_COMPILE_FLAG([-Wdeprecated], [CFLAGS="$CFLAGS -Wdeprecated"])
-AX_CHECK_COMPILE_FLAG([-Wfloat-conversion], [CFLAGS="$CFLAGS -Wfloat-conversion"])
-AX_CHECK_COMPILE_FLAG([-Wformat-pedantic], [CFLAGS="$CFLAGS -Wformat-pedantic"])
-AX_CHECK_COMPILE_FLAG([-Wformat-signedness], [CFLAGS="$CFLAGS -Wformat-signedness"])
-AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CFLAGS="$CFLAGS -Wno-unused-parameter"])
+AX_CHECK_COMPILE_FLAG([-Werror],
+                      [CFLAGS="$CFLAGS -Werror"])
+AX_CHECK_COMPILE_FLAG([-Wall],
+                      [CFLAGS="$CFLAGS -Wall"])
+AX_CHECK_COMPILE_FLAG([-Wextra],
+                      [CFLAGS="$CFLAGS -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes],
+                      [CFLAGS="$CFLAGS -Wstrict-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-prototypes],
+                      [CFLAGS="$CFLAGS -Wmissing-prototypes"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-declarations],
+                      [CFLAGS="$CFLAGS -Wmissing-declarations"])
+AX_CHECK_COMPILE_FLAG([-Wshadow],
+                      [CFLAGS="$CFLAGS -Wshadow"])
+AX_CHECK_COMPILE_FLAG([-Wpointer-arith],
+                      [CFLAGS="$CFLAGS -Wpointer-arith"])
+AX_CHECK_COMPILE_FLAG([-Wcast-qual],
+                      [CFLAGS="$CFLAGS -Wcast-qual"])
+AX_CHECK_COMPILE_FLAG([-Wsign-compare],
+                      [CFLAGS="$CFLAGS -Wsign-compare"])
+AX_CHECK_COMPILE_FLAG([-Walloca],
+                      [CFLAGS="$CFLAGS -Walloca"])
+AX_CHECK_COMPILE_FLAG([-Warray-parameter],
+                      [CFLAGS="$CFLAGS -Warray-parameter"])
+AX_CHECK_COMPILE_FLAG([-Wbad-function-cast],
+                      [CFLAGS="$CFLAGS -Wbad-function-cast"])
+AX_CHECK_COMPILE_FLAG([-Wbool-operation],
+                      [CFLAGS="$CFLAGS -Wbool-operation"])
+AX_CHECK_COMPILE_FLAG([-Wcast-align],
+                      [CFLAGS="$CFLAGS -Wcast-align"])
+AX_CHECK_COMPILE_FLAG([-Wcast-function-type],
+                      [CFLAGS="$CFLAGS -Wcast-function-type"])
+AX_CHECK_COMPILE_FLAG([-Wcomment],
+                      [CFLAGS="$CFLAGS -Wcomment"])
+AX_CHECK_COMPILE_FLAG([-Wconditional-uninitialized],
+                      [CFLAGS="$CFLAGS -Wconditional-uninitialized"])
+AX_CHECK_COMPILE_FLAG([-Wconversion],
+                      [CFLAGS="$CFLAGS -Wconversion"])
+AX_CHECK_COMPILE_FLAG([-Wdeprecated],
+                      [CFLAGS="$CFLAGS -Wdeprecated"])
+AX_CHECK_COMPILE_FLAG([-Wfloat-conversion],
+                      [CFLAGS="$CFLAGS -Wfloat-conversion"])
+AX_CHECK_COMPILE_FLAG([-Wformat-pedantic],
+                      [CFLAGS="$CFLAGS -Wformat-pedantic"])
+AX_CHECK_COMPILE_FLAG([-Wformat-signedness],
+                      [CFLAGS="$CFLAGS -Wformat-signedness"])
+AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter],
+                      [CFLAGS="$CFLAGS -Wno-unused-parameter"])
 
 
 AC_CONFIG_FILES([Makefile
