@@ -5,6 +5,9 @@ AC_PREREQ([2.72])
 AC_INIT([wcjson], [0.23], [cs@schulte.it], [wcjson], [http://wcjson.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
 
+AC_SUBST(wcjson_pkgconf_version, [0.0.0])
+AC_SUBST(wcjson_version_info, [0:0:0])
+
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/wcjson.h])
 AC_CONFIG_TESTDIR([tests])
@@ -38,8 +41,7 @@ AX_CHECK_COMPILE_FLAG([-pedantic],
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdint.h
-                  wchar.h])
+AC_CHECK_HEADERS([wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -191,6 +193,7 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter],
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/wcjson.pc
                  tests/Makefile
                  tests/atlocal
                  compat/Makefile])

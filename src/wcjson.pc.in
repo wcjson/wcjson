@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: WCJSON
+Description: Wide Character JSON for C
+Version: @wcjson_pkgconf_version@
+Requires:
+Requires.private:
+Libs: -L${libdir} -lwcjson
+Libs.private:
+Cflags: -I${includedir}

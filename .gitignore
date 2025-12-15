@@ -32,6 +32,8 @@ testsuite
 /install-sh
 /missing
 stamp-h1
+wcjson.pc
+test-cli
 
 # https://www.gnu.org/software/libtool/
 
