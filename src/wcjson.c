@@ -270,8 +270,9 @@ static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
 #define __limit 0xffff
 #elif defined(WCHAR_T_UTF8)
 #define __limit 0xff
-#elif
-#error "Wide character literal encoding implementation not found."
+#else
+#define __limit 0
+#error "Wide character literal encoding not defined"
 #endif
   for (; ss->pos < ss->len; ss->pos++)
     if (!((ss->txt[ss->pos] >= (wchar_t)0x20 &&
@@ -1042,8 +1043,8 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
           }
           d_len -= u_len - 1;
           d += u_len;
-#elif
-#error "Wide character literal encoding implementation not found."
+#else
+#error "Wide character literal encoding not defined"
 #endif
         } else
           *d++ = *s++;
@@ -1226,8 +1227,8 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
             d_len -= 3;
           } else
             goto err_ilseq;
-#elif
-#error "Wide character literal encoding implementation not found."
+#else
+#error "Wide character literal encoding not defined"
 #endif
           if (s_len == SIZE_MAX)
             goto err_range;
