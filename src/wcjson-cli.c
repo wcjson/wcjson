@@ -81,7 +81,7 @@ static _Noreturn void usage(void) {
 
 int main(int argc, char *argv[]) {
   int ch;
-  char *i = NULL, *o = NULL, *d = NULL, *e = NULL, *ep = NULL;
+  char *i = NULL, *o = NULL, *ep = NULL;
   size_t limit = CLI_DEFAULT_LIMIT, len, total_bytes = 0;
   FILE *in = stdin, *out = stdout;
   wchar_t *json = NULL, *strings = NULL, *esc = NULL, *outb = NULL;
@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
   wint_t wc;
 #ifdef HAVE_SETLOCALE
   char *locale;
+  char *d = NULL, *e = NULL;
 #endif
 
   struct wcjson wcjson = WCJSON_INITIALIZER;
@@ -106,20 +107,14 @@ int main(int argc, char *argv[]) {
     case 'o':
       o = options.optarg;
       break;
+#ifdef HAVE_SETLOCALE
     case 'd':
       d = options.optarg;
-#ifndef HAVE_SETLOCALE
-      fputws(L"wcjson: setlocale: -d not supported on this platform\n", stderr);
-      exit(3);
-#endif
       break;
     case 'e':
       e = options.optarg;
-#ifndef HAVE_SETLOCALE
-      fputws(L"wcjson: setlocale: -e not supported on this platform\n", stderr);
-      exit(3);
-#endif
       break;
+#endif
     case 'm':
       errno = 0;
       const long long m = strtoll(options.optarg, &ep, 0);
@@ -168,8 +163,6 @@ int main(int argc, char *argv[]) {
   }
   if (report)
     fwprintf(stdout, L"Input locale: %s\n", locale);
-#else
-  fprintf(stderr, "%s\n", d != NULL ? d : "");
 #endif
 
   if (i != NULL)
@@ -327,8 +320,6 @@ int main(int argc, char *argv[]) {
   }
   if (report)
     fwprintf(stdout, L"Output locale: %s\n", locale);
-#else
-  fprintf(stderr, "%s\n", e != NULL ? e : "");
 #endif
 
   if (o != NULL && !report && (out = fopen(o, "w")) == NULL)
