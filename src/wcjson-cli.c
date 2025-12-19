@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
   struct optparse options = {0};
   void *p;
   wint_t wc;
-#if HAVE_SETLOCALE
+#ifdef HAVE_SETLOCALE
   char *locale;
 #endif
 
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
   if (argc || *argv)
     usage();
 
-#if HAVE_SETLOCALE
+#ifdef HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, d != NULL ? d : "");
   if (locale == NULL) {
     errno = EINVAL;
@@ -319,7 +319,7 @@ int main(int argc, char *argv[]) {
   doc.esc = esc;
   doc.e_nitems = doc.e_nitems_cnt;
 
-#if HAVE_SETLOCALE
+#ifdef HAVE_SETLOCALE
   locale = setlocale(LC_CTYPE, e != NULL ? e : "");
   if (locale == NULL) {
     errno = EINVAL;
