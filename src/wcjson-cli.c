@@ -44,11 +44,10 @@ extern "C" {
 
 #include "wcjson-document.h"
 
-extern char *__progname;
 int ascii = 0;
 int report = 0;
 
-static _Noreturn void fail(struct wcjson *ctx) {
+static void fail(struct wcjson *ctx) {
   int ret = 3;
 
   switch (ctx->status) {
@@ -71,11 +70,9 @@ static _Noreturn void fail(struct wcjson *ctx) {
   exit(ret);
 }
 
-static _Noreturn void usage(void) {
-  fprintf(stderr,
-          "usage: %s [-i file] [-o file] [-d locale] [-e locale] [-a] [-r] [-m "
-          "bytes]\n",
-          __progname);
+static void usage(void) {
+  fprintf(stderr, "usage: wcjson [-i file] [-o file] [-d locale] [-e locale] "
+                  "[-a] [-r] [-m bytes]\n");
   exit(3);
 }
 
@@ -162,7 +159,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
   if (report)
-    fwprintf(stdout, L"Input locale: %s\n", locale);
+    fprintf(stdout, "Input locale: %s\n", locale);
 #endif
 
   if (i != NULL)
@@ -199,8 +196,8 @@ int main(int argc, char *argv[]) {
 
   if (report) {
     total_bytes += len * sizeof(wchar_t);
-    fwprintf(stdout, L"Input characters: %lld\n", len);
-    fwprintf(stdout, L"Input characters (byte): %lld\n", len * sizeof(wchar_t));
+    fprintf(stdout, "Input characters: %lld\n", len);
+    fprintf(stdout, "Input characters (byte): %lld\n", len * sizeof(wchar_t));
   }
 
   limit -= sizeof(wchar_t) * len;
@@ -223,12 +220,12 @@ int main(int argc, char *argv[]) {
   int r = wcjsondocvalues(&wcjson, &doc, json, len);
 
   if (report) {
-    fwprintf(stdout, L"Values: %lld\n", doc.v_nitems_cnt);
-    fwprintf(stdout, L"Values (byte): %lld\n",
-             doc.v_nitems_cnt * sizeof(struct wcjson_value));
-    fwprintf(stdout, L"Wide string characters: %lld\n", doc.s_nitems_cnt);
-    fwprintf(stdout, L"Wide string characters (byte): %lld\n",
-             doc.s_nitems_cnt * sizeof(wchar_t));
+    fprintf(stdout, "Values: %lld\n", doc.v_nitems_cnt);
+    fprintf(stdout, "Values (byte): %lld\n",
+            doc.v_nitems_cnt * sizeof(struct wcjson_value));
+    fprintf(stdout, "Wide string characters: %lld\n", doc.s_nitems_cnt);
+    fprintf(stdout, "Wide string characters (byte): %lld\n",
+            doc.s_nitems_cnt * sizeof(wchar_t));
     total_bytes += doc.s_nitems_cnt * sizeof(wchar_t);
     total_bytes += doc.v_nitems_cnt * sizeof(struct wcjson_value);
   }
@@ -270,12 +267,12 @@ int main(int argc, char *argv[]) {
   if (report) {
     total_bytes += doc.mb_nitems_cnt * sizeof(char);
     total_bytes += doc.e_nitems_cnt * sizeof(wchar_t);
-    fwprintf(stdout, L"Multibyte string characters: %lld\n", doc.mb_nitems_cnt);
-    fwprintf(stdout, L"Multibyte string  characters (byte): %lld\n",
-             doc.mb_nitems_cnt * sizeof(char));
-    fwprintf(stdout, L"Escape sequence characters: %lld\n", doc.e_nitems_cnt);
-    fwprintf(stdout, L"Escape sequence characters (byte): %lld\n",
-             doc.e_nitems_cnt * sizeof(wchar_t));
+    fprintf(stdout, "Multibyte string characters: %lld\n", doc.mb_nitems_cnt);
+    fprintf(stdout, "Multibyte string  characters (byte): %lld\n",
+            doc.mb_nitems_cnt * sizeof(char));
+    fprintf(stdout, "Escape sequence characters: %lld\n", doc.e_nitems_cnt);
+    fprintf(stdout, "Escape sequence characters (byte): %lld\n",
+            doc.e_nitems_cnt * sizeof(wchar_t));
   }
 
   limit -= doc.s_nitems_cnt * sizeof(wchar_t);
@@ -319,7 +316,7 @@ int main(int argc, char *argv[]) {
     goto err;
   }
   if (report)
-    fwprintf(stdout, L"Output locale: %s\n", locale);
+    fprintf(stdout, "Output locale: %s\n", locale);
 #endif
 
   if (o != NULL && !report && (out = fopen(o, "w")) == NULL)
@@ -354,10 +351,10 @@ int main(int argc, char *argv[]) {
     }
 
     total_bytes += o_nitems * sizeof(wchar_t);
-    fwprintf(stdout, L"Output characters: %lld\n", o_nitems);
-    fwprintf(stdout, L"Output characters (byte): %lld\n",
-             o_nitems * sizeof(wchar_t));
-    fwprintf(stdout, L"Free memory (byte): %lld\n", limit);
+    fprintf(stdout, "Output characters: %lld\n", o_nitems);
+    fprintf(stdout, "Output characters (byte): %lld\n",
+            o_nitems * sizeof(wchar_t));
+    fprintf(stdout, "Free memory (byte): %lld\n", limit);
   } else if (ascii) {
     if (wcjsondocfprintasc(out, &doc, doc.values) < 0)
       goto err;
@@ -371,7 +368,7 @@ int main(int argc, char *argv[]) {
     goto err;
 
   if (report)
-    fwprintf(stdout, L"Total bytes: %lld\n", total_bytes);
+    fprintf(stdout, "Total bytes: %lld\n", total_bytes);
 
   free(json);
   free(values);

@@ -75,7 +75,7 @@ endif()
 if(HAVE_SETLOCALE)
 	add_compile_definitions(HAVE_SETLOCALE)
 endif()
-	
+
 add_library(wcjson-lib)
 
 target_sources(
