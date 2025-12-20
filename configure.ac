@@ -29,7 +29,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 LT_INIT
 
@@ -196,5 +195,7 @@ AC_CONFIG_FILES([Makefile
                  src/wcjson.pc
                  tests/Makefile
                  tests/atlocal
-                 compat/Makefile])
+                 compat/Makefile
+                 cmake/Makefile])
+
 AC_OUTPUT
