@@ -101,7 +101,6 @@ target_sources(
 
 	PRIVATE
 	    src/wcjson-cli.c
-
 )
 
 target_link_libraries(
