@@ -29,6 +29,16 @@ extern "C" {
 #include <stddef.h>
 #include <wchar.h>
 
+#ifdef HAVE_WCJSON_EXPORT_H
+#include <wcjson_export.h>
+#else
+#define WCJSON_EXPORT
+#define WCJSON_NO_EXPORT
+#define WCJSON_DEPRECATED
+#define WCJSON_DEPRECATED_EXPORT
+#define WCJSON_DEPRECATED_NO_EXPORT
+#endif
+
 /**
  * Maximum number of wide characters escaping of a single wide character may
  * require. The worst case currently is when a single wide character needs to
@@ -56,6 +66,7 @@ struct wcjson {
   int errnum;
 };
 
+/** Macro expanding to a rvalue expression initializing a wcjson structure. */
 #define WCJSON_INITIALIZER                                                     \
   {                                                                            \
       .status = WCJSON_OK,                                                     \
@@ -159,8 +170,8 @@ struct wcjson_ops {
  * @param len The number of wide characters to process.
  * @return 0 on success, <0 on failure.
  */
-int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops, void *doc,
-           const wchar_t *txt, const size_t len);
+WCJSON_EXPORT int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops,
+                         void *doc, const wchar_t *txt, const size_t len);
 
 /**
  * Encodes wide characters to a JSON string.
@@ -171,7 +182,8 @@ int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops, void *doc,
  * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
+WCJSON_EXPORT int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d,
+                              size_t *d_lenp);
 
 /**
  * Encodes wide characters to a JSON 7bit ASCII string,
@@ -182,7 +194,8 @@ int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
  * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
+WCJSON_EXPORT int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d,
+                               size_t *d_lenp);
 
 /**
  * Decodes a JSON string to wide characters.
@@ -193,7 +206,8 @@ int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
  * number of wide characters written to d on return.
  * @return 0 on success, <0 on failure.
  */
-int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp);
+WCJSON_EXPORT int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d,
+                              size_t *d_lenp);
 
 #ifdef __cplusplus
 }

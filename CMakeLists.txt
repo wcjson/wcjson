@@ -26,6 +26,7 @@ project(
 include(CheckCSourceRuns)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(GenerateExportHeader)
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
@@ -93,10 +94,42 @@ if(HAVE_SETLOCALE)
 	add_compile_definitions(HAVE_SETLOCALE)
 endif()
 
-add_library(wcjson-lib)
+add_library(libwcjson)
+add_executable(wcjson)
+
+if(BUILD_SHARED_LIBS)
+	generate_export_header(
+		libwcjson
+		BASE_NAME WCJSON
+		EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/wcjson_export.h
+	)
+
+	target_compile_definitions(
+		libwcjson
+		PUBLIC
+		    WCJSON_HAVE_EXPORT_H
+	)
+
+	target_compile_definitions(
+		wcjson
+		PRIVATE
+		    WCJSON_HAVE_EXPORT_H
+	)
+
+	target_include_directories(
+		libwcjson
+		PUBLIC
+		    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+	)
+
+	install(
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/wcjson_export.h
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	)
+endif()
 
 target_sources(
-	wcjson-lib
+	libwcjson
 
 	PRIVATE
 	    src/wcjson.c
@@ -111,38 +144,36 @@ target_sources(
 	        src/wcjson-document.h
 )
 
-add_executable(wcjson-cli)
-
 target_sources(
-	wcjson-cli
+	wcjson
 
 	PRIVATE
 	    src/wcjson-cli.c
 )
 
 target_link_libraries(
-	wcjson-cli
+	wcjson
 
 	PRIVATE
-	    wcjson-lib
+	    libwcjson
 )
 
 set_target_properties(
-	wcjson-lib
+	libwcjson
 
 	PROPERTIES
 	    OUTPUT_NAME wcjson
 )
 
 set_target_properties(
-	wcjson-cli
+	wcjson
 
 	PROPERTIES
 	    OUTPUT_NAME wcjson
 )
 
 install(
-	TARGETS wcjson-lib wcjson-cli
+	TARGETS libwcjson wcjson
 	EXPORT wcjsonTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

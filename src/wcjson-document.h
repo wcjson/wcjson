@@ -70,6 +70,10 @@ struct wcjson_document {
   size_t e_nitems_cnt;
 };
 
+/**
+ * Macro expanding to a rvalue expression initializing a wcjson_document
+ * structure.
+ */
 #define WCJSON_DOCUMENT_INITIALIZER                                            \
   {                                                                            \
       .values = NULL,                                                          \
@@ -93,7 +97,8 @@ struct wcjson_document {
  * @param doc The document to create the value in.
  * @return A null value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_null(struct wcjson_document *doc);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_null(struct wcjson_document *doc);
 
 /**
  * Creates a boolean value in a document.
@@ -101,8 +106,8 @@ struct wcjson_value *wcjson_value_null(struct wcjson_document *doc);
  * @param val The value of the boolean value.
  * @return A boolean value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_bool(struct wcjson_document *doc,
-                                       const bool val);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_bool(struct wcjson_document *doc, const bool val);
 
 /**
  * Creates a string value in a document.
@@ -112,8 +117,9 @@ struct wcjson_value *wcjson_value_bool(struct wcjson_document *doc,
  * zero character.
  * @return A string value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_string(struct wcjson_document *doc,
-                                         const wchar_t *val, const size_t len);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_string(struct wcjson_document *doc, const wchar_t *val,
+                    const size_t len);
 
 /**
  * Creates a number value in a document.
@@ -123,22 +129,25 @@ struct wcjson_value *wcjson_value_string(struct wcjson_document *doc,
  * zero character.
  * @return A number value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_number(struct wcjson_document *doc,
-                                         const wchar_t *val, const size_t len);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_number(struct wcjson_document *doc, const wchar_t *val,
+                    const size_t len);
 
 /**
  * Creates an object value in a document.
  * @param doc The document to create the value in.
  * @return An object value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_object(struct wcjson_document *doc);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_object(struct wcjson_document *doc);
 
 /**
  * Creates an array value in a document.
  * @param doc The document to create the value in.
  * @return An array value or NULL if the document cannot provide more values.
  */
-struct wcjson_value *wcjson_value_array(struct wcjson_document *doc);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_value_array(struct wcjson_document *doc);
 
 /**
  * Accessor macro to get the head value of the child value list of a value.
@@ -189,8 +198,9 @@ struct wcjson_value *wcjson_value_array(struct wcjson_document *doc);
  * @param val The value to add.
  * @return 0 on success or <0 if adding fails.
  */
-int wcjson_array_add_head(const struct wcjson_document *doc,
-                          struct wcjson_value *arr, struct wcjson_value *val);
+WCJSON_EXPORT int wcjson_array_add_head(const struct wcjson_document *doc,
+                                        struct wcjson_value *arr,
+                                        struct wcjson_value *val);
 
 /**
  * Adds a value to the tail of the child value list of an array.
@@ -199,8 +209,9 @@ int wcjson_array_add_head(const struct wcjson_document *doc,
  * @param val The value to add.
  * @return 0 on success or <0 if adding fails.
  */
-int wcjson_array_add_tail(const struct wcjson_document *doc,
-                          struct wcjson_value *arr, struct wcjson_value *val);
+WCJSON_EXPORT int wcjson_array_add_tail(const struct wcjson_document *doc,
+                                        struct wcjson_value *arr,
+                                        struct wcjson_value *val);
 
 /**
  * Gets a value from an array.
@@ -209,9 +220,9 @@ int wcjson_array_add_tail(const struct wcjson_document *doc,
  * @param idx The index of the value to get.
  * @return The value at idx from arr or NULL if no such value is found.
  */
-struct wcjson_value *wcjson_array_get(const struct wcjson_document *doc,
-                                      const struct wcjson_value *arr,
-                                      const size_t idx);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_array_get(const struct wcjson_document *doc,
+                 const struct wcjson_value *arr, const size_t idx);
 
 /**
  * Removes a value from an array.
@@ -220,9 +231,9 @@ struct wcjson_value *wcjson_array_get(const struct wcjson_document *doc,
  * @param idx The index of the value to remove.
  * @return The removed value at idx from arr or NULL if no such value is found.
  */
-struct wcjson_value *wcjson_array_remove(const struct wcjson_document *doc,
-                                         struct wcjson_value *arr,
-                                         const size_t idx);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_array_remove(const struct wcjson_document *doc, struct wcjson_value *arr,
+                    const size_t idx);
 
 /**
  * Adds a key value pair to the head of the child value list of an object.
@@ -234,9 +245,10 @@ struct wcjson_value *wcjson_array_remove(const struct wcjson_document *doc,
  * @param val The value of the key value pair to add.
  * @return 0 on success or <0 if adding fails.
  */
-int wcjson_object_add_head(struct wcjson_document *doc,
-                           struct wcjson_value *obj, const wchar_t *key,
-                           const size_t len, const struct wcjson_value *val);
+WCJSON_EXPORT int wcjson_object_add_head(struct wcjson_document *doc,
+                                         struct wcjson_value *obj,
+                                         const wchar_t *key, const size_t len,
+                                         const struct wcjson_value *val);
 
 /**
  * Adds a key value pair to the tail of the child value list of an object.
@@ -248,9 +260,10 @@ int wcjson_object_add_head(struct wcjson_document *doc,
  * @param val The value of the key value pair to add.
  * @return 0 on success or <0 if adding fails.
  */
-int wcjson_object_add_tail(struct wcjson_document *doc,
-                           struct wcjson_value *obj, const wchar_t *key,
-                           const size_t len, const struct wcjson_value *val);
+WCJSON_EXPORT int wcjson_object_add_tail(struct wcjson_document *doc,
+                                         struct wcjson_value *obj,
+                                         const wchar_t *key, const size_t len,
+                                         const struct wcjson_value *val);
 
 /**
  * Removes a key value pair from an object.
@@ -261,9 +274,10 @@ int wcjson_object_add_tail(struct wcjson_document *doc,
  * zero character.
  * @return The first value matching key or NULL if no such value is found.
  */
-struct wcjson_value *wcjson_object_remove(const struct wcjson_document *doc,
-                                          struct wcjson_value *obj,
-                                          const wchar_t *key, const size_t len);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_object_remove(const struct wcjson_document *doc,
+                     struct wcjson_value *obj, const wchar_t *key,
+                     const size_t len);
 
 /**
  * Gets a value from an object.
@@ -274,9 +288,10 @@ struct wcjson_value *wcjson_object_remove(const struct wcjson_document *doc,
  * zero character.
  * @return The first value matching key or NULL if no such value is found.
  */
-struct wcjson_value *wcjson_object_get(const struct wcjson_document *doc,
-                                       const struct wcjson_value *obj,
-                                       const wchar_t *key, const size_t len);
+WCJSON_EXPORT struct wcjson_value *
+wcjson_object_get(const struct wcjson_document *doc,
+                  const struct wcjson_value *obj, const wchar_t *key,
+                  const size_t len);
 
 /**
  * Adds a wide string to a document.
@@ -287,8 +302,9 @@ struct wcjson_value *wcjson_object_get(const struct wcjson_document *doc,
  * @return A pointer to the string or NULL if the document cannot hold the
  * string.
  */
-wchar_t *wcjson_document_string(struct wcjson_document *doc, const wchar_t *s,
-                                const size_t len);
+WCJSON_EXPORT wchar_t *wcjson_document_string(struct wcjson_document *doc,
+                                              const wchar_t *s,
+                                              const size_t len);
 
 /**
  * Adds a multibyte string to a document.
@@ -299,8 +315,8 @@ wchar_t *wcjson_document_string(struct wcjson_document *doc, const wchar_t *s,
  * @return A pointer to the string or NULL if the document cannot holds the
  * string.
  */
-char *wcjson_document_mbstring(struct wcjson_document *doc, const char *s,
-                               const size_t len);
+WCJSON_EXPORT char *wcjson_document_mbstring(struct wcjson_document *doc,
+                                             const char *s, const size_t len);
 
 /**
  * Deserializes JSON text to populate a document.
@@ -310,8 +326,9 @@ char *wcjson_document_mbstring(struct wcjson_document *doc, const char *s,
  * @param len Number of characters to deserialize.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
-                    const wchar_t *txt, const size_t len);
+WCJSON_EXPORT int wcjsondocvalues(struct wcjson *ctx,
+                                  struct wcjson_document *doc,
+                                  const wchar_t *txt, const size_t len);
 
 /**
  * Decodes all string and number values in a document by unapplying JSON
@@ -320,7 +337,8 @@ int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,
  * @param doc Document to process.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc);
+WCJSON_EXPORT int wcjsondocstrings(struct wcjson *ctx,
+                                   struct wcjson_document *doc);
 
 /**
  * Creates multibyte strings for all string and number values in a document by
@@ -329,7 +347,8 @@ int wcjsondocstrings(struct wcjson *ctx, struct wcjson_document *doc);
  * @param doc Document to process.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocmbstrings(struct wcjson *ctx, struct wcjson_document *doc);
+WCJSON_EXPORT int wcjsondocmbstrings(struct wcjson *ctx,
+                                     struct wcjson_document *doc);
 
 /**
  * Serializes a JSON document to a wide character file.
@@ -338,8 +357,8 @@ int wcjsondocmbstrings(struct wcjson *ctx, struct wcjson_document *doc);
  * @param value The value to serialize.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,
-                    const struct wcjson_value *value);
+WCJSON_EXPORT int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,
+                                  const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a 7 bit ASCII file.
@@ -348,8 +367,8 @@ int wcjsondocfprint(FILE *f, const struct wcjson_document *doc,
  * @param value The value to serialize.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc,
-                       const struct wcjson_value *value);
+WCJSON_EXPORT int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc,
+                                     const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a wide character string.
@@ -360,8 +379,9 @@ int wcjsondocfprintasc(FILE *f, const struct wcjson_document *doc,
  * @param value The value to serialize.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocsprint(wchar_t *s, size_t *lenp, const struct wcjson_document *doc,
-                    const struct wcjson_value *value);
+WCJSON_EXPORT int wcjsondocsprint(wchar_t *s, size_t *lenp,
+                                  const struct wcjson_document *doc,
+                                  const struct wcjson_value *value);
 
 /**
  * Serializes a JSON document to a 7 bit ASCII string.
@@ -372,9 +392,9 @@ int wcjsondocsprint(wchar_t *s, size_t *lenp, const struct wcjson_document *doc,
  * @param value The value to serialize.
  * @return 0 on success or <0 on failure.
  */
-int wcjsondocsprintasc(wchar_t *s, size_t *lenp,
-                       const struct wcjson_document *doc,
-                       const struct wcjson_value *value);
+WCJSON_EXPORT int wcjsondocsprintasc(wchar_t *s, size_t *lenp,
+                                     const struct wcjson_document *doc,
+                                     const struct wcjson_value *value);
 
 #ifdef __cplusplus
 }
