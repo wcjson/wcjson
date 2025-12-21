@@ -26,7 +26,6 @@ project(
 include(CheckCSourceRuns)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(CPack)
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
@@ -40,6 +39,8 @@ set(CPACK_NSIS_MENU_LINKS
 	"http://wcjson.de/wcjson.3.html" "Parser Documentation"
 	"http://wcjson.de/wcjson-document.3.html" "Document Documentation"
 )
+
+include(CPack)
 
 check_c_source_runs([[
 	#include <wchar.h>
