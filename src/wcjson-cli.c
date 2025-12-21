@@ -71,8 +71,12 @@ static void fail(struct wcjson *ctx) {
 }
 
 static void usage(void) {
+#ifdef HAVE_SETLOCALE
   fprintf(stderr, "usage: wcjson [-i file] [-o file] [-d locale] [-e locale] "
                   "[-a] [-r] [-m bytes]\n");
+#else
+  fprintf(stderr, "usage: wcjson [-i file] [-o file] [-a] [-r] [-m bytes]\n");
+#endif
   exit(3);
 }
 
@@ -96,7 +100,11 @@ int main(int argc, char *argv[]) {
   optparse_init(&options, argv);
   options.permute = 0;
 
+#ifdef HAVE_SETLOCALE
   while ((ch = optparse(&options, "i:o:d:e:m:ar")) != -1) {
+#else
+  while ((ch = optparse(&options, "i:o:m:ar")) != -1) {
+#endif
     switch (ch) {
     case 'i':
       i = options.optarg;
