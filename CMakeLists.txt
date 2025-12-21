@@ -18,12 +18,21 @@ cmake_minimum_required(VERSION 3.31)
 project(
 	wcjson
 	VERSION 0.0.0
+	DESCRIPTION "Wide Character JSON for C"
+	HOMEPAGE_URL "http://wcjson.de"
 	LANGUAGES C
 )
 
 include(CheckCSourceRuns)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(CPack)
+
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
+set(CPACK_PACKAGE_VENDOR "Christian Schulte")
+set(CPACK_PACKAGE_CONTACT "cs@schulte.it")
 
 check_c_source_runs([[
 	#include <wchar.h>
