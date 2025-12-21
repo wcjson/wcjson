@@ -33,6 +33,13 @@ set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
 set(CPACK_PACKAGE_VENDOR "Christian Schulte")
 set(CPACK_PACKAGE_CONTACT "cs@schulte.it")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_EXECUTABLES "${PROJECT_NAME};wcjson")
+set(CPACK_NSIS_MENU_LINKS
+	"http://wcjson.de/wcjson.1.html" "Command Documentation"
+	"http://wcjson.de/wcjson.3.html" "Parser Documentation"
+	"http://wcjson.de/wcjson-document.3.html" "Document Documentation"
+)
 
 check_c_source_runs([[
 	#include <wchar.h>
