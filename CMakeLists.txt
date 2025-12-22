@@ -195,6 +195,8 @@ configure_package_config_file(
 	cmake/wcjsonConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/wcjsonConfig.cmake
 	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/wcjson
+	NO_SET_AND_CHECK_MACRO
+	NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
 write_basic_package_version_file(
