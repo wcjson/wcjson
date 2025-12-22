@@ -31,11 +31,25 @@ extern "C" {
 
 #ifdef HAVE_WCJSON_EXPORT_H
 #include <wcjson_export.h>
-#else
+#endif
+
+#ifndef WCJSON_EXPORT
 #define WCJSON_EXPORT
+#endif
+
+#ifndef WCJSON_NO_EXPORT
 #define WCJSON_NO_EXPORT
+#endif
+
+#ifndef WCJSON_DEPRECATED
 #define WCJSON_DEPRECATED
+#endif
+
+#ifndef WCJSON_DEPRECATED_EXPORT
 #define WCJSON_DEPRECATED_EXPORT
+#endif
+
+#ifndef WCJSON_DEPRECATED_NO_EXPORT
 #define WCJSON_DEPRECATED_NO_EXPORT
 #endif
 
