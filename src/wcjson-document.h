@@ -28,7 +28,7 @@ extern "C" {
 #include <stdio.h>
 #include <wchar.h>
 
-#include "wcjson.h"
+#include <wcjson.h>
 
 /** JSON value. */
 struct wcjson_value {
