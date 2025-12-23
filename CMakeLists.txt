@@ -170,6 +170,7 @@ set_target_properties(
 
 	PROPERTIES
 	    OUTPUT_NAME wcjson
+	    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
 )
 
 install(
