@@ -130,11 +130,9 @@ endif()
 
 target_sources(
 	libwcjson
-
 	PRIVATE
 	    src/wcjson.c
 	    src/wcjson-document.c
-
 	PUBLIC
 	    FILE_SET HEADERS
 	    BASE_DIRS
@@ -146,28 +144,24 @@ target_sources(
 
 target_sources(
 	wcjson
-
 	PRIVATE
 	    src/wcjson-cli.c
 )
 
 target_link_libraries(
 	wcjson
-
 	PRIVATE
 	    libwcjson
 )
 
 set_target_properties(
 	libwcjson
-
 	PROPERTIES
 	    OUTPUT_NAME wcjson
 )
 
 set_target_properties(
 	wcjson
-
 	PROPERTIES
 	    OUTPUT_NAME wcjson
 	    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
@@ -187,8 +181,10 @@ if(NOT WIN32)
 	configure_file(cmake/wcjson.pc.in wcjson.pc @ONLY)
 
 	install(
-		FILES ${CMAKE_BINARY_DIR}/wcjson.pc
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+		FILES
+		    ${CMAKE_BINARY_DIR}/wcjson.pc
+		DESTINATION
+		    ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 	)
 endif()
 
