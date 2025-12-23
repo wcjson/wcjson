@@ -20,7 +20,8 @@ project(
 	VERSION 0.0.0
 	DESCRIPTION "Wide Character JSON for C"
 	HOMEPAGE_URL "http://wcjson.de"
-	LANGUAGES C
+	LANGUAGES
+	    C
 )
 
 include(CheckCSourceRuns)
@@ -123,7 +124,8 @@ if(BUILD_SHARED_LIBS)
 	)
 
 	install(
-		FILES ${CMAKE_CURRENT_BINARY_DIR}/wcjson_export.h
+		FILES
+		    ${CMAKE_CURRENT_BINARY_DIR}/wcjson_export.h
 		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	)
 endif()
@@ -168,7 +170,9 @@ set_target_properties(
 )
 
 install(
-	TARGETS libwcjson wcjson
+	TARGETS
+	    libwcjson
+	    wcjson
 	EXPORT wcjsonTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -183,8 +187,7 @@ if(NOT WIN32)
 	install(
 		FILES
 		    ${CMAKE_BINARY_DIR}/wcjson.pc
-		DESTINATION
-		    ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 	)
 endif()
 
@@ -206,8 +209,7 @@ install(
 	FILES
 	    ${CMAKE_CURRENT_BINARY_DIR}/wcjsonConfig.cmake
 	    ${CMAKE_CURRENT_BINARY_DIR}/wcjsonConfigVersion.cmake
-	DESTINATION
-	    ${CMAKE_INSTALL_LIBDIR}/cmake/wcjson
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/wcjson
 )
 
 install(
