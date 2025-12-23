@@ -181,16 +181,6 @@ install(
 	FILE_SET HEADERS
 )
 
-if(NOT WIN32)
-	configure_file(cmake/wcjson.pc.in wcjson.pc @ONLY)
-
-	install(
-		FILES
-		    ${CMAKE_BINARY_DIR}/wcjson.pc
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-	)
-endif()
-
 configure_package_config_file(
 	cmake/wcjsonConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/wcjsonConfig.cmake
