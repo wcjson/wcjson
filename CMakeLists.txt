@@ -160,6 +160,8 @@ set_target_properties(
 	libwcjson
 	PROPERTIES
 	    OUTPUT_NAME wcjson
+	    VERSION ${PROJECT_VERSION}
+	    SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
 set_target_properties(
@@ -167,6 +169,7 @@ set_target_properties(
 	PROPERTIES
 	    OUTPUT_NAME wcjson
 	    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+	    VERSION ${PROJECT_VERSION}
 )
 
 install(
