@@ -102,19 +102,19 @@ if(BUILD_SHARED_LIBS)
 	generate_export_header(
 		libwcjson
 		BASE_NAME WCJSON
-		EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/wcjson-target.h
+		EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/wcjson-host.h
 	)
 
 	target_compile_definitions(
 		libwcjson
 		PUBLIC
-		    WCJSON_TARGET_H
+		    WCJSON_HOST_H
 	)
 
 	target_compile_definitions(
 		wcjson
 		PRIVATE
-		    WCJSON_TARGET_H
+		    WCJSON_HOST_H
 	)
 
 	target_include_directories(
@@ -125,7 +125,7 @@ if(BUILD_SHARED_LIBS)
 
 	install(
 		FILES
-		    ${CMAKE_CURRENT_BINARY_DIR}/wcjson-target.h
+		    ${CMAKE_CURRENT_BINARY_DIR}/wcjson-host.h
 		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	)
 endif()

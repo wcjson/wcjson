@@ -29,8 +29,8 @@ extern "C" {
 #include <stddef.h>
 #include <wchar.h>
 
-#ifdef WCJSON_TARGET_H
-#include <wcjson-target.h>
+#ifdef WCJSON_HOST_H
+#include <wcjson-host.h>
 #endif
 
 #ifndef WCJSON_EXPORT
