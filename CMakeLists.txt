@@ -133,21 +133,21 @@ endif()
 target_sources(
 	libwcjson
 	PRIVATE
-	    src/wcjson.c
-	    src/wcjson-document.c
+	    ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson.c
+	    ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson-document.c
 	PUBLIC
 	    FILE_SET HEADERS
 	    BASE_DIRS
-	        src
+	        ${CMAKE_CURRENT_SOURCE_DIR}/src
 	    FILES
-	        src/wcjson.h
-	        src/wcjson-document.h
+	        ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson.h
+	        ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson-document.h
 )
 
 target_sources(
 	wcjson
 	PRIVATE
-	    src/wcjson-cli.c
+	    ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson-cli.c
 )
 
 target_link_libraries(
@@ -185,7 +185,7 @@ install(
 )
 
 configure_package_config_file(
-	cmake/wcjsonConfig.cmake.in
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/wcjsonConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/wcjsonConfig.cmake
 	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/wcjson
 	NO_SET_AND_CHECK_MACRO
