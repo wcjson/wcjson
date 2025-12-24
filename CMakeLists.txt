@@ -57,7 +57,7 @@ check_c_source_runs([[
 	#include <wchar.h>
 	int main(int argc, char *argv[]) {
 		wchar_t *s = L"\\U0010FFFF";
-		return sizeof(wchar_t) == 2 && wcslen(s) == 2
+		return sizeof(wchar_t) >= 2 && wcslen(s) == 2
 		    && s[0] == 0xdbff && s[1] == 0xdfff ? 0 : -1;
 	}
 ]] WCHAR_T_UTF16)
@@ -66,7 +66,7 @@ check_c_source_runs([[
 	#include <wchar.h>
 	int main(int argc, char *argv[]) {
 		wchar_t *s = L"\\U0010FFFF";
-		return sizeof(wchar_t) == 1 && wcslen(s) == 4
+		return sizeof(wchar_t) >= 1 && wcslen(s) == 4
 		    && s[0] == 0xf4 && s[1] == 0x8f && s[2] == 0xbf
 		    && s[3] == 0xbf ? 0 : -1;
 	}

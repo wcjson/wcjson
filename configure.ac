@@ -114,7 +114,7 @@ AC_CACHE_CHECK([whether the wide literal encoding is UTF-16],
 #include <wchar.h>
 #endif
 wchar_t *s = L"\U0010FFFF";],
-  [return sizeof(wchar_t) == 2 && wcslen(s) == 2 && s[[0]] == 0xdbff
+  [return sizeof(wchar_t) >= 2 && wcslen(s) == 2 && s[[0]] == 0xdbff
     && s[[1]] == 0xdfff ? 0 : 1;])],
                 [wcjson_cv_wchar_t_is_utf16="yes"],
                 [wcjson_cv_wchar_t_is_utf16="no"])])
@@ -131,7 +131,7 @@ AC_CACHE_CHECK([whether the wide literal encoding is UTF-8],
 #include <wchar.h>
 #endif
 wchar_t *s = L"\U0010FFFF";],
-  [return sizeof(wchar_t) == 1 && wcslen(s) == 4 && s[[0]] == 0xf4
+  [return sizeof(wchar_t) >= 1 && wcslen(s) == 4 && s[[0]] == 0xf4
     && s[[1]] == 0x8f && s[[2]] == 0xbf && s[[3]] == 0xbf ? 0 : 1;])],
                  [wcjson_cv_wchar_t_is_utf8="yes"],
                  [wcjson_cv_wchar_t_is_utf8="no"])])
