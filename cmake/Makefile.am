@@ -1,2 +1,2 @@
-ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST = wcjsonConfig.cmake.in
+AM_CPPFLAGS=-I$(top_builddir)/src -I$(top_srcdir)/src
+EXTRA_DIST=wcjsonConfig.cmake.in

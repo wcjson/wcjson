@@ -1,2 +1,2 @@
-EXTRA_DIST=	realloc.c
-AM_CPPFLAGS=	-I$(top_srcdir)/src
+AM_CPPFLAGS=-I$(top_builddir)/src -I$(top_srcdir)/src
+EXTRA_DIST=realloc.c

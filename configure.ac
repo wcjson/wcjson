@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.72])
 AC_INIT([wcjson], [0.27], [cs@schulte.it], [wcjson], [http://wcjson.de])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.16])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects nostdinc 1.16])
 
 AC_SUBST(wcjson_pkgconf_version, [0.0.0])
 AC_SUBST(wcjson_version_info, [0:0:0])
