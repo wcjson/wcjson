@@ -103,6 +103,7 @@ if(BUILD_SHARED_LIBS)
 		libwcjson
 		BASE_NAME WCJSON
 		EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/wcjson-host.h
+		INCLUDE_GUARD_NAME WCJSON_HOST_H
 	)
 
 	target_compile_definitions(
