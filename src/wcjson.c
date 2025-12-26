@@ -30,7 +30,7 @@ extern "C" {
 #include <errno.h>
 #include <stdint.h>
 
-#include "wcjson.h"
+#include <wcjson.h>
 
 static const wchar_t *const hex_digits = L"0123456789abcdef";
 

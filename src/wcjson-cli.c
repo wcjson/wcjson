@@ -42,7 +42,7 @@ extern "C" {
 #define CLI_DEFAULT_LIMIT 16384
 #endif
 
-#include "wcjson-document.h"
+#include <wcjson-document.h>
 
 int ascii = 0;
 int report = 0;

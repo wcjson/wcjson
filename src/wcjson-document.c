@@ -31,8 +31,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#include "wcjson-document.h"
-#include "wcjson.h"
+#include <wcjson-document.h>
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 

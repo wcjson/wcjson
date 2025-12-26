@@ -109,13 +109,13 @@ if(BUILD_SHARED_LIBS)
 	target_compile_definitions(
 		libwcjson
 		PUBLIC
-		    WCJSON_HOST_H
+		    HAVE_WCJSON_HOST_H
 	)
 
 	target_compile_definitions(
 		wcjson
 		PRIVATE
-		    WCJSON_HOST_H
+		    HAVE_WCJSON_HOST_H
 	)
 
 	target_include_directories(

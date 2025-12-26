@@ -29,7 +29,7 @@ extern "C" {
 #include <stddef.h>
 #include <wchar.h>
 
-#ifdef WCJSON_HOST_H
+#ifdef HAVE_WCJSON_HOST_H
 #include <wcjson-host.h>
 #endif
 
