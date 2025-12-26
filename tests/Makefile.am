@@ -21,7 +21,7 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	  echo '  [$(PACKAGE_URL)])'; \
 	} >'$(srcdir)/package.m4'
 
-DISTCLEANFILES=${srcdir}/package.m4 atconfig
+DISTCLEANFILES=$(srcdir)/package.m4 atconfig
 EXTRA_DIST=testsuite.at $(srcdir)/package.m4 $(TESTSUITE) atlocal.in
 TESTSUITE=$(srcdir)/testsuite
 TESTSUITEFLAGS=AUTOTEST_PATH=$(abs_top_builddir)/src:$(abs_top_builddir)/tests
