@@ -34,12 +34,15 @@ set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
 set(CPACK_PACKAGE_VENDOR "Christian Schulte")
 set(CPACK_PACKAGE_CONTACT "cs@schulte.it")
+set(CPACK_PACKAGE_HOMEPAGE_URL ${PROJECT_HOMEPAGE_URL})
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_PACKAGE_EXECUTABLES "${PROJECT_NAME};wcjson")
+set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/wcjson.ico")
+set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/unwcjson.ico")
 set(CPACK_NSIS_MENU_LINKS
-	"http://wcjson.de/wcjson.1.html" "Command Documentation"
-	"http://wcjson.de/wcjson.3.html" "Parser Documentation"
-	"http://wcjson.de/wcjson-document.3.html" "Document Documentation"
+	"http://wcjson.de/wcjson.1.html" "wcjson.1"
+	"http://wcjson.de/wcjson.3.html" "wcjson.3"
+	"http://wcjson.de/wcjson-document.3.html" "wcjson-document.3"
 )
 
 include(CPack)
