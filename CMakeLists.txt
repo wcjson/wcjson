@@ -152,6 +152,7 @@ target_sources(
 	wcjson
 	PRIVATE
 	    ${CMAKE_CURRENT_SOURCE_DIR}/src/wcjson-cli.c
+	    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/wcjson.rc
 )
 
 target_link_libraries(
