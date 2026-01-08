@@ -286,19 +286,20 @@ The elements of this structure are defined as follows:
 
 *head\_idx*
 
-> Index of the first value of the child value list.
+> Index of the first value of the child value list in the document values array.
 
 *tail\_idx*
 
-> Index of the last value of the child value list.
+> Index of the last value of the child value list in the document values array.
 
 *prev\_idx*
 
-> Index of the previous value in the child value list.
+> Index of the previous value in the child value list in the document values
+> array.
 
 *next\_idx*
 
-> Index of the next value in the child value list.
+> Index of the next value in the child value list in the document values array.
 
 The
 **WCJSON\_DOCUMENT\_INITIALIZER**()
