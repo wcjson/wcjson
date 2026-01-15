@@ -177,6 +177,18 @@ set_target_properties(
 	    VERSION ${PROJECT_VERSION}
 )
 
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/wcjson.pc.in
+	wcjson.pc
+	@ONLY
+)
+
+install(
+	FILES
+	    ${CMAKE_BINARY_DIR}/wcjson.pc
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+)
+
 install(
 	TARGETS
 	    libwcjson
