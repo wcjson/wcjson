@@ -179,13 +179,13 @@ set_target_properties(
 
 configure_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/cmake/wcjson.pc.in
-	wcjson.pc
+	${CMAKE_CURRENT_BINARY_DIR}/wcjson.pc
 	@ONLY
 )
 
 install(
 	FILES
-	    ${CMAKE_BINARY_DIR}/wcjson.pc
+	    ${CMAKE_CURRENT_BINARY_DIR}/wcjson.pc
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
