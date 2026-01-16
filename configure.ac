@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.72])
-AC_INIT([wcjson], [0.31], [cs@schulte.it], [wcjson], [http://wcjson.de])
+AC_INIT([wcjson], [0.32], [cs@schulte.it], [wcjson], [http://wcjson.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects nostdinc 1.16])
 
-AC_SUBST(wcjson_pkgconf_version, [0.31])
-AC_SUBST(wcjson_version_info, [0:31:0])
+AC_SUBST(wcjson_pkgconf_version, [0.32])
+AC_SUBST(wcjson_version_info, [0:32:0])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/wcjson.h])
