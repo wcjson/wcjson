@@ -1188,7 +1188,7 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 
             *d++ = (wchar_t)(0xdc00 | ((cp - 0x10000) & 0b1111111111));
           } else
-            *d++ = cp;
+            *d++ = (wchar_t)cp;
 #elif defined(WCHAR_T_UTF8)
           if (cp < 0x80) {
             *d++ = (wchar_t)cp & 0xff;
