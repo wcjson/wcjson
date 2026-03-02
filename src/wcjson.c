@@ -261,26 +261,21 @@ static void *parse_number(struct scan_state *ss, struct wcjson *ctx,
 }
 
 static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
-#ifdef __limit
-#error "__limit macro already defined - rename"
-#endif
-#if defined(WCHAR_T_UTF32)
-#define __limit 0x10ffff
-#elif defined(WCHAR_T_UTF16)
-#define __limit 0xffff
-#elif defined(WCHAR_T_UTF8)
-#define __limit 0xff
-#else
-#define __limit 0
-#error "Wide character literal encoding not defined"
-#endif
   for (; ss->pos < ss->len; ss->pos++)
     if (!((ss->txt[ss->pos] >= (wchar_t)0x20 &&
            ss->txt[ss->pos] <= (wchar_t)0x21) ||
           (ss->txt[ss->pos] >= (wchar_t)0x23 &&
            ss->txt[ss->pos] <= (wchar_t)0x5b) ||
           (ss->txt[ss->pos] >= (wchar_t)0x5d &&
-           ss->txt[ss->pos] <= (wchar_t)__limit)))
+#if defined(WCHAR_T_UTF32)
+           ss->txt[ss->pos] <= 0x10ffff)))
+#elif defined(WCHAR_T_UTF16)
+           (sizeof(wchar_t) == 2 || ss->txt[ss->pos] <= 0xffff))))
+#elif defined(WCHAR_T_UTF8)
+           (sizeof(wchar_t) == 1 || ss->txt[ss->pos] <= 0xff))))
+#else
+#error "Wide character literal encoding not defined"
+#endif
       break;
 
   return WCJSON_OK;
