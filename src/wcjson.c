@@ -277,7 +277,7 @@ static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
 #endif
 #elif defined(WCHAR_T_UTF8)
 #if SIZEOF_WCHAR_T == 1
-	   true)))
+           true)))
 #else
            ss->txt[ss->pos] <= (wchar_t)0xff)))
 #endif
