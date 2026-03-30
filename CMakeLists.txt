@@ -24,6 +24,7 @@ project(
 	    C
 )
 
+include(CheckTypeSize)
 include(CheckCSourceRuns)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -49,6 +50,8 @@ set(CPACK_NSIS_MENU_LINKS
 )
 
 include(CPack)
+
+check_type_size("wchar_t" SIZEOF_WCHAR_T)
 
 check_c_source_runs([[
 	#include <wchar.h>
@@ -84,6 +87,10 @@ check_c_source_runs([[
 		return setlocale(LC_CTYPE, "C") != NULL ? 0 : -1;
 	}
 ]] HAVE_SETLOCALE)
+
+if(HAVE_SIZEOF_WCHAR_T)
+	add_compile_definitions(SIZEOF_WCHAR_T=${SIZEOF_WCHAR_T})
+endif()
 
 if(WCHAR_T_UTF32)
 	add_compile_definitions(WCHAR_T_UTF32)

@@ -48,7 +48,7 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
-
+AC_CHECK_SIZEOF([wchar_t])
 # Checks for library functions.
 AC_CHECK_FUNCS([setlocale])
 AC_FUNC_REALLOC

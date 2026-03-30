@@ -268,11 +268,19 @@ static inline enum wcjson_status scan_unescaped(struct scan_state *ss) {
            ss->txt[ss->pos] <= (wchar_t)0x5b) ||
           (ss->txt[ss->pos] >= (wchar_t)0x5d &&
 #if defined(WCHAR_T_UTF32)
-           ss->txt[ss->pos] <= 0x10ffff)))
+           ss->txt[ss->pos] <= (wchar_t)0x10ffff)))
 #elif defined(WCHAR_T_UTF16)
-           (sizeof(wchar_t) == 2 || ss->txt[ss->pos] <= 0xffff))))
+#if SIZEOF_WCHAR_T == 2
+           true)))
+#else
+           ss->txt[ss->pos] <= (wchar_t)0xffff)))
+#endif
 #elif defined(WCHAR_T_UTF8)
-           (sizeof(wchar_t) == 1 || ss->txt[ss->pos] <= 0xff))))
+#if SIZEOF_WCHAR_T == 1
+	   true)))
+#else
+           ss->txt[ss->pos] <= (wchar_t)0xff)))
+#endif
 #else
 #error "Wide character literal encoding not defined"
 #endif
@@ -861,16 +869,16 @@ int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops, void *doc,
   return ctx->status == WCJSON_OK ? 0 : -1;
 }
 
-static inline int uhex4(wchar_t n, wchar_t *s, size_t *len) {
+static inline int uhex4(uint32_t cp, wchar_t *s, size_t *len) {
   if (*len < 6)
     return -1;
 
   *s++ = L'\\';
   *s++ = L'u';
-  *s++ = hex_digits[(n >> 12) & 0xf];
-  *s++ = hex_digits[(n >> 8) & 0xf];
-  *s++ = hex_digits[(n >> 4) & 0xf];
-  *s++ = hex_digits[n & 0xf];
+  *s++ = hex_digits[(cp >> 12) & 0xf];
+  *s++ = hex_digits[(cp >> 8) & 0xf];
+  *s++ = hex_digits[(cp >> 4) & 0xf];
+  *s++ = hex_digits[cp & 0xf];
   *len -= *len - 6;
   return 0;
 }
@@ -890,9 +898,6 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
   } while (0)
 
   size_t d_len = *d_lenp, u_len;
-#if defined(WCHAR_T_UTF8)
-  uint32_t cp;
-#endif
 
   if (s_len != 0) {
     if (d_len == 0)
@@ -932,20 +937,21 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
 #if defined(WCHAR_T_UTF32)
           if (*s < 0x10000) {
             u_len = d_len;
-            if (uhex4(*s, d, &u_len))
+            if (uhex4((uint32_t)*s, d, &u_len))
               goto err_range;
 
           } else {
             // UTF 16 surrogates
             u_len = d_len;
-            if (uhex4(0xd800 | (((*s - 0x10000) >> 10) & 0b1111111111), d,
-                      &u_len))
+            if (uhex4((uint32_t)(0xd800 |
+                                 (((*s - 0x10000) >> 10) & 0b1111111111)),
+                      d, &u_len))
               goto err_range;
 
             d_len -= u_len;
             d += u_len;
             u_len = d_len;
-            if (uhex4(0xdc00 | (*s & 0b1111111111), d, &u_len))
+            if (uhex4((uint32_t)(0xdc00 | (*s & 0b1111111111)), d, &u_len))
               goto err_range;
           }
           d_len -= u_len - 1;
@@ -958,7 +964,7 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
               goto err_ilseq;
 
             u_len = d_len;
-            if (uhex4(*s, d, &u_len))
+            if (uhex4((uint32_t)*s, d, &u_len))
               goto err_range;
 
             d_len -= u_len;
@@ -973,12 +979,12 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
               goto err_ilseq;
 
             u_len = d_len;
-            if (uhex4(*s, d, &u_len))
+            if (uhex4((uint32_t)*s, d, &u_len))
               goto err_range;
 
           } else {
             u_len = d_len;
-            if (uhex4(*s, d, &u_len))
+            if (uhex4((uint32_t)*s, d, &u_len))
               goto err_range;
           }
           d_len -= u_len - 1;
@@ -986,14 +992,17 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
           s++;
 #elif defined(WCHAR_T_UTF8)
           // Decode UTF 8
+          uint32_t cp;
           if ((*s & 0b11110000) == 0b11110000) {
             if (4 > s_len || (s[3] & 0b10000000) != 0b10000000 ||
                 (s[2] & 0b10000000) != 0b10000000 ||
                 (s[1] & 0b10000000) != 0b10000000)
               goto err_ilseq;
 
-            cp = ((s[0] & 0b111) << 18) | ((s[1] & 0b111111) << 12) |
-                 ((s[2] & 0b111111) << 6) | (s[3] & 0b111111);
+            cp = ((uint32_t)(s[0] & 0b111) << 18) |
+                 ((uint32_t)(s[1] & 0b111111) << 12) |
+                 ((uint32_t)(s[2] & 0b111111) << 6) |
+                 (uint32_t)(s[3] & 0b111111);
 
             s_len -= 3;
             s += 4;
@@ -1002,8 +1011,9 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
                 (s[1] & 0b10000000) != 0b10000000)
               goto err_ilseq;
 
-            cp = ((s[0] & 0b1111) << 12) | ((s[1] & 0b111111) << 6) |
-                 (s[2] & 0b111111);
+            cp = ((uint32_t)(s[0] & 0b1111) << 12) |
+                 ((uint32_t)(s[1] & 0b111111) << 6) |
+                 (uint32_t)(s[2] & 0b111111);
 
             s_len -= 2;
             s += 3;
@@ -1011,7 +1021,8 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
             if (2 > s_len || (s[1] & 0b10000000) != 0b10000000)
               goto err_ilseq;
 
-            cp = ((s[0] & 0b111111) << 6) | (s[1] & 0b11111);
+            cp =
+                ((uint32_t)(s[0] & 0b111111) << 6) | (uint32_t)(s[1] & 0b11111);
 
             s_len -= 1;
             s += 2;
@@ -1026,14 +1037,15 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
           } else {
             // UTF 16 surrogates
             u_len = d_len;
-            if (uhex4(0xd800 | (((cp - 0x10000) >> 10) & 0b1111111111), d,
-                      &u_len))
+            if (uhex4((uint32_t)(0xd800 |
+                                 (((cp - 0x10000) >> 10) & 0b1111111111)),
+                      d, &u_len))
               goto err_range;
 
             d_len -= u_len;
             d += u_len;
             u_len = d_len;
-            if (uhex4(0xdc00 | (cp & 0b1111111111), d, &u_len))
+            if (uhex4((uint32_t)(0xdc00 | (cp & 0b1111111111)), d, &u_len))
               goto err_range;
           }
           d_len -= u_len - 1;
