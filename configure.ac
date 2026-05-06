@@ -32,8 +32,6 @@ AC_PROG_MAKE_SET
 
 LT_INIT
 
-AX_CHECK_COMPILE_FLAG([-std=c2x],
-                      [CFLAGS="$CFLAGS -std=c2x"])
 AX_CHECK_COMPILE_FLAG([-pedantic],
                       [CFLAGS="$CFLAGS -pedantic"])
 
