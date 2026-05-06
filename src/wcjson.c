@@ -32,6 +32,22 @@ extern "C" {
 
 #include <wcjson.h>
 
+/* Binary to hex literal conversions */
+#define B111 0x07
+#define B1111 0x0f
+#define B11111 0x1f
+#define B111111 0x3f
+#define B10000000 0x80
+#define B11000000 0xc0
+#define B11100000 0xe0
+#define B11110000 0xf0
+#define B1111111111 0x3ff
+#define B11111000000 0x7c0
+#define B111111000000 0xfc0
+#define B1111000000000000 0xf000
+#define B111111000000000000 0x3f000
+#define B111000000000000000000 0x1c0000
+
 static const wchar_t *const hex_digits = L"0123456789abcdef";
 
 enum token {
@@ -944,14 +960,14 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
             // UTF 16 surrogates
             u_len = d_len;
             if (uhex4((uint32_t)(0xd800 |
-                                 (((*s - 0x10000) >> 10) & 0b1111111111)),
+                                 (((*s - 0x10000) >> 10) & B1111111111)),
                       d, &u_len))
               goto err_range;
 
             d_len -= u_len;
             d += u_len;
             u_len = d_len;
-            if (uhex4((uint32_t)(0xdc00 | (*s & 0b1111111111)), d, &u_len))
+            if (uhex4((uint32_t)(0xdc00 | (*s & B1111111111)), d, &u_len))
               goto err_range;
           }
           d_len -= u_len - 1;
@@ -993,36 +1009,36 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
 #elif defined(WCHAR_T_UTF8)
           // Decode UTF 8
           uint32_t cp;
-          if ((*s & 0b11110000) == 0b11110000) {
-            if (4 > s_len || (s[3] & 0b10000000) != 0b10000000 ||
-                (s[2] & 0b10000000) != 0b10000000 ||
-                (s[1] & 0b10000000) != 0b10000000)
+          if ((*s & B11110000) == B11110000) {
+            if (4 > s_len || (s[3] & B10000000) != B10000000 ||
+                (s[2] & B10000000) != B10000000 ||
+                (s[1] & B10000000) != B10000000)
               goto err_ilseq;
 
-            cp = ((uint32_t)(s[0] & 0b111) << 18) |
-                 ((uint32_t)(s[1] & 0b111111) << 12) |
-                 ((uint32_t)(s[2] & 0b111111) << 6) |
-                 (uint32_t)(s[3] & 0b111111);
+            cp = ((uint32_t)(s[0] & B111) << 18) |
+                 ((uint32_t)(s[1] & B111111) << 12) |
+                 ((uint32_t)(s[2] & B111111) << 6) |
+                 (uint32_t)(s[3] & B111111);
 
             s_len -= 3;
             s += 4;
-          } else if ((*s & 0b11100000) == 0b11100000) {
-            if (3 > s_len || (s[2] & 0b10000000) != 0b10000000 ||
-                (s[1] & 0b10000000) != 0b10000000)
+          } else if ((*s & B11100000) == B11100000) {
+            if (3 > s_len || (s[2] & B10000000) != B10000000 ||
+                (s[1] & B10000000) != B10000000)
               goto err_ilseq;
 
-            cp = ((uint32_t)(s[0] & 0b1111) << 12) |
-                 ((uint32_t)(s[1] & 0b111111) << 6) |
-                 (uint32_t)(s[2] & 0b111111);
+            cp = ((uint32_t)(s[0] & B1111) << 12) |
+                 ((uint32_t)(s[1] & B111111) << 6) |
+                 (uint32_t)(s[2] & B111111);
 
             s_len -= 2;
             s += 3;
-          } else if ((*s & 0b11000000) == 0b11000000) {
-            if (2 > s_len || (s[1] & 0b10000000) != 0b10000000)
+          } else if ((*s & B11000000) == B11000000) {
+            if (2 > s_len || (s[1] & B10000000) != B10000000)
               goto err_ilseq;
 
             cp =
-                ((uint32_t)(s[0] & 0b111111) << 6) | (uint32_t)(s[1] & 0b11111);
+                ((uint32_t)(s[0] & B111111) << 6) | (uint32_t)(s[1] & B11111);
 
             s_len -= 1;
             s += 2;
@@ -1038,14 +1054,14 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
             // UTF 16 surrogates
             u_len = d_len;
             if (uhex4((uint32_t)(0xd800 |
-                                 (((cp - 0x10000) >> 10) & 0b1111111111)),
+                                 (((cp - 0x10000) >> 10) & B1111111111)),
                       d, &u_len))
               goto err_range;
 
             d_len -= u_len;
             d += u_len;
             u_len = d_len;
-            if (uhex4((uint32_t)(0xdc00 | (cp & 0b1111111111)), d, &u_len))
+            if (uhex4((uint32_t)(0xdc00 | (cp & B1111111111)), d, &u_len))
               goto err_range;
           }
           d_len -= u_len - 1;
@@ -1182,9 +1198,9 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
             if (ls < 0xdc00 || ls > 0xdfff)
               goto err_ilseq;
 
-            cp = hs & 0b1111111111;
+            cp = hs & B1111111111;
             cp <<= 10;
-            cp |= ls & 0b1111111111;
+            cp |= ls & B1111111111;
             cp += 0x10000;
           } else
             cp = hs;
@@ -1193,12 +1209,12 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
 #elif defined(WCHAR_T_UTF16)
           if (cp > 0xffff) {
             // UTF 16 surrogates
-            *d++ = (wchar_t)(0xd800 | (((cp - 0x10000) >> 10) & 0b1111111111));
+            *d++ = (wchar_t)(0xd800 | (((cp - 0x10000) >> 10) & B1111111111));
 
             if (--d_len == 0)
               goto err_range;
 
-            *d++ = (wchar_t)(0xdc00 | ((cp - 0x10000) & 0b1111111111));
+            *d++ = (wchar_t)(0xdc00 | ((cp - 0x10000) & B1111111111));
           } else
             *d++ = (wchar_t)cp;
 #elif defined(WCHAR_T_UTF8)
@@ -1208,28 +1224,28 @@ int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp) {
             if (2 > d_len)
               goto err_range;
 
-            d[1] = (wchar_t)(0b10000000 | (cp & 0b111111));
-            d[0] = (wchar_t)(0b11000000 | ((cp & 0b11111000000) >> 6));
+            d[1] = (wchar_t)(B10000000 | (cp & B111111));
+            d[0] = (wchar_t)(B11000000 | ((cp & B11111000000) >> 6));
             d += 2;
             d_len -= 1;
           } else if (cp >= 0x800 && cp <= 0xffff) {
             if (3 > d_len)
               goto err_range;
 
-            d[2] = (wchar_t)(0b10000000 | (cp & 0b111111));
-            d[1] = (wchar_t)(0b10000000 | ((cp & 0b111111000000) >> 6));
-            d[0] = (wchar_t)(0b11100000 | ((cp & 0b1111000000000000) >> 12));
+            d[2] = (wchar_t)(B10000000 | (cp & B111111));
+            d[1] = (wchar_t)(B10000000 | ((cp & B111111000000) >> 6));
+            d[0] = (wchar_t)(B11100000 | ((cp & B1111000000000000) >> 12));
             d += 3;
             d_len -= 2;
           } else if (cp >= 0x10000 && cp <= 0x10ffff) {
             if (4 > d_len)
               goto err_range;
 
-            d[3] = (wchar_t)(0b10000000 | (cp & 0b111111));
-            d[2] = (wchar_t)(0b10000000 | ((cp & 0b111111000000) >> 6));
-            d[1] = (wchar_t)(0b10000000 | ((cp & 0b111111000000000000) >> 12));
+            d[3] = (wchar_t)(B10000000 | (cp & B111111));
+            d[2] = (wchar_t)(B10000000 | ((cp & B111111000000) >> 6));
+            d[1] = (wchar_t)(B10000000 | ((cp & B111111000000000000) >> 12));
             d[0] =
-                (wchar_t)(0b11110000 | ((cp & 0b111000000000000000000) >> 18));
+                (wchar_t)(B11110000 | ((cp & B111000000000000000000) >> 18));
             d += 4;
             d_len -= 3;
           } else
