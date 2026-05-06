@@ -1,8 +1,17 @@
-# Documentation
+# wcjson
+
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Language: C](https://img.shields.io/badge/Language-C-A8B9CC.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![GitHub Release](https://img.shields.io/github/v/release/wcjson/wcjson.svg)](https://github.com/wcjson/wcjson/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/wcjson/wcjson.svg)](https://github.com/wcjson/wcjson)
+
+Wide Character JSON C source code repository.
+
+## Documentation
 
 Please see the individual manual pages [wcjson(1)](wcjson.1.md), [wcjson(3)](wcjson.3.md) and [wcjson-document(3)](wcjson-document.3.md).
 
-# Releases
+## Releases
 
 Releases are provided via Github. The latest release is
 [v0.33](https://github.com/wcjson/wcjson/releases/tag/v0.33).
