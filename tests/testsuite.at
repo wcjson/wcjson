@@ -100,7 +100,7 @@ AT_CHECK([printf -- %s "   @<:@   null   ,   true   ,   false   ,   \"abc\"   , 
 AT_CHECK([printf -- %s "   {   \"key\"   :  null   ,   \"key\"   :   true   ,   \"key\"   :   false   ,   \"key\"   :   \"abc\"   ,   \"key\"   :   -100e-10   ,   \"key\"   :   @<:@   null   @:>@   ,   \"key\"   :   {   \"key\"   :   @<:@   true   @:>@   }   }   " | wcjson], [0], [{"key":null,"key":true,"key":false,"key":"abc","key":-100e-10,"key":@<:@null@:>@,"key":{"key":@<:@true@:>@}}])
 
 AT_CHECK([printf -- %s \"ABC\\u0041\\u0042\\u0043ABC\" | wcjson], [0], ["ABCABCABC"])
-AT_CHECK([printf -- %s \"ABC\\tABC\\u0041BC\\rA\\u0042C\\/AB\\u0043\\\\ABC\" | wcjson], [0], ["ABC\tABCABC\rABC\/ABC\\ABC"])
+AT_CHECK([printf -- %s \"ABC\\tABC\\u0041BC\\rA\\u0042C\\/AB\\u0043\\\\ABC\" | wcjson], [0], ["ABC\tABCABC\rABC/ABC\\ABC"])
 AT_CHECK([printf -- %s \"ABC\\udbff\\udfffABC\" | wcjson -d C.UTF-8 -e C -a], [0], ["ABC\udbff\udfffABC"])
 AT_CHECK([printf -- %s "   \"   \\udbff\\udfff   \"   " | wcjson -d C.UTF-8 -e C -a], [0], ["   \udbff\udfff   "])
 AT_CHECK([printf -- %s \"ABC\\uffffABC\" | wcjson -d C.UTF-8 -e C -a], [0], ["ABC\uffffABC"])
@@ -114,6 +114,7 @@ AT_CHECK([printf -- %s \"\\u123\" | wcjson -e C -a 2>/dev/null], [1], [], [])
 AT_CHECK([printf -- %s \"\\udfff\" | wcjson -e C -a 2>/dev/null], [1], [], [])
 AT_CHECK([printf -- %s \"\\udbff\\udbff\" | wcjson -e C -a 2>/dev/null], [1], [], [])
 AT_CHECK([printf -- %s \"\\u0000\" | wcjson -e C -a 2>/dev/null], [1], [], [])
+AT_CHECK([printf -- %s \"A\\u002fB\/C/D\" | wcjson], [0], ["A/B/C/D"])
 AT_CLEANUP
 
 AT_TESTED([test-cli])

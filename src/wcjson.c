@@ -927,9 +927,6 @@ static int wctojsons(const wchar_t *s, size_t s_len, wchar_t *d, size_t *d_lenp,
       case L'\\':
         __escape(L'\\');
         break;
-      case L'/':
-        __escape(L'/');
-        break;
       case L'\b':
         __escape(L'b');
         break;
