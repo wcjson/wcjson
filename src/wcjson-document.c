@@ -642,7 +642,8 @@ static int doc_unesc(struct wcjson *ctx, struct doc_impl *d,
     v->s_len = dst_len;
 
     d->d->s_next = s_next;
-    d->d->e_nitems_cnt = MAX(dst_len * WCJSON_ESCAPE_MAX + 1, d->d->e_nitems);
+    d->d->e_nitems_cnt =
+        MAX(dst_len * WCJSON_ESCAPE_MAX + 1, d->d->e_nitems_cnt);
 
     size_t mblen = wcstombs(NULL, v->string, v->s_len);
     if (mblen == (size_t)-1)
