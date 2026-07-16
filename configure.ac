@@ -39,6 +39,7 @@ AX_CHECK_COMPILE_FLAG([-pedantic],
 
 # Checks for header files.
 AC_CHECK_HEADERS([wchar.h])
+AC_CHECK_HEADERS([stdint.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -70,23 +71,6 @@ AC_ARG_WITH([default-memory-limit],
 
 AC_DEFINE_UNQUOTED(CLI_DEFAULT_LIMIT, [$with_default_memory_limit],
   [Default memory limit value.])
-
-AC_ARG_WITH([nesting-limit],
-  [AS_HELP_STRING([--with-nesting-limit],
-    [Nesting limit used to prevent stack overflows (default 256)])],
-  [case $with_nesting_limit in
-    yes) AC_MSG_ERROR([[--with-nesting-limit needs an argument]])
-    ;;
-    no) AC_MSG_ERROR([[--without-nesting-limit not supported]])
-    ;;
-    [[0-9]]*)
-    ;;
-    *) AC_MSG_ERROR([[nesting limit must be numeric]])
-  esac],
-  [with_nesting_limit=256])
-
-AC_DEFINE_UNQUOTED(DEFAULT_NESTING_LIMIT, [$with_nesting_limit],
-  [Default nesting level value.])
 
 AC_CACHE_CHECK([whether the wide literal encoding is UTF-32],
                wcjson_cv_wchar_t_is_utf32,

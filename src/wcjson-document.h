@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Christian Schulte <cs@schulte.it>
+ * Copyright (c) 2025-2026 Christian Schulte <cs@schulte.it>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -29,6 +29,9 @@ extern "C" {
 #include <wchar.h>
 
 #include <wcjson.h>
+
+/** Document callback functions. */
+extern const struct wcjson_ops *const wcjson_document_ops;
 
 /** JSON value. */
 struct wcjson_value {
