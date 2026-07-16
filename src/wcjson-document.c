@@ -14,11 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * @file wcjson-document.c
- * @brief Document implementation.
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif

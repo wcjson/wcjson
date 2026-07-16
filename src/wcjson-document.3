@@ -116,35 +116,35 @@ struct wcjson_document {
 .Pp
 The elements of this structure are defined as follows:
 .Bl -tag -width w_nitems
-.It Fa values
+.It Va values
 Array of values of the document.
-.It Fa v_nitems
+.It Va v_nitems
 Number of items the values array is capable of holding.
-.It Fa v_nitems_cnt
+.It Va v_nitems_cnt
 Number of items the values array needs to be capable of holding.
-.It Fa v_next
+.It Va v_next
 Index of the next item in the values array.
-.It Fa strings
+.It Va strings
 Array of strings of the document.
-.It Fa s_nitems
+.It Va s_nitems
 Number of items the strings array is capable of holding.
-.It Fa s_nitems_cnt
+.It Va s_nitems_cnt
 Number of items the strings array needs to be capable of holding.
-.It Fa s_next
+.It Va s_next
 Index of the next item in the strings array.
-.It Fa mbstrings
+.It Va mbstrings
 Array of multibyte strings of the document.
-.It Fa mb_nitems
+.It Va mb_nitems
 Number of items the mbstrings array is capable of holding.
-.It Fa mb_nitems_cnt
+.It Va mb_nitems_cnt
 Number of items the mbstrings array needs to be capable of holding.
-.It Fa mb_next
+.It Va mb_next
 Index of the next item in the mbstrings array.
-.It Fa esc
+.It Va esc
 Array of escape sequences.
-.It Fa e_nitems
+.It Va e_nitems
 Number of items the esc array is capable of holding.
-.It Fa e_nitems_cnt
+.It Va e_nitems_cnt
 Number of items the esc array needs to be capable of holding.
 .El
 .Pp
@@ -175,45 +175,45 @@ struct wcjson_value {
 .Pp
 The elements of this structure are defined as follows:
 .Bl -tag -width is_boolean
-.It Fa is_null
+.It Va is_null
 Flag indicating the value represents a JSON null literal.
-.It Fa is_boolean
+.It Va is_boolean
 Flag indicating the value represents a JSON boolean literal.
-.It Fa is_true
+.It Va is_true
 Flag indicating a JSON true or false literal.
-.It Fa is_string
+.It Va is_string
 Flag indicating the value represents a JSON string.
-.It Fa is_number
+.It Va is_number
 Flag indicating the value represents a JSON number.
-.It Fa is_object
+.It Va is_object
 Flag indicating the value represents a JSON object.
-.It Fa is_array
+.It Va is_array
 Flag indicating the value represents a JSON array.
-.It Fa is_pair
+.It Va is_pair
 Flag indicating the value represents a key value pair of a JSON object.
-.It Fa string
+.It Va string
 Array holding items of a JSON string or number value.
-.It Fa s_len
+.It Va s_len
 Number of items in the string array excluding any terminating items.
-.It Fa mbstring
+.It Va mbstring
 Array holding multibyte items of a JSON string or number value.
-.It Fa mb_len
+.It Va mb_len
 Number of items in the mbstring array excluding any terminating items.
-.It Fa idx
+.It Va idx
 Index of the value in the docment values array.
-.It Fa head_idx
+.It Va head_idx
 Index of the first value of the child value list in the document values array.
-.It Fa tail_idx
+.It Va tail_idx
 Index of the last value of the child value list in the document values array.
-.It Fa prev_idx
+.It Va prev_idx
 Index of the previous value in the child value list in the document values
 array.
-.It Fa next_idx
+.It Va next_idx
 Index of the next value in the child value list in the document values array.
 .El
 .Pp
 The
-.Fn WCJSON_DOCUMENT_INITIALIZER
+.Dv WCJSON_DOCUMENT_INITIALIZER
 macro expands to a rvalue expression for initializing an empty document.
 .Pp
 The
@@ -225,25 +225,25 @@ characters of JSON
 to populate a
 .Fa document .
 The
-.Fa values
+.Va values
 member of the
 .Fa document
 should point to available memory, the
-.Fa v_nitems
+.Va v_nitems
 member should be set to the number of items available in that array and the
-.Fa v_next
+.Va v_next
 member should be set to the index of the next item in that array.
 On successful completion that array holds the deserialized document structure,
 the
-.Fa v_next
+.Va v_next
 member holds the index of the next item in that array, the
-.Fa v_nitems_cnt
+.Va v_nitems_cnt
 member holds the number of items the
-.Fa values
+.Va values
 array needs to be capable of holding for the document to get populated and the
-.Fa s_nitems_cnt
+.Va s_nitems_cnt
 member holds the number of items the
-.Fa strings
+.Va strings
 array needs to be capable of holding for decoding strings and adding terminating
 zero characters using the
 .Fn wcjsondocstrings
@@ -251,9 +251,9 @@ function.
 If the
 .Fa values
 member is NULL, only the
-.Fa v_nitems_cnt
+.Va v_nitems_cnt
 and
-.Fa s_nitems_cnt
+.Va s_nitems_cnt
 members are updated and
 .Fa text
 is only validated to contain well formed JSON text.
@@ -261,16 +261,16 @@ The
 .Fn wcjsondocvalues
 function does not decode strings.
 The
-.Fa string
+.Va string
 member of any
 .Vt wcjson_value
 in the
-.Fa values
+.Va values
 array points to
 .Fa text .
 Those strings may contain escape sequences and are not zero terminated C
 strings so that the value of the
-.Fa s_len
+.Va s_len
 member needs to be used when working with those strings.
 .Pp
 The
@@ -281,69 +281,69 @@ in a
 .Fa document
 by unapplying JSON escaping rules and adding terminating zero characters.
 The
-.Fa strings
+.Va strings
 member of the
 .Fa document
 needs to point to available memory, the
-.Fa s_nitems
+.Va s_nitems
 member needs to be set to the number of items available in that array and the
-.Fa s_next
+.Va s_next
 member needs to be set to the index of the next item in that array.
 On successful completion that array holds the decoded strings, the
-.Fa s_next
+.Va s_next
 member holds the index of the next item in that array, the
-.Fa mb_nitems_cnt
+.Va mb_nitems_cnt
 member holds the number of items the
-.Fa mbstrings
+.Va mbstrings
 array needs to be capable of holding for creating multibyte strings using the
 .Fn wcjsondocmbstrings
 function and the
-.Fa e_nitems_cnt
+.Va e_nitems_cnt
 member holds the number of items the
-.Fa esc
+.Va esc
 array needs to be capable of holding for creating JSON escape sequences when
 serializing the document.
 The
-.Fa string
+.Va string
 member of any
 .Vt wcjson_value
 in the
-.Fa values
+.Va values
 array points to
-.Fa strings
+.Va strings
 after successfull completion.
 .Pp
 The
 .Fn wcjsondocmbstrings
 function creates multibyte strings by converting all
-.Fa string
+.Va string
 members of all
-.Fa values
+.Va values
 in a
 .Fa document
 to
-.Fa mbstring
+.Va mbstring
 multibyte strings.
 The
-.Fa mbstrings
+.Va mbstrings
 member of the
 .Fa document
 needs to point to available memory, the
-.Fa mb_nitems
+.Va mb_nitems
 member needs to be set to the number of items available in that array and the
-.Fa mb_next
+.Va mb_next
 member needs to be set to the index of the next item in that array.
 On successful completion that array holds the multibyte strings and the
-.Fa mb_next
+.Va mb_next
 member holds the index of the next item in that array.
 The
-.Fa mbstrings
+.Va mbstrings
 member of any
 .Vt wcjson_value
 in the
-.Fa values
+.Va values
 array points to
-.Fa mbstrings
+.Va mbstrings
 after successful completion.
 .Pp
 The
@@ -366,11 +366,11 @@ and
 functions serialize to wide characters with just the standard JSON escaping
 rules applied.
 The
-.Fa esc
+.Va esc
 member of the
 .Fa document
 needs to point to available memory and the
-.Fa e_nitems
+.Va e_nitems
 member needs to be set to the number of items available in that array.
 For the
 .Fn wcjsondocsprint
@@ -396,21 +396,21 @@ and
 functions add a value to a
 .Fa document .
 The
-.Fa values
+.Va values
 member of the
 .Fa document
 needs to point to available memory, the
-.Fa v_nitems
+.Va v_nitems
 member needs to be set to the number of items available in that array and the
-.Fa v_next
+.Va v_next
 member needs to be set to the index of the next item in that array.
 On successful completion the
-.Fa v_next
+.Va v_next
 member holds the index of the next item in that array.
 The
 .Fn wcjson_value_string
 function additionally updates the
-.Fa s_nitems_cnt
+.Va s_nitems_cnt
 member to account for the added string.
 .Pp
 The
@@ -460,13 +460,13 @@ of length
 to
 .Fa document .
 The
-.Fa strings
+.Va strings
 member of the
 .Fa document
 needs to point to available memory, the
-.Fa s_nitems
+.Va s_nitems
 member needs to be set to the number of items available in that array and the
-.Fa s_next
+.Va s_next
 member needs to be set to the index of the item in that array.
 .Pp
 The
@@ -478,13 +478,13 @@ of length
 to
 .Fa document .
 The
-.Fa mbstrings
+.Va mbstrings
 member of the
 .Fa document
 needs to point to available memory, the
-.Fa mb_nitems
+.Va mb_nitems
 member needs to be set to the number of items available in that array and the
-.Fa mb_next
+.Va mb_next
 member needs to be set to the index of the item in that array.
 .Sh RETURN VALUES
 The functions return 0 on success, or a negative value or NULL if an error
@@ -536,10 +536,10 @@ be provided.
 A function was called with an invalid value.
 .It Bq Er ERANGE
 A size of
-.Fa v_nitems ,
-.Fa s_nitems ,
-.Fa mb_nitems ,
-.Fa e_nitems
+.Va v_nitems ,
+.Va s_nitems ,
+.Va mb_nitems ,
+.Va e_nitems
 or
 .Fa *lenp
 was too small.

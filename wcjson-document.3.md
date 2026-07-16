@@ -302,7 +302,7 @@ The elements of this structure are defined as follows:
 > Index of the next value in the child value list in the document values array.
 
 The
-**WCJSON\_DOCUMENT\_INITIALIZER**()
+`WCJSON_DOCUMENT_INITIALIZER`
 macro expands to a rvalue expression for initializing an empty document.
 
 The
@@ -669,3 +669,7 @@ F. Yergeau,
 *UTF-16, an encoding of ISO 10646*,
 [RFC 2781](http://www.rfc-editor.org/rfc/rfc2781.html),
 February 2000.
+
+## AUTHORS
+
+Christian Schulte &lt;[cs@schulte.it](mailto:cs@schulte.it)&gt;.

@@ -32,6 +32,187 @@ and
 to callback functions
 .Fa ops .
 .Pp
+The
+.Vt wcjson
+structure is defined as follows:
+.Bd -literal -offset indent
+struct wcjson {
+	enum wcjson_status status;
+	int errno;
+};
+.Ed
+.Pp
+The elements of this structure are defined as follows:
+.Bl -tag -width errno
+.It Va status
+Constant indicating status of an operation.
+.Bl -tag -width WCJSON_ABORT_END_OF_INPUT -offset indent
+.It Dv WCJSON_OK
+An operation completed successfully.
+.It Dv WCJSON_ABORT_ERROR
+An operation aborted due to an error.
+The
+.Va errno
+member is describing the error.
+.It WCJSON_ABORT_INVALID
+An operation aborted due to invalid JSON text.
+.It WCJSON_ABORT_END_OF_INPUT
+An operation aborted due to an unexpected end of input.
+.El
+.It Va errno
+Code describing the error in case of
+.Dv WCJSON_ABORT_ERROR .
+.El
+.Pp
+The
+.Vt wcjson_ops
+structure is defined as follows:
+.Bd -literal -offset indent
+struct wcjson_ops {
+	void *(*object_start)(struct wcjson *ctx, void *doc,
+	    void *parent);
+
+	void (*object_add)(struct wcjson *ctx, void *doc,
+	    void *obj, void *key,
+
+	void (*object_end)(struct wcjson *ctx, void *doc,
+	    void *obj);
+
+	void *(*array_start)(struct wcjson *ctx, void *doc,
+	    void *parent);
+
+	void (*array_add)(struct wcjson *ctx, void *doc,
+	    void *arr, void *value);
+
+	void (*array_end)(struct wcjson *ctx, void *doc,
+	    void *arr);
+
+	void *(*string_value)(struct wcjson *ctx, void *doc,
+	    const wchar_t *str, const size_t len,
+	    const bool escaped);
+
+	void *(*number_value)(struct wcjson *ctx, void *doc,
+	    const wchar_t *num, const size_t len);
+
+	void *(*bool_value)(struct wcjson *ctx, void *doc,
+	    const bool value);
+
+	void *(*null_value)(struct wcjson *ctx, void *doc);
+};
+.Ed
+.Pp
+The elements of this structure are defined as follows:
+.Bl -tag -width array
+.It Va object_start
+Called whenever an opening '{' character of a JSON object has been scanned
+to create a corresponding result node in
+.Fa doc .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.It Va object_add
+Called whenever a JSON object's key/value pair has been scanned to add
+to
+.Fa obj
+with
+.Fa key
+and
+.Fa value .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+.It Va object_end
+Called whenever a closing '}' character of a JSON object has been scanned
+to close
+.Fa obj .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+.It Va array_start
+Called whenever an opening '[' character of a JSON array has been scanned
+to create a corresponding result node in
+.Fa doc .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.It Va array_add
+Called whenever a value of a JSON array has been scanned to add to
+.Fa doc .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+.It Va array_end
+Called whenever a closing ']' character of a JSON array has been scanned
+to close
+.Fa arr .
+Except the
+.Fa ctx
+argument all arguments may be
+.Dv NULL .
+.It Va string_value
+Called whenever a JSON string has been scanned to create a corresponding
+result node in
+.Fa doc
+passing the string having been scanned in
+.Fa str
+of length
+.Fa len .
+The
+.Fa escaped
+flag indicates that string contains escape sequences.
+The
+.Fa doc
+argument may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.It Va number_value
+Called whenever a JSON number has been scanned to create a corresponding
+result node in
+.Fa doc
+passing the number having been scanned in
+.Fa num
+of length
+.Fa len .
+The
+.Fa doc
+argument may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.It Va bool_value
+Called whenever a JSON boolean has been scanned to create a corresponding
+result node in
+.Fa doc
+passing the flag having been scanned in
+.Fa value .
+The
+.Fa doc
+argument may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.It Va null_value
+Called whenever a JSON null value has been scanned to create a corresponding
+result node in
+.Fa doc .
+The
+.Fa doc
+argument may be
+.Dv NULL .
+The function is expected to return a pointer to the result node or
+.Dv NULL .
+.El
+.Pp
 The (a)
 .Fn wctowcjsons
 and (b)
@@ -87,7 +268,7 @@ to the number of characters written to
 on return.
 .Pp
 The
-.Fn WCJSON_INITIALIZER
+.Dv WCJSON_INITIALIZER
 macro expands to a rvalue expression for initializing a
 .Vt wcjson
 structure.

@@ -14,11 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * @file wcjson.c
- * @brief RFC8259 implementation.
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
