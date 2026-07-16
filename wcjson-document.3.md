@@ -207,6 +207,12 @@ The elements of this structure are defined as follows:
 > Number of items the esc array needs to be capable of holding.
 
 The
+`WCJSON_DOCUMENT_INITIALIZER`
+macro expands to a rvalue expression initializing a
+*wcjson\_document*
+structure.
+
+The
 *wcjson\_value*
 structure is defined as follows:
 
@@ -229,12 +235,6 @@ structure is defined as follows:
 		size_t prev_idx;
 		size_t next_idx;
 	};
-
-The
-`WCJSON_DOCUMENT_INITIALIZER`
-macro expands to a rvalue expression initializing a
-*wcjson\_document*
-structure.
 
 The elements of this structure are defined as follows:
 

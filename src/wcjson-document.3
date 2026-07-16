@@ -149,6 +149,12 @@ Number of items the esc array needs to be capable of holding.
 .El
 .Pp
 The
+.Dv WCJSON_DOCUMENT_INITIALIZER
+macro expands to a rvalue expression initializing a
+.Vt wcjson_document
+structure.
+.Pp
+The
 .Vt wcjson_value
 structure is defined as follows:
 .Bd -literal -offset indent
@@ -172,12 +178,6 @@ struct wcjson_value {
 	size_t next_idx;
 };
 .Ed
-.Pp
-The
-.Dv WCJSON_DOCUMENT_INITIALIZER
-macro expands to a rvalue expression initializing a
-.Vt wcjson_document
-structure.
 .Pp
 The elements of this structure are defined as follows:
 .Bl -tag -width is_boolean
