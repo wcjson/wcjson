@@ -496,6 +496,11 @@ member needs to be set to the index of the next item in that array.
 On successful completion the
 *v\_next*
 member holds the index of the next item in that array.
+The
+**wcjson\_value\_string**()
+function additionally updates the
+*s\_nitems\_cnt*
+member to account for the added string.
 
 The
 **wcjson\_value\_head**(),

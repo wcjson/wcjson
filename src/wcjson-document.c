@@ -136,9 +136,18 @@ struct wcjson_value *wcjson_value_string(struct wcjson_document *doc,
     v->is_string = 1;
     v->string = val;
     v->s_len = len;
+
+    if (doc->s_nitems_cnt > SIZE_MAX - len - 1 ||
+        len > SIZE_MAX - doc->s_nitems_cnt - 1)
+      goto err_range;
+
+    doc->s_nitems_cnt += len + 1;
   }
 
   return v;
+err_range:
+  errno = ERANGE;
+  return NULL;
 }
 
 struct wcjson_value *wcjson_value_number(struct wcjson_document *doc,

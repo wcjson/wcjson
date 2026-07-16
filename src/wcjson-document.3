@@ -407,6 +407,11 @@ member needs to be set to the index of the next item in that array.
 On successful completion the
 .Fa v_next
 member holds the index of the next item in that array.
+The
+.Fn wcjson_value_string
+function additionally updates the
+.Fa s_nitems_cnt
+member to account for the added string.
 .Pp
 The
 .Fn wcjson_value_head ,
