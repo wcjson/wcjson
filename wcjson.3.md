@@ -79,6 +79,12 @@ The elements of this structure are defined as follows:
 > `WCJSON_ABORT_ERROR`.
 
 The
+`WCJSON_INITIALIZER`
+macro expands to a rvalue expression initializing a
+*wcjson*
+structure.
+
+The
 *wcjson\_ops*
 structure is defined as follows:
 
@@ -297,12 +303,6 @@ functions set
 to the number of characters written to
 *d*
 on return.
-
-The
-`WCJSON_INITIALIZER`
-macro expands to a rvalue expression for initializing a
-*wcjson*
-structure.
 
 ## RETURN VALUES
 

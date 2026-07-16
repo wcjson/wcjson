@@ -230,6 +230,12 @@ structure is defined as follows:
 		size_t next_idx;
 	};
 
+The
+`WCJSON_DOCUMENT_INITIALIZER`
+macro expands to a rvalue expression initializing a
+*wcjson\_document*
+structure.
+
 The elements of this structure are defined as follows:
 
 *is\_null*
@@ -300,10 +306,6 @@ The elements of this structure are defined as follows:
 *next\_idx*
 
 > Index of the next value in the child value list in the document values array.
-
-The
-`WCJSON_DOCUMENT_INITIALIZER`
-macro expands to a rvalue expression for initializing an empty document.
 
 The
 **wcjsondocvalues**()

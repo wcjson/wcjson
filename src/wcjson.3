@@ -65,6 +65,12 @@ Code describing the error in case of
 .El
 .Pp
 The
+.Dv WCJSON_INITIALIZER
+macro expands to a rvalue expression initializing a
+.Vt wcjson
+structure.
+.Pp
+The
 .Vt wcjson_ops
 structure is defined as follows:
 .Bd -literal -offset indent
@@ -266,12 +272,6 @@ functions set
 to the number of characters written to
 .Fa d
 on return.
-.Pp
-The
-.Dv WCJSON_INITIALIZER
-macro expands to a rvalue expression for initializing a
-.Vt wcjson
-structure.
 .Sh RETURN VALUES
 The functions return 0 on success or a negative value if a deserialization,
 decoding or encoding error occurs.

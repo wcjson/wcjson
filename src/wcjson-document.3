@@ -173,6 +173,12 @@ struct wcjson_value {
 };
 .Ed
 .Pp
+The
+.Dv WCJSON_DOCUMENT_INITIALIZER
+macro expands to a rvalue expression initializing a
+.Vt wcjson_document
+structure.
+.Pp
 The elements of this structure are defined as follows:
 .Bl -tag -width is_boolean
 .It Va is_null
@@ -211,10 +217,6 @@ array.
 .It Va next_idx
 Index of the next value in the child value list in the document values array.
 .El
-.Pp
-The
-.Dv WCJSON_DOCUMENT_INITIALIZER
-macro expands to a rvalue expression for initializing an empty document.
 .Pp
 The
 .Fn wcjsondocvalues
