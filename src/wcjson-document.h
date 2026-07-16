@@ -26,7 +26,6 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#include <wchar.h>
 
 #include <wcjson.h>
 

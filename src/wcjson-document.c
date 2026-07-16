@@ -29,6 +29,7 @@ extern "C" {
 
 #include <errno.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -71,12 +72,15 @@ const struct wcjson_ops *const wcjson_document_ops = &(const struct wcjson_ops){
 
 static struct wcjson_value *wcjson_document_nextv(struct wcjson_document *doc,
                                                   const bool maybe_null) {
+  if (doc->v_nitems_cnt == SIZE_MAX)
+    goto err_range;
+
   doc->v_nitems_cnt++;
 
   if (maybe_null && doc->values == NULL)
     return NULL;
 
-  if (doc->v_next == doc->v_nitems)
+  if (doc->v_next == SIZE_MAX || doc->v_next == doc->v_nitems)
     goto err_range;
 
   struct wcjson_value *v = &doc->values[doc->v_next];
@@ -387,7 +391,7 @@ wchar_t *wcjson_document_string(struct wcjson_document *doc, const wchar_t *s,
   size_t dst_len = doc->s_nitems - doc->s_next;
   wchar_t *dst = &doc->strings[doc->s_next];
 
-  if (dst_len < len + 1)
+  if (len == SIZE_MAX || dst_len < len + 1)
     goto err_range;
 
   wchar_t *ret = wcsncpy(dst, s, len);
@@ -409,7 +413,7 @@ char *wcjson_document_mbstring(struct wcjson_document *doc, const char *s,
   size_t dst_len = doc->mb_nitems - doc->mb_next;
   char *dst = &doc->mbstrings[doc->mb_next];
 
-  if (dst_len < len + 1)
+  if (len == SIZE_MAX || dst_len < len + 1)
     goto err_range;
 
   char *ret = strncpy(dst, s, len);
@@ -539,11 +543,20 @@ static void *doc_string_value(struct wcjson *ctx, void *doc, const wchar_t *str,
     v->s_len = len;
   }
 
+  if (d->s_nitems_cnt > SIZE_MAX - len - 1 ||
+      len > SIZE_MAX - d->s_nitems_cnt - 1)
+    goto err_range;
+
   d->s_nitems_cnt += len + 1;
   return v;
 err:
   ctx->status = WCJSON_ABORT_ERROR;
   ctx->errnum = errno;
+  errno = saved_errno;
+  return v;
+err_range:
+  ctx->status = WCJSON_ABORT_ERROR;
+  ctx->errnum = ERANGE;
   errno = saved_errno;
   return v;
 }
@@ -567,11 +580,20 @@ static void *doc_number_value(struct wcjson *ctx, void *doc, const wchar_t *num,
     v->s_len = len;
   }
 
+  if (d->s_nitems_cnt > SIZE_MAX - len - 1 ||
+      len > SIZE_MAX - d->s_nitems_cnt - 1)
+    goto err_range;
+
   d->s_nitems_cnt += len + 1;
   return v;
 err:
   ctx->status = WCJSON_ABORT_ERROR;
   ctx->errnum = errno;
+  errno = saved_errno;
+  return v;
+err_range:
+  ctx->status = WCJSON_ABORT_ERROR;
+  ctx->errnum = ERANGE;
   errno = saved_errno;
   return v;
 }
@@ -649,6 +671,10 @@ static int doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
     if (mblen == (size_t)-1)
       goto err;
 
+    if (d->mb_nitems_cnt > SIZE_MAX - mblen - 1 ||
+        mblen > SIZE_MAX - d->mb_nitems_cnt - 1)
+      goto err_range;
+
     d->mb_nitems_cnt += mblen + 1;
 
     if (v->is_pair && doc_unesc(ctx, d, wcjson_value_head(d, v)) < 0)
@@ -658,7 +684,7 @@ static int doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
     size_t dst_len = d->s_nitems - d->s_next;
     wchar_t *dst = &d->strings[d->s_next];
 
-    if (dst_len < v->s_len + 1)
+    if (v->s_len == SIZE_MAX || dst_len < v->s_len + 1)
       goto err_range;
 
     wmemcpy(dst, v->string, v->s_len);
@@ -674,6 +700,10 @@ static int doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
     size_t mblen = wcstombs(NULL, v->string, v->s_len);
     if (mblen == (size_t)-1)
       goto err;
+
+    if (d->mb_nitems_cnt > SIZE_MAX - mblen - 1 ||
+        mblen > SIZE_MAX - d->mb_nitems_cnt - 1)
+      goto err_range;
 
     d->mb_nitems_cnt += mblen + 1;
   } else if (v->is_array) {
