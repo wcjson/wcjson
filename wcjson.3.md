@@ -65,11 +65,11 @@ The elements of this structure are defined as follows:
 > > *errno*
 > > member is describing the error.
 
-> WCJSON\_ABORT\_INVALID
+> `WCJSON_ABORT_INVALID`
 
 > > An operation aborted due to invalid JSON text.
 
-> WCJSON\_ABORT\_END\_OF\_INPUT
+> `WCJSON_ABORT_END_OF_INPUT`
 
 > > An operation aborted due to an unexpected end of input.
 
