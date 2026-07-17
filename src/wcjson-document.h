@@ -74,6 +74,7 @@ struct wcjson_document {
       .strings = NULL,                                                         \
       .s_nitems = 0,                                                           \
       .s_nitems_cnt = 0,                                                       \
+      .s_next = 0,                                                             \
       .mbstrings = NULL,                                                       \
       .mb_nitems = 0,                                                          \
       .mb_nitems_cnt = 0,                                                      \
