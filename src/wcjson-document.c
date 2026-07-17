@@ -669,17 +669,17 @@ static int doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
     v->s_len = dst_len;
 
     d->s_next = s_next;
-    d->e_nitems_cnt = MAX(dst_len * WCJSON_ESCAPE_MAX + 1, d->e_nitems_cnt);
+    d->e_nitems_cnt = MAX(dst_len * WCJSON_ESCAPE_MAX, d->e_nitems_cnt);
 
     size_t mblen = wcstombs(NULL, v->string, v->s_len);
     if (mblen == (size_t)-1)
       goto err;
 
-    if (d->mb_nitems_cnt > SIZE_MAX - mblen - 1 ||
-        mblen > SIZE_MAX - d->mb_nitems_cnt - 1)
+    const size_t mb_nitems_cnt = d->mb_nitems_cnt + mblen + 1;
+    if (mb_nitems_cnt < d->mb_nitems_cnt)
       goto err_range;
 
-    d->mb_nitems_cnt += mblen + 1;
+    d->mb_nitems_cnt = mb_nitems_cnt;
 
     if (v->is_pair && doc_unesc(ctx, d, wcjson_value_head(d, v)) < 0)
       goto err;
@@ -705,11 +705,11 @@ static int doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
     if (mblen == (size_t)-1)
       goto err;
 
-    if (d->mb_nitems_cnt > SIZE_MAX - mblen - 1 ||
-        mblen > SIZE_MAX - d->mb_nitems_cnt - 1)
+    const size_t mb_nitems_cnt = d->mb_nitems_cnt + mblen + 1;
+    if (mb_nitems_cnt < d->mb_nitems_cnt)
       goto err_range;
 
-    d->mb_nitems_cnt += mblen + 1;
+    d->mb_nitems_cnt = mb_nitems_cnt;
   } else if (v->is_array) {
     for (struct wcjson_value *n = wcjson_value_tail(d, v); n != NULL;
          n = wcjson_value_prev(d, n))
@@ -806,209 +806,207 @@ static int doc_fprint(FILE *f, bool asc, const struct wcjson_document *d,
                       const struct wcjson_value *v) {
   if (v->is_null) {
     if (fputws(L"null", f) == -1)
-      goto err;
+      return -1;
 
   } else if (v->is_boolean) {
     if (fputws(v->is_true ? L"true" : L"false", f) == -1)
-      goto err;
+      return -1;
 
   } else if (v->is_string || v->is_pair) {
-    size_t d_len = d->e_nitems;
+    size_t e_len = d->e_nitems;
 
     if (asc) {
-      if (wctoascjsons(v->string, v->s_len, d->esc, &d_len) < 0)
-        goto err;
+      if (wctoascjsons(v->string, v->s_len, d->esc, &e_len) < 0)
+        return -1;
 
     } else {
-      if (wctowcjsons(v->string, v->s_len, d->esc, &d_len) < 0)
-        goto err;
+      if (wctowcjsons(v->string, v->s_len, d->esc, &e_len) < 0)
+        return -1;
     }
 
-    if (d->e_nitems - d_len == 0)
-      goto err_range;
+    if (putwc(L'"', f) == WEOF)
+      return -1;
 
-    d->esc[d_len] = L'\0';
+    if (fwprintf(f, L"%.*ls", (int)e_len, d->esc) < 0)
+      return -1;
 
     if (putwc(L'"', f) == WEOF)
-      goto err;
-
-    if (fputws(d->esc, f) == -1)
-      goto err;
-
-    if (putwc(L'"', f) == WEOF)
-      goto err;
+      return -1;
 
     if (v->is_pair) {
       if (putwc(L':', f) == WEOF)
-        goto err;
+        return -1;
 
       if (doc_fprint(f, asc, d, wcjson_value_head(d, v)) < 0)
-        goto err;
+        return -1;
     }
   } else if (v->is_number) {
-    if (fputws(v->string, f) == -1)
-      goto err;
+    if (fwprintf(f, L"%.*ls", (int)v->s_len, v->string) < 0)
+      return -1;
 
   } else if (v->is_array) {
     if (putwc(L'[', f) == WEOF)
-      goto err;
+      return -1;
 
     struct wcjson_value *n = wcjson_value_head(d, v);
     while (n != NULL) {
       if (doc_fprint(f, asc, d, n) < 0)
-        goto err;
+        return -1;
 
       n = wcjson_value_next(d, n);
 
       if (n != NULL && putwc(L',', f) == WEOF)
-        goto err;
+        return -1;
     }
 
     if (putwc(L']', f) == WEOF)
-      goto err;
+      return -1;
 
   } else if (v->is_object) {
     if (putwc(L'{', f) == WEOF)
-      goto err;
+      return -1;
 
     struct wcjson_value *n = wcjson_value_head(d, v);
     while (n != NULL) {
       if (doc_fprint(f, asc, d, n) < 0)
-        goto err;
+        return -1;
 
       n = wcjson_value_next(d, n);
 
       if (n != NULL && putwc(L',', f) == WEOF)
-        goto err;
+        return -1;
     }
 
     if (putwc(L'}', f) == WEOF)
-      goto err;
+      return -1;
 
   } else
     goto err_inval;
 
   return 0;
-err:
-  return -1;
 err_inval:
   errno = EINVAL;
   return -1;
+}
+
+static inline int doc_sprint_copy(const wchar_t *s, size_t s_len, wchar_t *d,
+                                  size_t *d_lenp) {
+  if (*d_lenp < s_len)
+    goto err_range;
+
+  wmemcpy(d, s, s_len);
+  *d_lenp -= s_len;
+  return 0;
 err_range:
   errno = ERANGE;
   return -1;
 }
 
-static int doc_sprint(wchar_t *s, size_t *lenp, bool asc,
-                      const struct wcjson_document *d,
+static int doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
+                      const struct wcjson_document *doc,
                       const struct wcjson_value *v) {
-#ifdef __copy
-#error "__copy macro already defined - rename"
-#else
-#define __copy(_s, _l)                                                         \
-  do {                                                                         \
-    if (s_len < (_l))                                                          \
-      goto err_range;                                                          \
-    wmemcpy(s, (_s), (_l));                                                    \
-    s_len -= (_l);                                                             \
-    s += (_l);                                                                 \
-  } while (0)
-#endif
-
-  size_t s_len = *lenp;
+  size_t d_len = *d_lenp;
 
   if (v->is_null) {
-    __copy(L"null", 4);
+    if (doc_sprint_copy(L"null", 4, d, &d_len) < 0)
+      return -1;
   } else if (v->is_boolean) {
     if (v->is_true) {
-      __copy(L"true", 4);
+      if (doc_sprint_copy(L"true", 4, d, &d_len) < 0)
+        return -1;
     } else {
-      __copy(L"false", 5);
+      if (doc_sprint_copy(L"false", 5, d, &d_len) < 0)
+        return -1;
     }
   } else if (v->is_string || v->is_pair) {
-    size_t d_len = d->e_nitems;
+    size_t e_len = doc->e_nitems;
 
     if (asc) {
-      if (wctoascjsons(v->string, v->s_len, d->esc, &d_len) < 0)
-        goto err;
-
+      if (wctoascjsons(v->string, v->s_len, doc->esc, &e_len) < 0)
+        return -1;
     } else {
-      if (wctowcjsons(v->string, v->s_len, d->esc, &d_len) < 0)
-        goto err;
+      if (wctowcjsons(v->string, v->s_len, doc->esc, &e_len) < 0)
+        return -1;
     }
 
-    if (d->e_nitems - d_len == 0)
+    if (e_len > SIZE_MAX - 2 || d_len < e_len + 2)
       goto err_range;
 
-    d->esc[d_len] = L'\0';
+    *d++ = L'"';
+    d_len--;
 
-    __copy(L"\"", 1);
-    __copy(d->esc, d_len);
-    __copy(L"\"", 1);
+    if (doc_sprint_copy(doc->esc, e_len, d, &d_len) < 0)
+      return -1;
+
+    *d++ = '"';
+    d_len--;
 
     if (v->is_pair) {
-      __copy(L":", 1);
+      if (doc_sprint_copy(L":", 1, d, &d_len) < 0)
+        return -1;
 
-      size_t t_len = s_len;
-      if (doc_sprint(s, &t_len, asc, d, wcjson_value_head(d, v)) < 0)
-        goto err;
+      size_t v_len = d_len;
+      if (doc_sprint(d, &v_len, asc, doc, wcjson_value_head(doc, v)) < 0)
+        return -1;
 
-      s_len -= t_len;
+      d_len -= v_len;
     }
   } else if (v->is_number) {
-    __copy(v->string, v->s_len);
+    if (doc_sprint_copy(v->string, v->s_len, d, &d_len) < 0)
+      return -1;
   } else if (v->is_array) {
-    __copy(L"[", 1);
+    if (doc_sprint_copy(L"[", 1, d, &d_len) < 0)
+      return -1;
 
-    struct wcjson_value *n = wcjson_value_head(d, v);
+    struct wcjson_value *n = wcjson_value_head(doc, v);
     while (n != NULL) {
-      size_t t_len = s_len;
-      if (doc_sprint(s, &t_len, asc, d, n) < 0)
-        goto err;
+      size_t v_len = d_len;
+      if (doc_sprint(d, &v_len, asc, doc, n) < 0)
+        return -1;
 
-      s_len -= t_len;
-      s += t_len;
+      d += v_len;
+      d_len -= v_len;
 
-      n = wcjson_value_next(d, n);
+      n = wcjson_value_next(doc, n);
 
-      if (n != NULL)
-        __copy(L",", 1);
+      if (n != NULL && doc_sprint_copy(L",", 1, d, &d_len) < 0)
+        return -1;
     }
 
-    __copy(L"]", 1);
+    if (doc_sprint_copy(L"]", 1, d, &d_len) < 0)
+      return -1;
   } else if (v->is_object) {
-    __copy(L"{", 1);
+    if (doc_sprint_copy(L"{", 1, d, &d_len) < 0)
+      return -1;
 
-    struct wcjson_value *n = wcjson_value_head(d, v);
+    struct wcjson_value *n = wcjson_value_head(doc, v);
     while (n != NULL) {
-      size_t t_len = s_len;
-      if (doc_sprint(s, &t_len, asc, d, n) < 0)
-        goto err;
+      size_t v_len = d_len;
+      if (doc_sprint(d, &v_len, asc, doc, n) < 0)
+        return -1;
 
-      s_len -= t_len;
-      s += t_len;
+      d += v_len;
+      d_len -= v_len;
 
-      n = wcjson_value_next(d, n);
+      n = wcjson_value_next(doc, n);
 
-      if (n != NULL)
-        __copy(L",", 1);
+      if (n != NULL && doc_sprint_copy(L",", 1, d, &d_len) < 0)
+        return -1;
     }
 
-    __copy(L"}", 1);
+    if (doc_sprint_copy(L"}", 1, d, &d_len) < 0)
+      return -1;
   } else
     goto err_inval;
 
-  *lenp -= s_len;
+  *d_lenp -= d_len;
   return 0;
-err:
-  return -1;
 err_inval:
   errno = EINVAL;
   return -1;
 err_range:
   errno = ERANGE;
   return -1;
-#undef __copy
 }
 
 int wcjsondocvalues(struct wcjson *ctx, struct wcjson_document *doc,

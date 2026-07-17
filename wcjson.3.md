@@ -326,7 +326,7 @@ function provides status via
 \[`ERANGE`]
 
 > The size
-> *d\_len*
+> *\*d\_lenp*
 > of the destination
 > *d*
 > was too small.
