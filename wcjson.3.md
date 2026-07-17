@@ -45,7 +45,7 @@ structure is defined as follows:
 
 	struct wcjson {
 		enum wcjson_status status;
-		int errno;
+		int errnum;
 	};
 
 The elements of this structure are defined as follows:
@@ -62,7 +62,7 @@ The elements of this structure are defined as follows:
 
 > > An operation aborted due to an error.
 > > The
-> > *errno*
+> > *errnum*
 > > member is describing the error.
 
 > `WCJSON_ABORT_INVALID`
@@ -73,7 +73,7 @@ The elements of this structure are defined as follows:
 
 > > An operation aborted due to an unexpected end of input.
 
-*errno*
+*errnum*
 
 > Code describing the error in case of
 > `WCJSON_ABORT_ERROR`.
