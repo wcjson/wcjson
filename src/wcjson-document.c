@@ -131,13 +131,12 @@ struct wcjson_value *wcjson_value_string(struct wcjson_document *doc,
     v->is_string = 1;
     v->string = val;
     v->s_len = len;
-
-    if (doc->s_nitems_cnt > SIZE_MAX - len - 1 ||
-        len > SIZE_MAX - doc->s_nitems_cnt - 1)
-      goto err_range;
-
-    doc->s_nitems_cnt += len + 1;
   }
+
+  const size_t s_nitems_cnt = doc->s_nitems_cnt + len + 1;
+  if (s_nitems_cnt < doc->s_nitems_cnt)
+    goto err_range;
+  doc->s_nitems_cnt = s_nitems_cnt;
 
   return v;
 err_range:
@@ -155,7 +154,15 @@ struct wcjson_value *wcjson_value_number(struct wcjson_document *doc,
     v->s_len = len;
   }
 
+  const size_t s_nitems_cnt = doc->s_nitems_cnt + len + 1;
+  if (s_nitems_cnt < doc->s_nitems_cnt)
+    goto err_range;
+  doc->s_nitems_cnt = s_nitems_cnt;
+
   return v;
+err_range:
+  errno = ERANGE;
+  return NULL;
 }
 
 struct wcjson_value *wcjson_value_object(struct wcjson_document *doc) {
@@ -547,11 +554,11 @@ static void *doc_string_value(struct wcjson *ctx, void *doc, const wchar_t *str,
     v->s_len = len;
   }
 
-  if (d->s_nitems_cnt > SIZE_MAX - len - 1 ||
-      len > SIZE_MAX - d->s_nitems_cnt - 1)
+  const size_t s_nitems_cnt = d->s_nitems_cnt + len + 1;
+  if (s_nitems_cnt < d->s_nitems_cnt)
     goto err_range;
 
-  d->s_nitems_cnt += len + 1;
+  d->s_nitems_cnt = s_nitems_cnt;
   return v;
 err:
   ctx->status = WCJSON_ABORT_ERROR;
@@ -584,11 +591,11 @@ static void *doc_number_value(struct wcjson *ctx, void *doc, const wchar_t *num,
     v->s_len = len;
   }
 
-  if (d->s_nitems_cnt > SIZE_MAX - len - 1 ||
-      len > SIZE_MAX - d->s_nitems_cnt - 1)
+  const size_t s_nitems_cnt = d->s_nitems_cnt + len + 1;
+  if (s_nitems_cnt < d->s_nitems_cnt)
     goto err_range;
 
-  d->s_nitems_cnt += len + 1;
+  d->s_nitems_cnt = s_nitems_cnt;
   return v;
 err:
   ctx->status = WCJSON_ABORT_ERROR;
