@@ -327,13 +327,13 @@ function provides status via
 
 > The size
 > *\*d\_lenp*
-> of the destination
+> of a destination
 > *d*
 > was too small.
 
 \[`EILSEQ`]
 
-> The source
+> A source
 > *s*
 > cointained invalid data.
 
