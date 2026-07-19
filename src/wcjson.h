@@ -52,50 +52,50 @@ extern "C" {
 #define WCJSON_ESCAPE_MAX 12
 
 enum wcjson_status {
-  WCJSON_OK,
-  WCJSON_ABORT_ERROR,
-  WCJSON_ABORT_INVALID,
-  WCJSON_ABORT_END_OF_INPUT,
+	WCJSON_OK,
+	WCJSON_ABORT_ERROR,
+	WCJSON_ABORT_INVALID,
+	WCJSON_ABORT_END_OF_INPUT,
 };
 
 struct wcjson {
-  enum wcjson_status status;
-  int errnum;
+	enum wcjson_status status;
+	int errnum;
 };
 
-#define WCJSON_INITIALIZER                                                     \
-  {                                                                            \
-      .status = WCJSON_OK,                                                     \
-      .errnum = 0,                                                             \
+#define WCJSON_INITIALIZER						\
+  {									\
+      .status = WCJSON_OK,						\
+      .errnum = 0,							\
   }
 
 struct wcjson_ops {
-  void *(*object_start)(struct wcjson *ctx, void *doc, void *parent);
-  void (*object_add)(struct wcjson *ctx, void *doc, void *obj, void *key,
-                     void *value);
-  void (*object_end)(struct wcjson *ctx, void *doc, void *obj);
-  void *(*array_start)(struct wcjson *ctx, void *doc, void *parent);
-  void (*array_add)(struct wcjson *ctx, void *doc, void *arr, void *value);
-  void (*array_end)(struct wcjson *ctx, void *doc, void *arr);
-  void *(*string_value)(struct wcjson *ctx, void *doc, const wchar_t *str,
-                        const size_t len, const bool escaped);
-  void *(*number_value)(struct wcjson *ctx, void *doc, const wchar_t *num,
-                        const size_t len);
-  void *(*bool_value)(struct wcjson *ctx, void *doc, const bool value);
-  void *(*null_value)(struct wcjson *ctx, void *doc);
+	void *(*object_start)(struct wcjson *ctx, void *doc, void *parent);
+	void (*object_add)(struct wcjson *ctx, void *doc, void *obj, void *key,
+	    void *value);
+	void (*object_end)(struct wcjson *ctx, void *doc, void *obj);
+	void *(*array_start)(struct wcjson *ctx, void *doc, void *parent);
+	void (*array_add)(struct wcjson *ctx, void *doc, void *arr, void *value);
+	void (*array_end)(struct wcjson *ctx, void *doc, void *arr);
+	void *(*string_value)(struct wcjson *ctx, void *doc, const wchar_t *str,
+	    const size_t len, const bool escaped);
+	void *(*number_value)(struct wcjson *ctx, void *doc, const wchar_t *num,
+	    const size_t len);
+	void *(*bool_value)(struct wcjson *ctx, void *doc, const bool value);
+	void *(*null_value)(struct wcjson *ctx, void *doc);
 };
 
 WCJSON_EXPORT int wcjson(struct wcjson *ctx, const struct wcjson_ops *ops,
-                         void *doc, const wchar_t *txt, const size_t len);
+    void *doc, const wchar_t *txt, const size_t len);
 
 WCJSON_EXPORT int wctowcjsons(const wchar_t *s, size_t s_len, wchar_t *d,
-                              size_t *d_lenp);
+    size_t *d_lenp);
 
 WCJSON_EXPORT int wctoascjsons(const wchar_t *s, size_t s_len, wchar_t *d,
-                               size_t *d_lenp);
+    size_t *d_lenp);
 
 WCJSON_EXPORT int wcjsonstowc(const wchar_t *s, size_t s_len, wchar_t *d,
-                              size_t *d_lenp);
+    size_t *d_lenp);
 
 #ifdef __cplusplus
 }
