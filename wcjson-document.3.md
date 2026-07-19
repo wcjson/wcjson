@@ -428,7 +428,7 @@ On successful completion that array holds the multibyte strings and the
 *mb\_next*
 member holds the index of the next item in that array.
 The
-*mbstrings*
+*mbstring*
 member of any
 *wcjson\_value*
 in the
@@ -470,10 +470,10 @@ and
 functions the
 *s*
 array needs to point to available memory and
-*lenp*
+*\*lenp*
 needs to be set to the number of items available in that array.
 On successful completion
-*lenp*
+*\*lenp*
 is updated to the number of items used in that array.
 
 The
@@ -500,9 +500,11 @@ On successful completion the
 member holds the index of the next item in that array.
 The
 **wcjson\_value\_string**()
-function additionally updates the
+and
+**wcjson\_value\_number**()
+functions additionally update the
 *s\_nitems\_cnt*
-member to account for the added string.
+member to account for the added values.
 
 The
 **wcjson\_value\_head**(),
@@ -559,6 +561,9 @@ needs to point to available memory, the
 member needs to be set to the number of items available in that array and the
 *s\_next*
 member needs to be set to the index of the item in that array.
+The
+*s\_items\_cnt*
+member is updated to account for the added string.
 
 The
 **wcjson\_document\_mbstring**()
@@ -577,6 +582,9 @@ needs to point to available memory, the
 member needs to be set to the number of items available in that array and the
 *mb\_next*
 member needs to be set to the index of the item in that array.
+The
+Va. mb\_nitems\_cnt
+member is updated to account for the added multibyte string.
 
 ## RETURN VALUES
 

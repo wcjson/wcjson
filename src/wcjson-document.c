@@ -408,11 +408,15 @@ wchar_t *wcjson_document_string(struct wcjson_document *doc, const wchar_t *s,
   wchar_t *ret = wcsncpy(dst, s, len);
   ret[len] = L'\0';
 
-  size_t s_next = doc->s_next + len + 1;
+  const size_t s_next = doc->s_next + len + 1;
   if (s_next < doc->s_next || s_next > doc->s_nitems)
     goto err_range;
 
   doc->s_next = s_next;
+  const size_t s_nitems_cnt = doc->s_nitems_cnt + len + 1;
+  if (s_nitems_cnt < doc->s_nitems_cnt)
+    goto err_range;
+  doc->s_nitems_cnt = s_nitems_cnt;
   return ret;
 err_range:
   errno = ERANGE;
@@ -430,11 +434,15 @@ char *wcjson_document_mbstring(struct wcjson_document *doc, const char *s,
   char *ret = strncpy(dst, s, len);
   ret[len] = '\0';
 
-  size_t mb_next = doc->mb_next + len + 1;
+  const size_t mb_next = doc->mb_next + len + 1;
   if (mb_next < doc->mb_next || mb_next > doc->mb_nitems)
     goto err_range;
 
   doc->mb_next = mb_next;
+  const size_t mb_nitems_cnt = doc->mb_nitems_cnt + len + 1;
+  if (mb_nitems_cnt < doc->mb_nitems_cnt)
+    goto err_range;
+  doc->mb_nitems_cnt = mb_nitems_cnt;
   return ret;
 err_range:
   errno = ERANGE;

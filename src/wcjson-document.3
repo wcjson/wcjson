@@ -339,7 +339,7 @@ On successful completion that array holds the multibyte strings and the
 .Va mb_next
 member holds the index of the next item in that array.
 The
-.Va mbstrings
+.Va mbstring
 member of any
 .Vt wcjson_value
 in the
@@ -381,10 +381,10 @@ and
 functions the
 .Fa s
 array needs to point to available memory and
-.Fa lenp
+.Fa *lenp
 needs to be set to the number of items available in that array.
 On successful completion
-.Fa lenp
+.Fa *lenp
 is updated to the number of items used in that array.
 .Pp
 The
@@ -411,9 +411,11 @@ On successful completion the
 member holds the index of the next item in that array.
 The
 .Fn wcjson_value_string
-function additionally updates the
+and
+.Fn wcjson_value_number
+functions additionally update the
 .Va s_nitems_cnt
-member to account for the added string.
+member to account for the added values.
 .Pp
 The
 .Fn wcjson_value_head ,
@@ -470,6 +472,9 @@ needs to point to available memory, the
 member needs to be set to the number of items available in that array and the
 .Va s_next
 member needs to be set to the index of the item in that array.
+The
+.Va s_items_cnt
+member is updated to account for the added string.
 .Pp
 The
 .Fn wcjson_document_mbstring
@@ -488,6 +493,9 @@ needs to point to available memory, the
 member needs to be set to the number of items available in that array and the
 .Va mb_next
 member needs to be set to the index of the item in that array.
+The
+Va. mb_nitems_cnt
+member is updated to account for the added multibyte string.
 .Sh RETURN VALUES
 The functions return 0 on success, or a negative value or NULL if an error
 occurs.
