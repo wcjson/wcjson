@@ -14,7 +14,7 @@ Please see the individual manual pages [wcjson(1)](wcjson.1.md), [wcjson(3)](wcj
 ## Releases
 
 Releases are provided via Github. The latest release is
-[v0.38](https://github.com/wcjson/wcjson/releases/tag/v0.38).
+[v0.39](https://github.com/wcjson/wcjson/releases/tag/v0.39).
 
 v0.x releases are marked pre releases not ready for production. Although the
 API is quite stable and this is used in production, library version-info will
