@@ -792,6 +792,7 @@ doc_unesc(struct wcjson *ctx, struct wcjson_document *d,
 			goto err_range;
 
 		v->string = dst;
+
 		d->s_next = s_next;
 
 		const size_t mblen = wcstombs(NULL, v->string, v->s_len);
@@ -1041,6 +1042,8 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 		if (doc_sprint_copy(doc->esc, e_len, d, &d_len) < 0)
 			return -1;
 
+		d += e_len;
+
 		*d++ = '"';
 		d_len--;
 
@@ -1048,6 +1051,7 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 			if (doc_sprint_copy(L":", 1, d, &d_len) < 0)
 				return -1;
 
+			d++;
 			size_t v_len = d_len;
 
 			if (doc_sprint(d, &v_len, asc, doc,
@@ -1063,10 +1067,13 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 		if (doc_sprint_copy(L"[", 1, d, &d_len) < 0)
 			return -1;
 
+		d++;
+
 		struct wcjson_value *n = wcjson_value_head(doc, v);
 
 		while (n != NULL) {
 			size_t v_len = d_len;
+
 			if (doc_sprint(d, &v_len, asc, doc, n) < 0)
 				return -1;
 
@@ -1075,9 +1082,12 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 
 			n = wcjson_value_next(doc, n);
 
-			if (n != NULL &&
-			    doc_sprint_copy(L",", 1, d, &d_len) < 0)
-				return -1;
+			if (n != NULL) {
+				if (doc_sprint_copy(L",", 1, d, &d_len) < 0)
+					return -1;
+
+				d++;
+			}
 		}
 
 		if (doc_sprint_copy(L"]", 1, d, &d_len) < 0)
@@ -1086,10 +1096,13 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 		if (doc_sprint_copy(L"{", 1, d, &d_len) < 0)
 			return -1;
 
+		d++;
+
 		struct wcjson_value *n = wcjson_value_head(doc, v);
 
 		while (n != NULL) {
 			size_t v_len = d_len;
+
 			if (doc_sprint(d, &v_len, asc, doc, n) < 0)
 				return -1;
 
@@ -1098,9 +1111,12 @@ doc_sprint(wchar_t *d, size_t *d_lenp, bool asc,
 
 			n = wcjson_value_next(doc, n);
 
-			if (n != NULL &&
-			    doc_sprint_copy(L",", 1, d, &d_len) < 0)
-				return -1;
+			if (n != NULL) {
+				if (doc_sprint_copy(L",", 1, d, &d_len) < 0)
+					return -1;
+
+				d++;
+			}
 		}
 
 		if (doc_sprint_copy(L"}", 1, d, &d_len) < 0)
