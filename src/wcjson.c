@@ -382,7 +382,7 @@ scan_escaped(struct scan_state *ss)
 			return WCJSON_ABORT_INVALID;
 
 		if (unescaped >= 0xd800 && unescaped <= 0xdfff) {
-      // UTF 16 surrogates
+			// UTF 16 surrogates
 			if (unescaped > 0xdbff || ss->txt[ss->pos] != L'\\')
 				return WCJSON_ABORT_INVALID;
 
@@ -963,7 +963,7 @@ wctojsons_utf32(const uint32_t c, wchar_t *d,
 	size_t written, d_len = *d_lenp;
 
 	if (c > 0xffff) {
-    // UTF 16 surrogates
+		// UTF 16 surrogates
 		written = d_len;
 
 		if (wctojsons_uhex4((0xd800 |
@@ -1010,7 +1010,7 @@ wctojsons_ascii(const wchar_t *s, size_t *s_lenp, wchar_t *d,
 	return 0;
 #elif defined(WCHAR_T_UTF16)
 	if (*s >= 0xd800 && *s <= 0xdfff) {
-    // UTF 16 surrogates
+		// UTF 16 surrogates
 		if (*s > 0xdbff)
 			goto err_ilseq;
 
@@ -1055,7 +1055,7 @@ err_ilseq:
 	errno = EILSEQ;
 	return -1;
 #elif defined(WCHAR_T_UTF8)
-  // Decode UTF 8
+	// Decode UTF 8
 	uint32_t cp;
 
 	if ((*s & B11111000) == B11110000) {
@@ -1231,7 +1231,7 @@ wcjsonstowc_backslash_u(const wchar_t *s, size_t *s_lenp, wchar_t *d,
 	cp = hs;
 
 	if (hs >= 0xd800 && hs <= 0xdfff) {
-    // UTF 16 surrogates
+		// UTF 16 surrogates
 		if (hs > 0xdbff || 6 > s_len || *s++ != '\\' || *s++ != 'u')
 			goto err_ilseq;
 
@@ -1265,7 +1265,7 @@ wcjsonstowc_backslash_u(const wchar_t *s, size_t *s_lenp, wchar_t *d,
 			goto err_range;
 		*d = (wchar_t)cp;
 	} else {
-    // UTF 16 surrogates
+		// UTF 16 surrogates
 		if (2 > d_len)
 			goto err_range;
 
