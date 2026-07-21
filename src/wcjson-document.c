@@ -207,7 +207,17 @@ wcjson_value_pair(struct wcjson_document *doc,
 		v->tail_idx = val->idx;
 	}
 
+	const size_t s_nitems_cnt = doc->s_nitems_cnt + key_len + 1;
+
+	if (s_nitems_cnt < doc->s_nitems_cnt)
+		goto err_range;
+
+	doc->s_nitems_cnt = s_nitems_cnt;
+
 	return v;
+err_range:
+	errno = ERANGE;
+	return NULL;
 }
 
 struct wcjson_value *

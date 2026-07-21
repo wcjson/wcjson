@@ -413,7 +413,7 @@ The
 .Fn wcjson_value_string
 and
 .Fn wcjson_value_number
-functions additionally update the
+functions update the
 .Va s_nitems_cnt
 member to account for the added values.
 .Pp
@@ -448,6 +448,9 @@ The
 and
 .Fn wcjson_object_add_tail
 functions add a key value pair to an object.
+The functions update the
+.Va s_nitems_cnt
+member to account for the added key.
 The
 .Fn wcjson_object_remove
 function removes a key value pair from an object.

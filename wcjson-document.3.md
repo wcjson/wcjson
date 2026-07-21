@@ -502,7 +502,7 @@ The
 **wcjson\_value\_string**()
 and
 **wcjson\_value\_number**()
-functions additionally update the
+functions update the
 *s\_nitems\_cnt*
 member to account for the added values.
 
@@ -537,6 +537,9 @@ The
 and
 **wcjson\_object\_add\_tail**()
 functions add a key value pair to an object.
+The functions update the
+*s\_nitems\_cnt*
+member to account for the added key.
 The
 **wcjson\_object\_remove**()
 function removes a key value pair from an object.
