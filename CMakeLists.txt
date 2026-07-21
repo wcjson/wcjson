@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.31)
 
 project(
 	wcjson
-	VERSION 0.40
+	VERSION 0.41
 	DESCRIPTION "Wide Character JSON for C"
 	HOMEPAGE_URL "http://wcjson.de"
 	LANGUAGES
